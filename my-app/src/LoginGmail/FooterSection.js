@@ -62,30 +62,30 @@ export default function FooterSection() {
               Social Profiles
             </div>
             <div className="w-[184px] h-[52px] flex flex-row items-start justify-start gap-[14px]">
-              <div className="self-stretch flex-1 rounded-lg bg-white-97 flex flex-col items-start justify-start py-3.5 px-[13px] border-[1px] border-solid border-white-95">
+              <button className="self-stretch flex-1 rounded-lg bg-white-97 flex flex-col items-start justify-start py-3.5 px-[13px] border-[1px] border-solid border-white-95">
                 <img
                   className="w-6 h-6 relative overflow-hidden shrink-0"
                   loading="lazy"
                   alt=""
                   src="/fbicon.svg"
                 />
-              </div>
-              <div className="self-stretch flex-1 rounded-lg bg-white-97 flex flex-col items-start justify-start py-3.5 px-[13px] border-[1px] border-solid border-white-95">
+              </button>
+              <button className="self-stretch flex-1 rounded-lg bg-white-97 flex flex-col items-start justify-start py-3.5 px-[13px] border-[1px] border-solid border-white-95">
                 <img
                   className="w-6 h-6 relative overflow-hidden shrink-0"
                   loading="lazy"
                   alt=""
                   src="/twittericon.svg"
                 />
-              </div>
-              <div className="self-stretch flex-1 rounded-lg bg-white-97 flex flex-col items-start justify-start py-3.5 px-[13px] border-[1px] border-solid border-white-95">
+              </button>
+              <button className="self-stretch flex-1 rounded-lg bg-white-97 flex flex-col items-start justify-start py-3.5 px-[13px] border-[1px] border-solid border-white-95">
                 <img
                   className="w-6 h-6 relative overflow-hidden shrink-0"
                   loading="lazy"
                   alt=""
                   src="/linkin.svg"
                 />
-              </div>
+              </button>
             </div>
           </div>
         </div>

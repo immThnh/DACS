@@ -13,21 +13,21 @@ export default function Header() {
             src="/logo.png"
           />
           <div className="flex flex-row items-center justify-start gap-[26px] mq1875:hidden">
-            <div className="relative leading-[150%] inline-block min-w-[52px] whitespace-nowrap">
+            <button className="relative leading-[150%] inline-block min-w-[52px] whitespace-nowrap">
               Home
-            </div>
-            <div className="relative leading-[150%] inline-block min-w-[72px] whitespace-nowrap">
+            </button>
+            <button className="relative leading-[150%] inline-block min-w-[72px] whitespace-nowrap">
               Courses
-            </div>
-            <div className="relative leading-[150%] inline-block min-w-[81px] whitespace-nowrap">
+            </button>
+            <button className="relative leading-[150%] inline-block min-w-[81px] whitespace-nowrap">
               About Us
-            </div>
+            </button>
           </div>
         </div>
         <div className="flex flex-row items-center justify-start gap-[30px] mq1400:hidden">
-          <div className="relative leading-[150%] inline-block min-w-[67px] whitespace-nowrap">
+          <button className="relative leading-[150%] inline-block min-w-[67px] whitespace-nowrap">
             Sign Up
-          </div>
+          </button>
           <button className="cursor-pointer [border:none] py-3.5 px-[34px] bg-black rounded-lg flex flex-row items-center justify-start hover:bg-darkslategray">
             <div className="relative text-lg leading-[150%] font-be-vietnam-pro text-absolute-white text-left inline-block min-w-[49px] whitespace-nowrap">
               Login

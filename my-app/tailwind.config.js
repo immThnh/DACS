@@ -27,9 +27,18 @@ module.exports = {
   },
   fontSize: {
     xl: "20px",
-    base: "16px",
-    lg: "18px",
-    inherit: "inherit",
+      base: "16px",
+      lg: "18px",
+      "31xl": "50px",
+      "21xl": "40px",
+      "11xl": "30px",
+      "3xl": "22px",
+      "5xl": "24px",
+      lgi: "19px",
+      "29xl": "48px",
+      "19xl": "38px",
+      "10xl": "29px",
+      inherit: "inherit",
   },
   screens: {
     mq1875: {
