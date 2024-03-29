@@ -5,6 +5,7 @@ import com.example.demo.jwt.JwtService;
 import com.example.demo.mail.MailRequest;
 import com.example.demo.mail.MailService;
 import com.example.demo.twilio.TwilioService;
+import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,7 @@ public class AuthController {
     }
 
     @PostMapping("/send-verify-email")
-    public ResponseEntity<String> sendVerifyEmail(@RequestBody MailRequest email) {
+    public ResponseEntity<String> sendVerifyEmail(@RequestBody MailRequest email) throws MessagingException {
         if (authService.isUsedEmail(email.getEmail())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email đã tồn tại!");
         }
@@ -49,7 +50,7 @@ public class AuthController {
     }
 
     @PostMapping("/send-reset-password-email")
-    public ResponseEntity<String> sendResetPasswordEmail(@RequestBody MailRequest email) {
+    public ResponseEntity<String> sendResetPasswordEmail(@RequestBody MailRequest email) throws MessagingException {
         if (!authService.isUsedEmail(email.getEmail())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email không tồn tài!");
         }

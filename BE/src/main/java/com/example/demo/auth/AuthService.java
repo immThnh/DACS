@@ -3,6 +3,7 @@ package com.example.demo.auth;
 import com.example.demo.entity.auth.Role;
 import com.example.demo.entity.auth.User;
 import com.example.demo.jwt.JwtService;
+import com.example.demo.jwt.Token;
 import com.example.demo.mail.MailRequest;
 import com.example.demo.repository.TokenRepository;
 import com.example.demo.repository.UserRepository;
@@ -44,8 +45,9 @@ public class AuthService {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(auth.getEmail(), auth.getPassword()));
             var user = userRepository.findByEmail(auth.getEmail()).orElse(null);
-            String token = jwtService.generateToken(user);
-            return token;
+            Token token = new Token(jwtService.generateToken(user));
+            user.setToken(token);
+            return token.getToken();
         }
         catch (AuthenticationException ex) {
             System.out.println(ex.getMessage() + "Xác thực người dùng thất bại!");

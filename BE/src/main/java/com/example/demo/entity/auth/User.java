@@ -1,6 +1,7 @@
 package com.example.demo.entity.auth;
 
 import com.example.demo.entity.data.Course;
+import com.example.demo.jwt.Token;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +28,11 @@ public class User implements UserDetails {
     private String lastName;
     private String avatar;
     private String phoneNumber;
+
+    @OneToOne
+    @JoinColumn(name = "token_id")
+    private Token token;
+
     @ElementCollection
     @CollectionTable(name = "code_table", joinColumns = @JoinColumn(name = "user_id"))
     @MapKeyColumn(name = "code")
