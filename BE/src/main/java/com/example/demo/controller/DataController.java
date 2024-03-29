@@ -1,26 +1,25 @@
 package com.example.demo.controller;
 
-import com.example.demo.entity.data.Course;
+import com.example.demo.data.CourseRequest;
+import com.example.demo.service.DataService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/data")
 @RequiredArgsConstructor
 public class DataController {
+    private final DataService dataService;
 
-    @GetMapping
-    public String get() {
-        return "get:: manager controller";
+    @PostMapping("/course")
+    public ResponseEntity<String> post(@RequestPart CourseRequest course, @RequestPart("thumbnail")MultipartFile thumbnail) {
+        dataService.addCourse(course, thumbnail);
+        return ResponseEntity.ok("Thêm khóa học thành công!");
     }
 
-    @PostMapping
-    public String post() {
-        return "post:: manager controller";
-    }
+    @PostMapping("/course/lesson")
 
     @PutMapping
     public String put() {

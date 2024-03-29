@@ -2,9 +2,11 @@ package com.example.demo.config;
 
 import com.example.demo.entity.auth.Permission;
 import com.example.demo.entity.auth.Role;
+import com.example.demo.handler.LogoutHandler;
 import com.example.demo.handler.Oauth2SuccessHandler;
 import com.example.demo.jwt.JwtFilter;
 import jakarta.persistence.AssociationOverride;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,8 +17,10 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import static com.example.demo.entity.auth.Permission.*;
 import static com.example.demo.entity.auth.Role.ADMIN;
@@ -30,13 +34,15 @@ public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
     private final JwtFilter jwtFilter;
     private final Oauth2SuccessHandler oauth2SuccessHandler;
+    private final LogoutHandler logoutHandler;
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.cors(cors -> cors.disable())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/v1/auth/**"
-                                , "/home",
+                        .requestMatchers("/api/v1/auth/**",
+//                                "/api/v1/data/**",
+                                "/home",
                                 "/api/v1/auth/send-verify-otp",
                                 "/images/**"
                         ).permitAll()
@@ -51,6 +57,14 @@ public class SecurityConfig {
                 )
                 .oauth2Login(o -> o
                         .successHandler(oauth2SuccessHandler))
+                .logout(logout -> logout.logoutUrl("/api/v1/auth/logout")
+                        .addLogoutHandler(logoutHandler)
+                        .logoutSuccessHandler(((request, response, authentication) -> {
+                            SecurityContextHolder.clearContext();
+                            System.out.println("Logout successful");
+                            response.setStatus(HttpServletResponse.SC_OK);
+                        }))
+                )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
