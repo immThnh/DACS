@@ -1,0 +1,30 @@
+import axios from "axios";
+
+let token;
+
+export const setToken = (jwt) => {
+    token = jwt;
+};
+
+
+const instance = axios.create({
+    baseURL: "http://localhost:8080/api/v1",
+    timeout: 5000,
+});
+
+instance.interceptors.response.use(
+    function (res) {
+        return res.data;
+    },
+    function (error) {
+        console.error("Error: " + error);
+        return Promise.reject(error);
+    }
+);
+
+instance.interceptors.request.use(function (config) {
+    if (token != null) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+});
+
+export default instance;
