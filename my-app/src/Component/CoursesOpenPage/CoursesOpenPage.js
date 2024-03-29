@@ -1,7 +1,8 @@
 import React from 'react'
-import Header from '../LoginGmail/Header'
-import FooterSection from '../LoginGmail/FooterSection'
+import Header from '../Header'; // Đường dẫn tương đối đến Header.js
+import FooterSection from '../FooterSection';
 import Container from './Container'
+import Source from './Source';
 export default function CoursesOpenPage() {
   return (
     <div className="w-full relative bg-white-97 overflow-hidden flex flex-col items-start justify-start pt-5 px-0 pb-0 box-border gap-[100px] tracking-[normal] text-left text-[48px] text-grey-15 font-be-vietnam-pro mq925:gap-[25px_100px] mq1400:gap-[50px_100px]">
@@ -34,7 +35,16 @@ export default function CoursesOpenPage() {
               />
             </div>
           </div> 
-          <Container />
+          {/* <Container /> */}
+          <div className="self-stretch flex flex-col items-start justify-start gap-[30px] max-w-full shrink-0 text-left text-61xl text-grey-20 font-be-vietnam-pro">
+            <div className="self-stretch flex flex-row flex-wrap items-start justify-start gap-[30px] max-w-full">
+                <Source />
+                <Source />
+                <Source />
+                <Source />
+                <Source />
+            </div>
+          </div>
         </section>
       </main>
       <FooterSection />

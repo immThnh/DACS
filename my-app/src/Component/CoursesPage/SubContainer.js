@@ -1,4 +1,5 @@
 import React from 'react'
+import Image from './Image'
 
 export default function SubContainer() {
   return (
@@ -24,30 +25,9 @@ export default function SubContainer() {
       </div>
       <div className="self-stretch flex flex-col items-start justify-start pt-0 px-0 pb-5 box-border gap-[30px] max-w-full shrink-0 text-xl">
         <div className="self-stretch flex flex-row flex-wrap items-start justify-start gap-[29.94999999999891px] max-w-full">
-          <div className="h-[422px] flex-1 relative rounded-lg bg-gainsboro-200 min-w-[359px] max-w-full mq925:min-w-full" >
-          <img
-              className="relative rounded-lg max-w-full overflow-hidden max-h-full object-cover min-h-[422px] mq825:w-full"
-              loading="lazy"
-              alt=""
-              src="/logo.png"
-            />
-            </div>
-          <div className="h-[422px] flex-1 relative rounded-lg bg-gainsboro-200 min-w-[359px] max-w-full mq925:min-w-full" >
-          <img
-              className="relative rounded-lg max-w-full overflow-hidden max-h-full object-cover min-h-[422px] mq825:w-full"
-              loading="lazy"
-              alt=""
-              src="/logo.png"
-            />
-          </div>
-          <div className="h-[422px] flex-1 relative rounded-lg bg-gainsboro-200 min-w-[359px] max-w-full mq925:min-w-full" >
-          <img
-              className="relative rounded-lg max-w-full overflow-hidden max-h-full object-cover min-h-[422px] mq825:w-full"
-              loading="lazy"
-              alt=""
-              src="/logo.png"
-            />
-          </div>
+          <Image/>
+          <Image/>
+          <Image/>
         </div>
         <div className="self-stretch flex flex-row items-center justify-between gap-[20px] mq925:flex-wrap">
           <div className="flex flex-row items-start justify-start gap-[10px]">
@@ -109,15 +89,7 @@ export default function SubContainer() {
               Design Principles for Web
             </div>
           </div>
-          <div className="h-28 w-px relative box-border border-r-[1px] border-solid border-white-95 mq1400:w-full mq1400:h-px" />
-          <div className="w-[199.2px] flex flex-col items-start justify-start gap-[20px]">
-            <div className="h-[37px] relative leading-[150%] font-extrabold inline-block min-w-[70px] mq925:text-21xl mq925:leading-[60px] mq450:text-11xl mq450:leading-[45px]">
-              05
-            </div>
-            <div className="self-stretch relative text-lg leading-[150%] font-medium text-grey-20">
-              Building a Basic Website
-            </div>
-          </div>
+          
         </div>
       </div>
     </div>

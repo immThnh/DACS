@@ -1,13 +1,10 @@
 
 import './App.css';
-import CoursesOpenPage from './CoursesOpenPage/CoursesOpenPage';
-import CoursesPage from './CoursesPage/CoursesPage';
-import LoginPageWithEmail from './LoginGmail/LoginPageWithEmail';
-
+import CoursesPage from './Component/CoursesPage/CoursesPage'
 function App() {
   return (
     <>
-    <CoursesOpenPage />
+    <CoursesPage />
     </>
   );
 }

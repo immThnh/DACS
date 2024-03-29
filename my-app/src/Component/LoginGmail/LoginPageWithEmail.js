@@ -1,10 +1,17 @@
-import React from 'react'
-import Header from './Header'
-import FooterSection from './FooterSection'
+import React, {useState} from 'react'
+import Header from '../Header'; // Đường dẫn tương đối đến Header.js
+import FooterSection from '../FooterSection';
 import Button from './Button'
 import Checkbox from './CheckBox'
 
 export default function LoginPageWithEmail() {
+  const [password, setPassword] = useState(''); // State để lưu trữ giá trị của trường mật khẩu
+  const [showPassword, setShowPassword] = useState(false); // State để xác định xem mật khẩu có được hiển thị hay không
+
+  // Hàm để xử lý sự kiện thay đổi trạng thái hiển thị mật khẩu
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
+  };
   return (
     <div className="w-full relative bg-white-97 overflow-hidden flex flex-col items-start justify-start pt-5 px-0 pb-0 box-border gap-[94px] tracking-[normal] mq925:gap-[23px_94px] mq1400:gap-[47px_94px]">
     <main className="self-stretch flex flex-row items-start justify-start py-0 px-[30px] box-border max-w-full">
@@ -37,14 +44,18 @@ export default function LoginPageWithEmail() {
                     <input
                       className="w-full [border:none] [outline:none] font-be-vietnam-pro text-lg bg-[transparent] h-[27px] flex-1 relative leading-[150%] text-grey-40 text-left inline-block min-w-[250px] max-w-full p-0"
                       placeholder="Enter your Password"
-                      type="text"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                     />
-                    <button><img
+                    <button onClick={toggleShowPassword} >
+                    {/* <img
                       className="h-6 w-6 relative overflow-hidden shrink-0"
                       alt=""
                       src="/eye-svgrepo-com.svg"
-                    />  </button>
-                  </div>
+                    />  */}
+                     </button>
+                  </div>  
                   <button className="self-stretch relative leading-[150%] text-grey-30 text-right">
                     Forgot Password?
                   </button>
@@ -113,4 +124,5 @@ export default function LoginPageWithEmail() {
     <FooterSection />
   </div>
   )
+  
 }

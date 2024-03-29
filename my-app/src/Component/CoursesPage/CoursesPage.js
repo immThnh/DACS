@@ -1,6 +1,6 @@
 import React from 'react'
-import Header from '../LoginGmail/Header'
-import FooterSection from '../LoginGmail/FooterSection'
+import Header from '../Header'; // Đường dẫn tương đối đến Header.js
+import FooterSection from '../FooterSection';
 import SubContainer from './SubContainer'
 export default function CoursesPage() {
   return (
