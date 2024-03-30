@@ -37,7 +37,7 @@ export default function SignUpForm() {
         errors[name] = "";
         setErrors(errors);
     }
-    
+
     function handleSubmit(event) {
         event.preventDefault();
         const errors = {};
@@ -256,6 +256,8 @@ export default function SignUpForm() {
                                 leaveTo="opacity-0 scale-95"
                             >
                                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                <form onSubmit={handleSubmit}>
+
                                     <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
                                         Forgot Password
                                     </Dialog.Title>
@@ -332,6 +334,7 @@ export default function SignUpForm() {
                                             Next
                                         </button>
                                     </div>
+                                    </form>
                                 </Dialog.Panel>
                             </Transition.Child>
                         </div>
@@ -339,7 +342,6 @@ export default function SignUpForm() {
                 </Dialog>
             </Transition>
 
-            {/* Password Reset Modal */}
             <Transition appear show={isResetModalOpen} as={Fragment}>
                 <Dialog as="div" className="relative z-10" onClose={closeModal}>
                     <Transition.Child
@@ -366,78 +368,78 @@ export default function SignUpForm() {
                                 leaveTo="opacity-0 scale-95"
                             >
                                 <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                <form onSubmit={handleSubmit}>
                                     <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
                                         Reset Password
                                     </Dialog.Title>
                                     <div className="mt-2">
                                     <div className="mt-5 text-left">
-                    <label
-                        htmlFor="password"
-                        className="font-medium max-md:max-w-full"
-                    >
-                        Password
-                    </label>
-                    <div className="flex p-2.5 mt-2.5 bg-gray-50 rounded-lg border border-gray-100 border-solid text-stone-500 max-md:flex-wrap">
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleInputChange}
-                            placeholder="Enter your Password"
-                            className="flex-1 bg-transparent outline-none"
-                        />
-                        <img
-                            loading="lazy"
-                            src="https://cdn.builder.io/api/v1/image/assets/TEMP/a8819b1cf48d19a6e95bc57cb5d373ec0162742f3cfe62b7ec31b90b0b48de06?apiKey=9349475655ee4a448868f824f5feb11d&"
-                            // src={eyeSlash}
-                            alt="Eye icon"
-                            className="cursor-pointer shrink-0 w-6 aspect-square"
-                            onClick={(e) => handleShowPassword(e, "password")}
-                        />
-                    </div>
-
-                    {errors.password && (
-                        <div className="text-red-500 mt-1 text-sm ml-1">
-                            {errors.password}
-                        </div>
-                    )}
-                </div>
-                <div className="mt-5 text-left">
-                    <label
-                        htmlFor="confirmPassword"
-                        className="font-medium max-md:max-w-full"
-                    >
-                        Confirm Password
-                    </label>
-                    <div className="flex p-2.5 mt-2.5 bg-gray-50 rounded-lg border border-gray-100 border-solid text-stone-500 max-md:flex-wrap">
-                        <input
-                            type="password"
-                            name="confirmPassword"
-                            id="confirmPassword"
-                            // value={formData.confirmPassword}
-                            onChange={handleInputChange}
-                            placeholder="Enter your confirm Password"
-                            className="flex-1 bg-transparent outline-none"
-                        />
-                        <img
-                            loading="lazy"
-                            src="https://cdn.builder.io/api/v1/image/assets/TEMP/a8819b1cf48d19a6e95bc57cb5d373ec0162742f3cfe62b7ec31b90b0b48de06?apiKey=9349475655ee4a448868f824f5feb11d&"
-                            alt="Eye icon"
-                            className="cursor-pointer shrink-0 w-6 aspect-square"
-                            onClick={(e) =>
-                                handleShowPassword(e, "confirmPassword")
-                            }
-                        />
-                    </div>
-
-                    {errors.confirmPassword && (
-                        <div className="text-red-500 mt-1 text-sm ml-1">
-                            {errors.confirmPassword}
-                        </div>
-                    )}
-                </div>
+                                    <label
+                                        htmlFor="password"
+                                        className="font-medium max-md:max-w-full"
+                                    >
+                                        Password
+                                    </label>
+                                    <div className="flex p-2.5 mt-2.5 bg-gray-50 rounded-lg border border-gray-100 border-solid text-stone-500 max-md:flex-wrap">
+                                        <input
+                                            type="password"
+                                            id="password"
+                                            name="password"
+                                            value={formData.password}
+                                            onChange={handleInputChange}
+                                            placeholder="Enter your Password"
+                                            className="flex-1 bg-transparent outline-none"
+                                        />
+                                        <img
+                                            loading="lazy"
+                                            src="https://cdn.builder.io/api/v1/image/assets/TEMP/a8819b1cf48d19a6e95bc57cb5d373ec0162742f3cfe62b7ec31b90b0b48de06?apiKey=9349475655ee4a448868f824f5feb11d&"
+                                            // src={eyeSlash}
+                                            alt="Eye icon"
+                                            className="cursor-pointer shrink-0 w-6 aspect-square"
+                                            onClick={(e) => handleShowPassword(e, "password")}
+                                        />
                                     </div>
+
+                                    {errors.password && (
+                                        <div className="text-red-500 mt-1 text-sm ml-1">
+                                            {errors.password}
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="mt-5 text-left">
+                                    <label
+                                        htmlFor="confirmPassword"
+                                        className="font-medium max-md:max-w-full"
+                                    >
+                                        Confirm Password
+                                    </label>
+                                    <div className="flex p-2.5 mt-2.5 bg-gray-50 rounded-lg border border-gray-100 border-solid text-stone-500 max-md:flex-wrap">
+                                        <input
+                                            type="password"
+                                            name="confirmPassword"
+                                            id="confirmPassword"
+                                            // value={formData.confirmPassword}
+                                            onChange={handleInputChange}
+                                            placeholder="Enter your confirm Password"
+                                            className="flex-1 bg-transparent outline-none"
+                                        />
+                                        <img
+                                            loading="lazy"
+                                            src="https://cdn.builder.io/api/v1/image/assets/TEMP/a8819b1cf48d19a6e95bc57cb5d373ec0162742f3cfe62b7ec31b90b0b48de06?apiKey=9349475655ee4a448868f824f5feb11d&"
+                                            alt="Eye icon"
+                                            className="cursor-pointer shrink-0 w-6 aspect-square"
+                                            onClick={(e) =>
+                                                handleShowPassword(e, "confirmPassword")
+                                            }
+                                        />
+                                    </div>
+                                        {errors.confirmPassword && (
+                                            <div className="text-red-500 mt-1 text-sm ml-1">
+                                                {errors.confirmPassword}
+                                            </div>
+                                        )}
+                                </div>
+                                                    </div>
 
                                     <div className="mt-4">
                                         <button
@@ -448,6 +450,7 @@ export default function SignUpForm() {
                                             Reset Password
                                         </button>
                                     </div>
+                                    </form>
                                 </Dialog.Panel>
                             </Transition.Child>
                         </div>
