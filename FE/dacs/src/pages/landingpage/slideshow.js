@@ -27,12 +27,17 @@ const PromoSlideshow = () => {
       modules={[Pagination, Navigation, Autoplay]}
       spaceBetween={50}
       slidesPerView={1}
-      // loop={true}
-      // autoplay={{
-      //   delay: 3500,
-      //   disableOnInteraction: false,
-      // }}
-      pagination={{ clickable: true }}
+      loop={true}
+      autoplay={{
+        delay: 3500,
+        disableOnInteraction: false,
+      }}
+      pagination={{
+        clickable: true,
+        renderBullet: (index, className) => {
+          return '<span class="' + className + ' bg-white w-2 h-2 mx-1 rounded-full"></span>';
+        },
+      }}
       navigation={true}
       className="relative rounded-xl overflow-hidden"
     style={{ width: '1280px', height: '250px' }}

@@ -91,7 +91,7 @@ const CourseCard = memo(({ course }) => {
 const CoursesComponent = () => {
   return (
     // Use padding adjustment for smaller screens if necessary.
-    <section className="p-4 sm:px-5 sm:py-10 mx-auto max-w-[1200px]">
+    <section className="p-4 sm:px-5 sm:py-10 mx-auto max-w-[1350px]">
       {/* Change to column layout on small screens */}
       <div className="flex flex-wrap justify-center">
         {courses.map((course, index) => (
