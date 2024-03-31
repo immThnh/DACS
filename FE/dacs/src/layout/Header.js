@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 import logo from "../assets/images/logo.png";
 export default function Header() {
     return (
-        <header className=" mt-10 fixed flex gap-5 justify-between px-16 pt-3 pb-3 w-full text-sm leading-5 border-b border-gray-100 border-solid max-w-[1400px] max-md:flex-wrap max-md:px-5 max-md:max-w-full">
-            <div className="flex gap-5 justify-between self-start text-neutral-800">
+        <header className="fixed flex gap-5 justify-between px-16 pt-3 pb-3 w-full rounded-xl text-sm leading-5 border-b bg-white border-gray-100 border-solid max-w-[1400px] max-md:flex-wrap max-md:px-5 max-md:max-w-full z-30">
+            <div className="flex gap-5 justify-between self-start text-neutral-800 ">
                 <Link to="/">
                     <img
                         loading="lazy"

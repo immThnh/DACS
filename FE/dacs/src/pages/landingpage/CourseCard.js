@@ -6,7 +6,7 @@ const courses = [
     title: 'Web Design Fundamentals',
     price: 100,
     discount: 20,
-    description: 'Learn the fundamentals of web design, including HTML, CSS, and responsive design principles.',
+    description: 'Learn the fundamentals of web design, including HTML, CSS, and responsive design principlesssssssssssssssssssssssssssssssssssssssssssssssssssssss.',
     thumbnail: 'https://picsum.photos/id/237/800/500',
     categories: [
       { id: 1, name: 'Design' },

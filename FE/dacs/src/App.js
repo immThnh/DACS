@@ -9,8 +9,7 @@ import { Toaster } from "sonner";
 function App() {
     return (
         <Router>
-            <div className="App flex flex-col items-center pt-5 bg-neutral-100">
-                <div className="fixed shrink-0 max-w-full h-10 bg-black rounded-md w-[1400px]" />
+            <div className="App flex flex-col items-center bg-neutral-100  sticky top-0">
                 <Header></Header>
                 <Routes>
                     {publicRoutes.map((route, index) => {
