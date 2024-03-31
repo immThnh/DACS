@@ -5,13 +5,23 @@ import * as authService from "../../../src/api/apiService/authService.js";
 import { Link, useNavigate } from "react-router-dom";
 import eyeSlash from "../../assets/images/eye-slash.png";
 import { toast } from "sonner";
-export default function SignUpForm() {
+import loginSlice from "../../redux/reducers/loginReducer.js";
+import { useDispatch, useSelector } from "react-redux";
+export default function Login() {
     const [formData, setFormData] = useState({
         email: "",
         password: "",
     });
     const [errors, setErrors] = useState({});
     const navigate = useNavigate();
+    const dangLogin = useSelector((state) => state.login.isLogin);
+    const dispatch = useDispatch();
+
+    const handleGoToSignUp = () => {
+        if (!dangLogin) return;
+        dispatch(loginSlice.actions.setSignUp());
+        navigate("/sign-up");
+    };
 
     function handleInputChange(event) {
         const { name, value } = event.target;
@@ -156,7 +166,7 @@ export default function SignUpForm() {
                     type="submit"
                     className="justify-center px-5 py-3.5 mt-5 text-sm font-medium text-center text-white bg-black rounded-lg max-md:max-w-full w-full"
                 >
-                    Sign Up
+                    Login
                 </button>
             </form>
             <div className="mb-3 flex gap-3 justify-center items-center mt-6 text-sm text-center whitespace-nowrap text-neutral-400 max-md:flex-wrap">
@@ -166,13 +176,15 @@ export default function SignUpForm() {
             </div>
             <OAuth2Form></OAuth2Form>
             <p className="flex gap-1.5 justify-center px-20 mt-6 text-center max-md:flex-wrap max-md:px-5">
-                <span>Already have an account?</span>{" "}
-                <Link
+                <span>Don't have an account?</span>{" "}
+                <button
+                    type="button"
                     to="/sign-up"
-                    className="font-medium underline text-neutral-800"
+                    className="cursor-pointer font-medium underline text-neutral-800"
+                    onClick={handleGoToSignUp}
                 >
-                    Sign In
-                </Link>
+                    Sign Up
+                </button>
                 <img
                     loading="lazy"
                     src="https://cdn.builder.io/api/v1/image/assets/TEMP/52e263b3f77bfff5dc120002e909b75e45aba8be06ea8bd8be14872be77d8f38?apiKey=9349475655ee4a448868f824f5feb11d&"
