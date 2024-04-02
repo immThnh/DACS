@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 import logo from "../assets/images/logo.png";
+import SeacrhBar from '.././component/Searchbar'
 export default function Header() {
     return (
         <header className="fixed flex gap-5 justify-between px-16 pt-3 pb-3 w-full rounded-xl text-sm leading-5 border-b bg-white border-gray-100 border-solid max-w-[1400px] max-md:flex-wrap max-md:px-5 max-md:max-w-full z-30">
@@ -20,6 +21,7 @@ export default function Header() {
                 </nav>
             </div>
             <div className="flex gap-5 justify-between">
+                <SeacrhBar/>
                 <Link to="sign-up" className="my-auto text-neutral-800">
                     Sign Up
                 </Link>
