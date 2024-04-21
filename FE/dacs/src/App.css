@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+  padding-top: var(--header-height); /* Adjust this variable to match your header's height */
 }
 
 .App-logo {
@@ -18,7 +19,9 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
-
+.page-content {
+  padding-top: 70px; /* Adjust this value to match your header's height */
+}
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -28,6 +31,7 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  
 }
 
 .App-link {
@@ -42,3 +46,4 @@
     transform: rotate(360deg);
   }
 }
+

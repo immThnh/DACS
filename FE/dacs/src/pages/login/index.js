@@ -138,7 +138,7 @@ export default function SignUpForm() {
     };
     return (
         <Fragment>
-        <section className="mt-40 flex flex-col p-10 mt-10 max-w-full text-base leading-6 bg-white rounded-xl text-neutral-800 w-[540px] max-md:px-5 max-md:mt-10">
+        <section className=" mt-10 flex flex-col p-10  max-w-full text-base leading-6 bg-white rounded-xl text-neutral-800 w-[540px] max-md:px-5 max-md:mt-10">
             <h2 className="text-4xl font-semibold text-center max-md:max-w-full">
                 Login
             </h2>

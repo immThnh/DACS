@@ -9,8 +9,11 @@ import { Toaster } from "sonner";
 function App() {
     return (
         <Router>
-            <div className="App flex flex-col items-center bg-neutral-100  sticky top-0">
-                <Header></Header>
+        {/* Remove the 'sticky top-0' from here, it should be on the Header component only */}
+        <div className="App flex flex-col items-center bg-neutral-100">
+            <Header /> {/* Header should have 'sticky top-0' within its own styles */}
+            {/* Add a class to give padding equal to the Header's height */}
+            <div className="page-content">
                 <Routes>
                     {publicRoutes.map((route, index) => {
                         const Page = route.component;
@@ -18,15 +21,16 @@ function App() {
                             <Route
                                 key={index}
                                 path={route.path}
-                                element={<Page></Page>}
-                            ></Route>
+                                element={<Page />}
+                            />
                         );
                     })}
                 </Routes>
-                <Footer></Footer>
-                <Toaster position="top-center" richColors></Toaster>
             </div>
-        </Router>
+            <Footer />
+            <Toaster position="top-center" reverseOrder={false} />
+        </div>
+    </Router>
     );
 }
 

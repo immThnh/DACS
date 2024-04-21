@@ -2,8 +2,8 @@ import * as React from "react";
 
 function CourseSection() {
   return (
-    <section className="flex gap-5 w-full max-w-[1320px] max-md:flex-wrap max-md:mt-10 max-md:max-w-full text-start pl-8 mt-20">
-      <div className="flex flex-col flex-1  max-md:max-w-full">
+    <section className="flex gap-5 w-full max-w-[1536px] max-md:flex-wrap max-md:mt-10 max-md:max-w-full text-start pl-8 mt-20">
+      <div className="flex flex-col flex-1 max-w-[1350px]">
         <h2 className="text-4xl font-semibold leading-[57px] text-neutral-800 max-md:max-w-full">
           Our Courses
         </h2>

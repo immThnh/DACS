@@ -1,5 +1,6 @@
 
 import React, { useState,memo } from 'react';
+import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 const courses = [
   {
     id: 1,
@@ -65,6 +66,7 @@ const CourseCard = memo(({ course }) => {
     // For small screens: full width. For medium screens and up: 1/3 width.
     <div className="course-card w-full md:w-1/3 px-4 flex flex-col">
       <div className="bg-white rounded-xl border border-gray-100 p-6 flex flex-col">
+      <Link to={`/details/${course.id}`}>
         <div className="flex justify-center">
           {/* Adjust image size for smaller screens */}
           <img src={course.thumbnail} alt="" className="course-image rounded-t-lg mb-4 w-full object-cover" style={{ height: '200px', objectFit: 'cover' }} />
@@ -80,6 +82,7 @@ const CourseCard = memo(({ course }) => {
         <p className="text-neutral-600 text-xs sm:text-sm mb-4 line-clamp text-start">
           {course.description}
         </p>
+        </Link>
         <button className="px-4 py-2 text-xs sm:text-sm font-medium text-center rounded-md border border-gray-100 bg-neutral-100 text-neutral-800">
           Get it Now
         </button>
@@ -91,7 +94,7 @@ const CourseCard = memo(({ course }) => {
 const CoursesComponent = () => {
   return (
     // Use padding adjustment for smaller screens if necessary.
-    <section className="p-4 sm:px-5 sm:py-10 mx-auto max-w-[1350px]">
+    <section className="p-4 sm:px-5 sm:py-10 mx-auto max-w-[135 0px]">
       {/* Change to column layout on small screens */}
       <div className="flex flex-wrap justify-center">
         {courses.map((course, index) => (
