@@ -97,7 +97,7 @@ function UiUxCourse() {
             title: "Understanding UI/UX Design Principles",
             lesson: "Lesson 02",
             time: "45",
-            videoUrl: "video-url-2.mp4",
+            videoUrl: "https://www.youtube.com/watch?v=o_VDcEy029M",
           },
           {
             id: 2, // Unique identifier for the lesson

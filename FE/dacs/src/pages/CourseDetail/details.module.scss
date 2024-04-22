@@ -212,6 +212,10 @@
   color: var(--Grey-20, #333);
   margin-top: 20px;
   font: 700 18px/27px 'Be Vietnam Pro', sans-serif;
+  white-space: nowrap;
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    max-width: 200px;
 }
 .coursePrice {
   justify-content: center;
