@@ -34,13 +34,13 @@ public class CourseController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponObject> getCourseById(@PathVariable  int id) {
+    public ResponseEntity<ResponObject> getCourseById(@PathVariable int id) {
         var result = courseService.getCourseById(id);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
-    @GetMapping("/{alias}")
-    public ResponseEntity<ResponObject> getCourseById(@PathVariable  String alias) {
-        var result = courseService.getCourseById(id);
+    @GetMapping("/alias/{alias}")
+    public ResponseEntity<ResponObject> getCourseByAlias(@PathVariable  String alias) {
+        var result = courseService.getCourseByAlias(alias);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 
@@ -51,18 +51,20 @@ public class CourseController {
            return ResponseEntity.status(result.getStatus()).body(result.getContent().toString());
        }
        catch (Exception ex) {
-           System.out.println("updateCourse: " + ex.getMessage());
+           System.out.println("updateCourseController: " + ex.getMessage());
            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error updating course");
        }
     }
+
 
     @PutMapping
     public String put() {
         return "put:: manager controller";
     }
 
-    @DeleteMapping
-    public String delete() {
-        return "delete:: admin controller";
+    @DeleteMapping({"/delete/{id}"})
+    public ResponseEntity<ResponObject> delete(@PathVariable int id) {
+        var result = courseService.deleteCourseById(id);
+        return ResponseEntity.status(result.getStatus()).body(result);
     }
 }

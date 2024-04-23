@@ -93,3 +93,13 @@ export const updateCourse = async (id, course, lessons, thumbnail, videos) => {
         return Promise.reject(error);
     }
 };
+
+export const removeCourse = async (id) => {
+    try {
+        const result = await instance.delete(`/data/course/delete/${id}`);
+        return result;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+

@@ -6,10 +6,26 @@ import viewIcon from "../../../../assets/images/view.svg";
 import editIcon from "../../../../assets/images/edit.svg";
 import { useEffect, useState } from "react";
 import * as dataApi from "../../../../api/apiService/dataService";
+import { toast } from "sonner";
+
 function ListCourse() {
     const [courses, setCourses] = useState([]);
-    const handleRemoveCourse = () => {
-        console.log("a");
+    const handleRemoveCourse = (id) => {
+        console.log(id);
+        const fetchApi = async () => {
+            toast.promise(dataApi.removeCourse(id), {
+                loading: "Removing...",
+                success: () => {
+                    window.location.reload();
+                    return "Remove successfully";
+                },
+                error: (error) => {
+                    return error.content;
+                },
+            });
+        };
+
+        fetchApi();
     };
 
     useEffect(() => {
@@ -18,7 +34,7 @@ function ListCourse() {
                 const result = await dataApi.getAllCourse();
                 setCourses(result);
             } catch (error) {
-                console.log(error);
+                console.log(error.response.data);
             }
         };
         fetchApi();
@@ -258,19 +274,27 @@ function ListCourse() {
                                                                 alt=""
                                                             />
                                                         </Link>
-                                                        <Link  to={`/admin/course/edit/${course.id}`}>
+                                                        <Link
+                                                            to={`/admin/course/edit/${course.id}`}
+                                                        >
                                                             <img
                                                                 src={editIcon}
                                                                 alt=""
                                                             />
                                                         </Link>
-                                                        <img
-                                                            onClick={
-                                                                handleRemoveCourse
+                                                        <button
+                                                            onClick={() =>
+                                                                handleRemoveCourse(
+                                                                    course.id
+                                                                )
                                                             }
-                                                            src={deleteIcon}
-                                                            alt=""
-                                                        />
+                                                        >
+                                                            <img
+                                                                src={deleteIcon}
+                                                                alt=""
+                                                                className="cursor-pointer"
+                                                            />
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>

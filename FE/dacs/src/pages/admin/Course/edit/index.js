@@ -1,4 +1,3 @@
-import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import clsx from "clsx";
 import styles from "../create/CreateCourse.module.scss";
@@ -9,7 +8,10 @@ import * as DataApi from "../../../../api/apiService/dataService";
 import { toast } from "sonner";
 import btnClose from "../../../../assets/images/btnClose.svg";
 import { useParams } from "react-router-dom";
-import { clear } from "@testing-library/user-event/dist/clear";
+import makeAnimated from "react-select/animated";
+
+const animatedComponents = makeAnimated();
+
 const initFormData = {
     id: "",
     title: "",
@@ -18,12 +20,13 @@ const initFormData = {
     thumbnail: "",
     date: "",
     lessons: [],
-    category: [],
+    categories: [],
 };
 
 function EditCourse() {
     const [formData, setFormData] = useState(initFormData);
     const [options, setOptions] = useState([]);
+    const [selectedOptions, setSelectedOptions] = useState([]);
     const { id } = useParams();
 
     let timerId;
@@ -34,7 +37,6 @@ function EditCourse() {
             [name]: value,
         });
     };
-
 
     const handleFileChange = (e, index) => {
         const file = e.target.files[0];
@@ -64,7 +66,7 @@ function EditCourse() {
         });
         setFormData({
             ...formData,
-            category: [...newCate],
+            categories: [...newCate],
         });
     };
 
@@ -112,25 +114,30 @@ function EditCourse() {
     };
 
     useEffect(() => {
-        // const fetchApi = async () => {
-        //     try {
-        //         const result = await DataApi.getAllCategories();
-        //         var listOption = [];
-        //         result.forEach((category) => {
-        //             const { id, name } = category;
-        //             listOption.push({ value: name, label: name });
-        //         });
-        //         setOptions(listOption);
-        //     } catch (error) {
-        //         console.log("Error while get categories");
-        //     }
-        // };
+        const fetchApi = async () => {
+            try {
+                const result = await DataApi.getAllCategories();
+                var listOption = [];
+                result.forEach((category) => {
+                    const { id, name } = category;
+                    listOption.push({ value: id, label: name });
+                });
+                setOptions(listOption);
+            } catch (error) {
+                console.log("Error while get categories");
+            }
+        };
 
         const fetchData = async () => {
             toast.promise(DataApi.getCourseById(id), {
                 loading: "Loading...",
                 success: (data) => {
                     setFormData(data.content);
+                    const defaultValues = [...data.content.categories];
+                    const defaultValue = options.filter((option) =>
+                        defaultValues.includes(option.value)
+                    );
+                    setSelectedOptions(defaultValue);
                     return "Get data successfully";
                 },
                 error: (error) => {
@@ -140,7 +147,7 @@ function EditCourse() {
         };
 
         fetchData();
-        // fetchApi();
+        fetchApi();
     }, []);
 
     function isURL(str) {
@@ -206,9 +213,7 @@ function EditCourse() {
         newLessons.splice(index, 1);
         setFormData({ ...formData, lessons: [...newLessons] });
     };
-  
-  
-   
+
     return (
         <div>
             <>
@@ -259,8 +264,9 @@ function EditCourse() {
                                 >
                                     <Select
                                         isMulti
+                                        components={animatedComponents}
                                         onChange={handleSelectChange}
-                                        // defaultValue={selectedOption}
+                                        defaultValue={selectedOptions}
                                         options={options}
                                         styles={{
                                             control: (baseStyles, state) => ({
@@ -513,7 +519,9 @@ function EditCourse() {
                                                                 )}
                                                             >
                                                                 <video
-                                                                key={lesson.video}
+                                                                    key={
+                                                                        lesson.video
+                                                                    }
                                                                     controls
                                                                     className="rounded-lg"
                                                                 >

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -19,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class LessonService {
     private final LessonRepository lessonRepository;
     private final Cloudinary cloud;
@@ -37,71 +39,146 @@ public class LessonService {
         return (String) map.get("secure_url");
     }
 
+//    public void updateLessonsOfCourse(List<LessonRequest> newLessons, List<Lesson> currentLessons, Course course, List<MultipartFile> videos) {
+//
+//        if(newLessons.isEmpty()) {
+//            System.out.println("remove all lessons");
+//            for (var oldLesson:
+//                    currentLessons) {
+//                oldLesson.setCourse(null);
+//                lessonRepository.delete(oldLesson);
+//            }
+//            return;
+//        }
+//
+//        var lessonsUpdate = new ArrayList<>();
+//        int index = 0;
+//        for(var newLesson : newLessons) {
+//            int finalIndex = index;
+//
+//            Lesson isExistLesson = currentLessons.stream()
+//                    .filter(l -> newLesson.getId() == l.getId())
+//                    .findFirst()
+//                    .orElse(null);
+//
+//            if(isExistLesson != null)  {
+//                System.out.println("update lesson");
+//                isExistLesson.setDescription(newLesson.getDesc());
+//                isExistLesson.setTitle(newLesson.getTitle());
+//                isExistLesson.setLinkVideo(newLesson.getLinkVideo());
+//                if(newLesson.getIsEditedVideo() == 1) {
+//                    CompletableFuture.runAsync(() -> {
+//                        try {
+//                            System.out.println("create video");
+//                            isExistLesson.setVideo((getLinkCloud(videos.get(finalIndex).getBytes())));
+//                            lessonRepository.save(isExistLesson);
+//
+//                        } catch (IOException e) {
+//                            System.out.println("Update video lesson: " + e.getMessage());
+//                        }
+//                    });
+//                    index++;
+//                }
+//                lessonsUpdate.add(isExistLesson);
+//            }
+//            else {
+//                System.out.println("create lessons");
+//                Lesson temp = Lesson.builder()
+//                        .description(newLesson.getDesc())
+//                        .title(newLesson.getTitle())
+//                        .linkVideo(newLesson.getLinkVideo())
+//                        .course(course)
+//                        .build();
+//
+//                CompletableFuture.runAsync(() -> {
+//                    try {
+//                        System.out.println("create video");
+//                        temp.setVideo((getLinkCloud(videos.get(finalIndex).getBytes())));
+//                        lessonRepository.save(temp);
+//                    } catch (IOException e) {
+//                        System.out.println("Update video lesson: " + e.getMessage());
+//                    }
+//                });
+//                index++;
+//                lessonsUpdate.add(temp);
+//            }
+//        }
+//
+//        for (var oldLesson:
+//                currentLessons) {
+//            if(!lessonsUpdate.contains(oldLesson)) {
+//                System.out.println("remove lessons");
+//                oldLesson.setCourse(null);
+//                lessonRepository.delete(oldLesson);
+//            }
+//        }
+//    }
     public void updateLessonsOfCourse(List<LessonRequest> newLessons, List<Lesson> currentLessons, Course course, List<MultipartFile> videos) {
 
         if(newLessons.isEmpty()) {
-                    System.out.println("remove all lessons");
+            System.out.println("remove all lessons");
             for (var oldLesson:
                     currentLessons) {
-                    oldLesson.setCourse(null);
-                    lessonRepository.delete(oldLesson);
+                oldLesson.setCourse(null);
+                lessonRepository.delete(oldLesson);
             }
             return;
         }
 
         var lessonsUpdate = new ArrayList<>();
-            int index = 0;
-        for(var newLesson : newLessons) {
-            int finalIndex = index;
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
 
-            Lesson isExistLesson = currentLessons.stream()
+        int index = 0;
+        for (int i = 0; i < newLessons.size(); i++) {
+            LessonRequest newLesson = newLessons.get(i);
+            Lesson currentLesson = currentLessons.stream()
                     .filter(l -> newLesson.getId() == l.getId())
                     .findFirst()
                     .orElse(null);
-
-            if(isExistLesson != null)  {
+            if (currentLesson != null) {
                 System.out.println("update lesson");
-                isExistLesson.setDescription(newLesson.getDesc());
-                isExistLesson.setTitle(newLesson.getTitle());
-                isExistLesson.setLinkVideo(newLesson.getLinkVideo());
+                currentLesson.setDescription(newLesson.getDesc());
+                currentLesson.setTitle(newLesson.getTitle());
+                currentLesson.setLinkVideo(newLesson.getLinkVideo());
                 if(newLesson.getIsEditedVideo() == 1) {
-                    CompletableFuture.runAsync(() -> {
+                    MultipartFile video = videos.get(index);
+                    index++;
+                    CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                         try {
-                            System.out.println("create video");
-                            isExistLesson.setVideo((getLinkCloud(videos.get(finalIndex).getBytes())));
-                            lessonRepository.save(isExistLesson);
+                            System.out.println("update video");
+                            currentLesson.setVideo((getLinkCloud(video.getBytes())));
+                            lessonRepository.save(currentLesson);
 
                         } catch (IOException e) {
                             System.out.println("Update video lesson: " + e.getMessage());
                         }
                     });
-                    index++;
+                    futures.add(future);
                 }
-                lessonsUpdate.add(isExistLesson);
-            }
-            else {
-                System.out.println("create lessons");
+                lessonsUpdate.add(currentLesson);
+            } else {
+                System.out.println("create lesson");
                 Lesson temp = Lesson.builder()
                         .description(newLesson.getDesc())
                         .title(newLesson.getTitle())
                         .linkVideo(newLesson.getLinkVideo())
                         .course(course)
                         .build();
+                MultipartFile video = videos.get(index);
+                index++;
 
-                CompletableFuture.runAsync(() -> {
+                CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                     try {
-                        System.out.println("create video");
-                        temp.setVideo((getLinkCloud(videos.get(finalIndex).getBytes())));
+                        temp.setVideo(getLinkCloud(video.getBytes()));
                         lessonRepository.save(temp);
                     } catch (IOException e) {
-                        System.out.println("Update video lesson: " + e.getMessage());
+                        System.out.println("Error updating lesson video: " + e.getMessage());
                     }
                 });
-                index++;
                 lessonsUpdate.add(temp);
+                futures.add(future);
             }
         }
-
         for (var oldLesson:
                 currentLessons) {
             if(!lessonsUpdate.contains(oldLesson)) {
@@ -110,6 +187,7 @@ public class LessonService {
                 lessonRepository.delete(oldLesson);
             }
         }
+        CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+        allOf.join();
     }
-
 }

@@ -5,6 +5,7 @@ import com.example.demo.entity.data.Course;
 import com.example.demo.repository.data.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CategoryService {
     private final CategoryRepository categoryRepository;
 
@@ -19,21 +21,35 @@ public class CategoryService {
         return categoryRepository.getAllCategories().orElse(null);
     }
 
-    public void updateCategoryForCourse(Course course, Set<String> categories) {
+    public Category getById(int id) {
+        var cate = categoryRepository.findById(id).orElse(null);
+        if(cate == null) {
+            return null;
+        }
+        return cate;
+    }
+
+    public void updateCategoriesForCourse(Course course, Set<Integer> categories) {
         List<Category> newCategories = new ArrayList<>();
         for(var temp : categories) {
-            var cate = categoryRepository.findByName(temp).orElse(null);
+            var cate = categoryRepository.findById(temp).orElse(null);
             if(cate != null) {
                 newCategories.add(cate);
                 course.getCategories().add(cate);
             }
         }
 
-        for (var old:
-             course.getCategories()) {
-            if(!newCategories.contains(old)) {
-                course.getCategories().remove(old);
-            }
+        course.getCategories().removeIf(old -> !newCategories.contains(old));
+    }
+
+    public void addCategoriesForCourse(Course course, Set<Integer> categories) {
+        if(categories == null) {
+            System.out.println("opl");
+            course.setCategories(null);
+            return;
+        }
+        for(var temp : categories) {
+            categoryRepository.findById(temp).ifPresent(cate -> course.getCategories().add(cate));
         }
     }
 }

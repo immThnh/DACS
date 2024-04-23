@@ -23,14 +23,10 @@ public class Lesson {
     private String video;
     private LocalDateTime date;
 
+//    @ManyToOne(cascade = CascadeType.PERSIST)
     @ManyToOne
-    @JoinColumn(name="course_id")
     @JsonIgnore
     private Course course ;
-
-    public Course getCourse() {
-        return course;
-    }
 
     @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Exercise> exercises = new ArrayList<>();

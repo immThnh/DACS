@@ -5,6 +5,8 @@ import Header from "./layout/Header";
 import Footer from "./layout/Footer";
 import LeftNavDash from "./component/dashboard/leftNavDash";
 import HeaderAdmin from "./layout/adminLayout/headerAdmin";
+import { redirect } from "react-router-dom";
+
 function App() {
     return (
         <Router>
@@ -12,6 +14,7 @@ function App() {
                 <Routes>
                     {publicRoutes.map((route, index) => (
                         <Route
+                            exact
                             key={index}
                             path={route.path}
                             element={
@@ -26,6 +29,7 @@ function App() {
                     {adminRoutes.map((route, index) => (
                         <Route
                             key={index}
+                            exact
                             path={route.path}
                             element={
                                 <>
@@ -36,8 +40,10 @@ function App() {
                                     </div>
                                 </>
                             }
-                        />
+                        >
+                        </Route>
                     ))}
+                    {/* <Redirect exact  to="/404" /> */}
                 </Routes>
                 <Toaster position="top-center" richColors />
             </div>

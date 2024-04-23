@@ -1,4 +1,3 @@
-import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import styles from "./CreateCourse.module.scss";
 import clsx from "clsx";
@@ -15,7 +14,7 @@ const initFormData = {
     price: "",
     thumbnail: "",
     date: "",
-    category: [],
+    categories: [],
 };
 
 function CreateCourse() {
@@ -62,12 +61,12 @@ function CreateCourse() {
 
     const handleSelectChange = (e) => {
         let newCate = [];
-        e.forEach(({ name, value }) => {
+        e.forEach(({ value, name }) => {
             newCate = [...newCate, value];
         });
         setFormData({
             ...formData,
-            category: [...newCate],
+            categories: [...newCate],
         });
     };
 
@@ -118,7 +117,7 @@ function CreateCourse() {
                 var listOption = [];
                 result.forEach((category) => {
                     const { id, name } = category;
-                    listOption.push({ value: name, label: name });
+                    listOption.push({ value: id, label: name });
                 });
                 setOptions(listOption);
             } catch (error) {
@@ -150,6 +149,7 @@ function CreateCourse() {
                         return "Create successfully";
                     },
                     error: (error) => {
+                        console.log(error);
                         return error;
                     },
                 }

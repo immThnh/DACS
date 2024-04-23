@@ -20,7 +20,7 @@ public class CourseRequest {
     private int discount;
     private String desc;
     private LocalDateTime date;
-    private Set<String> categories;
+    private Set<Integer> categories;
     private List<Lesson> lessons;
 
     private boolean isEditedThumbnail;

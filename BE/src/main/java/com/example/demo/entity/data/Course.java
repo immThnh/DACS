@@ -1,5 +1,7 @@
 package com.example.demo.entity.data;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ManyToAny;
@@ -23,17 +25,21 @@ public class Course {
     private int price;
     private int discount;
     private LocalDateTime date;
+    @Column(columnDefinition = "TEXT")
     private String description;
     private String thumbnail;
     private String alias;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "course_category",
-            joinColumns = @JoinColumn(name = "course_id"),
-            inverseJoinColumns = @JoinColumn(name="category_id")
+            joinColumns = @JoinColumn(name = "course_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name="category_id", referencedColumnName = "id")
     )
-    private Set<Category> categories = new HashSet<>();
-    @OneToMany(mappedBy = "course")
+    @JsonManagedReference
+    private List<Category> categories;
+
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
     private List<Lesson> lessons;
 }
