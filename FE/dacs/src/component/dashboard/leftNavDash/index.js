@@ -1,6 +1,5 @@
 import styles from "./LeftNavDash.module.scss";
 import clsx from "clsx";
-import logoImg from "../../../assets/images/logo.png";
 import appDash from "../../../assets/images/app_dash.svg";
 import eDash from "../../../assets/images/ecommerce_dash.svg";
 import icUser from "../../../assets/images/ic_user.svg";
@@ -17,8 +16,8 @@ function LeftNavDash() {
                 link.classList.toggle(clsx(styles.active));
                 break;
             case "Course":
-                var sub = document.getElementById("subCourse");
-                var link = document.getElementById("courseLink");
+                sub = document.getElementById("subCourse");
+                link = document.getElementById("courseLink");
                 sub.classList.toggle("d-block");
                 link.classList.toggle(clsx(styles.active));
                 break;

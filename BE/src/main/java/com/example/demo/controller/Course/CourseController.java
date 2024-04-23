@@ -38,6 +38,11 @@ public class CourseController {
         var result = courseService.getCourseById(id);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
+    @GetMapping("/{alias}")
+    public ResponseEntity<ResponObject> getCourseById(@PathVariable  String alias) {
+        var result = courseService.getCourseById(id);
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
 
     @PutMapping("/edit/{id}")
     public ResponseEntity<String> updateCourse(@PathVariable int id, @RequestPart CourseRequest course, @RequestPart List<LessonRequest> lessons, @RequestPart(required = false) MultipartFile thumbnail, @RequestPart(value = "videos", required = false) List<MultipartFile> videos)  {

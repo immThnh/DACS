@@ -34,6 +34,8 @@ public class CourseService {
     private final CategoryService categoryService;
     private final LessonService lessonService;
 
+
+
     public ResponObject updateCourse(int id, CourseRequest courseRequest, List<LessonRequest> lessons, MultipartFile thumbnail, List<MultipartFile> videos) throws IOException, ExecutionException, InterruptedException {
         var courseDAO = courseRepository.findById(id).orElse(null);
         if(courseDAO == null) {
@@ -73,7 +75,13 @@ public class CourseService {
             return ResponObject.builder().content("Course is not exist!").status(HttpStatus.BAD_REQUEST).build();
         }
         return ResponObject.builder().content(course).status(HttpStatus.OK).build();
-
+    }
+    public ResponObject getCourseByAlias(String alias) {
+        Course course = courseRepository.findByAlias(alias).orElse(null);
+        if (course == null) {
+            return ResponObject.builder().content("Course is not exist!").status(HttpStatus.BAD_REQUEST).build();
+        }
+        return ResponObject.builder().content(course).status(HttpStatus.OK).build();
     }
 
     public ResponObject getAllCourse() {

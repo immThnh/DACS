@@ -25,6 +25,7 @@ public class Course {
     private LocalDateTime date;
     private String description;
     private String thumbnail;
+    private String alias;
 
     @ManyToMany
     @JoinTable(

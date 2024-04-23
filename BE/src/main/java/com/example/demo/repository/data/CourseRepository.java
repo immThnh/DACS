@@ -13,6 +13,8 @@ public interface CourseRepository extends JpaRepository<Course, Integer> {
     public Optional<Course> findByTitle(String title);
     public Optional<Course> findById(int id);
 
+    Optional<Course> findByAlias(String alias);
+
     @Query(value = "select * from course", nativeQuery = true)
     Optional<List<Course>> getAll();
 }

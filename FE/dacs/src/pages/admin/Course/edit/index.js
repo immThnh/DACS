@@ -25,7 +25,6 @@ function EditCourse() {
     const [formData, setFormData] = useState(initFormData);
     const [options, setOptions] = useState([]);
     const { id } = useParams();
-    const fileVideos = [];
 
     let timerId;
     const handleInputChange = (e) => {
@@ -36,14 +35,6 @@ function EditCourse() {
         });
     };
 
-    // const handleFileChange1 = (e) => {
-    //     const file = e.target.files[0];
-    //     setFormData({
-    //         ...formData,
-    //         thumbnail: file,
-    //         isEditedThumbnail: true,
-    //     });
-    // };
 
     const handleFileChange = (e, index) => {
         const file = e.target.files[0];
@@ -166,7 +157,6 @@ function EditCourse() {
     }
 
     console.log("render");
-    console.log(formData);
 
     const handleSubmit = (e) => {
         e.preventDefault();
