@@ -46,7 +46,7 @@ const PromoSlideshow = () => {
                 }}
                 navigation={true}
                 className="relative rounded-xl"
-                style={{ width: "1470px", height: "300px" }}
+                style={{ height: "300px" }}
             >
                 {slides.map((slide, index) => (
                     <SwiperSlide

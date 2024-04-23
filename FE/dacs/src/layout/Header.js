@@ -36,7 +36,7 @@ export default function Header() {
             <div className="z-1000 relative w-full flex justify-center">
                 <div className="w-1400 fixed shrink-0 max-w-full h-10 bg-black rounded-md w-full z-50"></div>
                 <header
-                    className={` ${Styles.boxShadow} w-1400  bg-neutral-100 mt-10 fixed flex gap-5 justify-between px-16 pt-3 pb-3 text-sm leading-5 border-b border-gray-100 border-solid  max-md:flex-wrap max-md:px-5 max-md:max-w-full`}
+                    className={` ${Styles.boxShadow} z-header w-1400  bg-neutral-100 mt-10 fixed flex gap-5 justify-between px-16 pt-3 pb-3 text-sm leading-5 border-b border-gray-100 border-solid  max-md:flex-wrap max-md:px-5 max-md:max-w-full`}
                 >
                     <div className="flex gap-5 justify-between self-start text-neutral-800">
                         <Link to="/">
