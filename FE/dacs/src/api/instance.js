@@ -6,10 +6,8 @@ export const setToken = (jwt) => {
     token = jwt;
 };
 
-
 const instance = axios.create({
     baseURL: "http://localhost:8080/api/v1",
-    timeout: 5000,
 });
 
 instance.interceptors.response.use(
@@ -17,7 +15,6 @@ instance.interceptors.response.use(
         return res.data;
     },
     function (error) {
-        console.error("Error: " + error);
         return Promise.reject(error);
     }
 );

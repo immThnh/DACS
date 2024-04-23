@@ -13,11 +13,14 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import java.util.List;
 
 @SpringBootApplication
 @RequiredArgsConstructor
+@Async
 public class DemoApplication {
 	private final Config configTwilio;
 	private final UserRepository userRepository;
@@ -33,36 +36,36 @@ public class DemoApplication {
 	}
 
 
-	@Bean
-	CommandLineRunner commandLineRunner (AuthService authService) {
-		return args -> {
-			User user = User.builder()
-					.firstName("nguyen")
-					.lastName("user")
-					.email("user@example.com")
-					.password("1234")
-					.role(Role.USER)
-					.build();
-			System.out.println(jwtService.generateToken(user));
-			User admin = User.builder()
-					.firstName("nguyen")
-					.lastName("admin")
-					.email("admin@example.com")
-					.password("1234")
-					.role(Role.ADMIN)
-					.build();
-			System.out.println(jwtService.generateToken(admin));
-
-			User manager = User.builder()
-					.firstName("nguyen")
-					.lastName("manager")
-					.email("managern@example.com")
-					.password("1234")
-					.role(Role.MANAGER)
-					.build();
-			System.out.println(jwtService.generateToken(manager));
-
-			userRepository.saveAll(List.of(user, admin, manager));
-		};
-	}
+//	@Bean
+//	CommandLineRunner commandLineRunner (AuthService authService) {
+//		return args -> {
+//			User user = User.builder()
+//					.firstName("nguyen")
+//					.lastName("user")
+//					.email("user@example.com")
+//					.password("1234")
+//					.role(Role.USER)
+//					.build();
+//			System.out.println(jwtService.generateToken(user));
+//			User admin = User.builder()
+//					.firstName("nguyen")
+//					.lastName("admin")
+//					.email("admin@example.com")
+//					.password("1234")
+//					.role(Role.ADMIN)
+//					.build();
+//			System.out.println(jwtService.generateToken(admin));
+//
+//			User manager = User.builder()
+//					.firstName("nguyen")
+//					.lastName("manager")
+//					.email("managern@example.com")
+//					.password("1234")
+//					.role(Role.MANAGER)
+//					.build();
+//			System.out.println(jwtService.generateToken(manager));
+//
+//			userRepository.saveAll(List.of(user, admin, manager));
+//		};
+//	}
 }

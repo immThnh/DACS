@@ -40,7 +40,7 @@ public class AuthController {
     @PostMapping("/send-verify-email")
     public ResponseEntity<String> sendVerifyEmail(@RequestBody MailRequest email) throws MessagingException {
         if (authService.isUsedEmail(email.getEmail())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email đã tồn tại!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email đã tồn tại!"); // 400
         }
         String code = authService.getVerifyCode();
         if (mailService.sendCode(email.getEmail(), code)) {

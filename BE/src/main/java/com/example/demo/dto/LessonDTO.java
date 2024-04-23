@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LessonDTO {
     private String video;
+    private String linkVideo;
     private String title;
     private String desc;
 }

@@ -1,31 +1,55 @@
-import "./App.css";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { publicRoutes } from "./router";
+import logo from "./assets/images/logo.png";
+import {
+    BrowserRouter as Router,
+    Routes,
+    Route,
+    Outlet,
+} from "react-router-dom";
+import { publicRoutes, adminRoutes } from "./router";
 import SignUp from "./pages/signUp";
+import { Toaster } from "sonner";
 import Header from "./layout/Header";
 import Footer from "./layout/Footer";
-import { Toaster } from "sonner";
-
+import clsx from "clsx";
+import styles from "./App.module.scss";
+import NavigationTopBar from "./component/dashboard/NavigationTopBar";
+import LeftNavDash from "./component/dashboard/leftNavDash";
+import HeaderAdmin from "./layout/adminLayout/headerAdmin";
 function App() {
     return (
         <Router>
-            <div className="App flex flex-col items-center pt-5 bg-neutral-100">
-                <div className="fixed shrink-0 max-w-full h-10 bg-black rounded-md w-[1400px]" />
-                <Header></Header>
+            <div className="App bg-neutral-100">
                 <Routes>
-                    {publicRoutes.map((route, index) => {
-                        const Page = route.component;
-                        return (
-                            <Route
-                                key={index}
-                                path={route.path}
-                                element={<Page></Page>}
-                            ></Route>
-                        );
-                    })}
+                    {publicRoutes.map((route, index) => (
+                        <Route
+                            key={index}
+                            path={route.path}
+                            element={
+                                <>
+                                    <Header />
+                                    <route.component />
+                                    <Footer />
+                                </>
+                            }
+                        />
+                    ))}
+                    {adminRoutes.map((route, index) => (
+                        <Route
+                            key={index}
+                            path={route.path}
+                            element={
+                                <>
+                                    <HeaderAdmin></HeaderAdmin>
+                                    <div className="flex bg-white">
+                                        <LeftNavDash></LeftNavDash>
+                                        <route.component />
+                                    </div>
+                                </>
+                            }
+                        />
+                    ))}
                 </Routes>
-                <Footer></Footer>
-                <Toaster position="top-center" richColors></Toaster>
+                <Toaster position="top-center" richColors />
             </div>
         </Router>
     );

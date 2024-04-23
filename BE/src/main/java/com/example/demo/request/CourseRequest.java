@@ -1,10 +1,13 @@
-package com.example.demo.data;
+package com.example.demo.request;
 
+import com.example.demo.entity.data.Lesson;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -16,5 +19,12 @@ public class CourseRequest {
     private int price;
     private int discount;
     private String desc;
+    private LocalDateTime date;
     private Set<String> categories;
+    private List<Lesson> lessons;
+
+    private boolean isEditedThumbnail;
+    private boolean isEditedCategories;
+
+    public CourseRequest(String temp) {}
 }

@@ -1,7 +1,7 @@
 import Button from "./Button";
-import FaceBookLogo from "../assets/images/facebook-svgrepo-com.svg";
-import GithubLogo from "../assets/images/github-svgrepo-com.svg";
-import GoogleLogo from "../assets/images/google-color-svgrepo-com.svg";
+import FaceBookLogo from "../../assets/images/facebook-svgrepo-com.svg";
+import GithubLogo from "../../assets/images/github-svgrepo-com.svg";
+import GoogleLogo from "../../assets/images/google-color-svgrepo-com.svg";
 function OAuth2Form() {
     return (
         <div className="self-stretch flex flex-col items-start justify-start gap-[20px]">
