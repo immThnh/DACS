@@ -1,0 +1,7 @@
+/* Header.css or wherever your Header styles are defined */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10; /* Use a z-index to ensure it stacks on top of other content */
+  /* Other styles for your header */
+}

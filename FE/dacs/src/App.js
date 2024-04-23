@@ -50,8 +50,9 @@ function App() {
                     ))}
                 </Routes>
                 <Toaster position="top-center" richColors />
-            </div>
-        </Router>
+        
+    </div>
+     </Router>
     );
 }
 

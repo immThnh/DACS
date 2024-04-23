@@ -5,12 +5,17 @@ import AdminPage from "../pages/admin";
 import NotFoundPage from "../pages/notFound";
 import ListCourse from "../pages/admin/Course/list";
 import CreateCourse from "../pages/admin/Course/create";
-import EditCourse from "../pages/admin/Course/edit"; 
+import EditCourse from "../pages/admin/Course/edit";
+import details from "../pages/CourseDetail";
+import Course from "../pages/learningPage";
+
 const publicRoutes = [
     { path: "/", component: LandingPage },
     { path: "/sign-up", component: SignUp },
     { path: "/login", component: Login },
     { path: "/404", component: NotFoundPage },
+    { path: "/details", component: details },
+    { path: "/course", component: Course },
 ];
 
 const adminRoutes = [

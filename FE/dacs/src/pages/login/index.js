@@ -7,6 +7,7 @@ import loginSlice from "../../redux/reducers/loginReducer.js";
 import { useDispatch } from "react-redux";
 import { Dialog, Transition } from "@headlessui/react";
 import ShowPassword from "../../component/authenComponent/ShowPassword.js";
+import { ForgotPasswordModal, ResetPasswordModal } from '../../component/Modals.js';
 export default function Login() {
     const initFormForgotData = {
         email: "",
