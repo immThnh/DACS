@@ -17,3 +17,7 @@ body {
 html {
     /* font-size: 62.5%; */
 }
+
+w-1400 {
+    width: 1400px !important;
+}
