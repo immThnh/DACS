@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ManyToAny;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,6 +22,7 @@ public class Course {
     private String title;
     private int price;
     private int discount;
+    private LocalDateTime date;
     private String description;
     private String thumbnail;
 
@@ -30,6 +33,6 @@ public class Course {
             inverseJoinColumns = @JoinColumn(name="category_id")
     )
     private Set<Category> categories = new HashSet<>();
-    @OneToMany
-    private List<Lesson> lesson;
+    @OneToMany(mappedBy = "course")
+    private List<Lesson> lessons;
 }

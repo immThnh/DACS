@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,12 +18,12 @@ public class MailService {
     @Value("${spring.mail.username}")
     private String from;
 
-    public Boolean sendCode(String to, String code) throws MessagingException {
+    @Async
+    public Boolean sendCode(String to, String code)  {
+        try {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
-
         String htmlContent;
-        try {
             htmlContent = "<!DOCTYPE html>\n" +
                     "<html lang=\"en\">\n" +
                     "<head>\n" +
@@ -95,7 +96,7 @@ public class MailService {
             helper.setText(htmlContent, true);
             helper.setTo(to);
             helper.addInline("logo", new ClassPathResource("/static/images/logo.png"));
-            helper.setSubject(code + " là mã xác minh của bạn");
+            helper.setSubject("Yêu cầu xác minh email");
             javaMailSender.send(mimeMessage);
             return true;
         }
@@ -105,11 +106,12 @@ public class MailService {
         }
     }
 
-    public boolean sendMailResetPassword(String email, String code) throws MessagingException {
+    @Async
+    public boolean sendMailResetPassword(String email, String code) {
+        try {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
         String htmlContent;
-        try {
             htmlContent = "<!DOCTYPE html>\n" +
                     "<html lang=\"en\">\n" +
                     "<head>\n" +
@@ -181,7 +183,7 @@ public class MailService {
                     "</body>\n" +
                     "</html>\n";;
                     mimeMessageHelper.setFrom(from, "Dream Chasers");
-                    mimeMessageHelper.setSubject(code + " là mã khôi phục mật khẩu");
+                    mimeMessageHelper.setSubject("Yêu cầu khôi phục mật khẩu Dream Chasers");
                     mimeMessageHelper.setTo(email);
                     mimeMessageHelper.setText(htmlContent, true);
                     mimeMessageHelper.addInline("logo", new ClassPathResource("/static/images/logo.png"));
@@ -189,6 +191,7 @@ public class MailService {
         }
         catch (Exception ex) {
             System.out.println(ex.getMessage());
+            return false;
         }
         return true;
     }

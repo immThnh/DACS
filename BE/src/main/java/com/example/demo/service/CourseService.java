@@ -1,45 +1,54 @@
 package com.example.demo.service;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
+import com.example.demo.cloudinary.CloudService;
+import com.example.demo.entity.data.Lesson;
 import com.example.demo.request.CourseRequest;
 import com.example.demo.request.LessonRequest;
 import com.example.demo.dto.ResponObject;
 import com.example.demo.entity.data.Course;
-import com.example.demo.entity.data.Lesson;
 import com.example.demo.repository.data.CourseRepository;
 import com.example.demo.repository.data.LessonRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Data
 @RequiredArgsConstructor
 @Service
-public class DataService {
+@Transactional
+public class CourseService {
     private final CourseRepository courseRepository;
     private final LessonRepository lessonRepository;
-    private final Cloudinary cloud;
+    private final CloudService cloudService;
     private final CategoryService categoryService;
     private final LessonService lessonService;
 
-    public ResponObject updateCourse(int id, CourseRequest courseRequest, List<LessonRequest> lessons, MultipartFile thumbnail, List<MultipartFile> videos) throws IOException {
+    public ResponObject updateCourse(int id, CourseRequest courseRequest, List<LessonRequest> lessons, MultipartFile thumbnail, List<MultipartFile> videos) throws IOException, ExecutionException, InterruptedException {
         var courseDAO = courseRepository.findById(id).orElse(null);
         if(courseDAO == null) {
             return ResponObject.builder().content("Course is not exist!").status(HttpStatus.BAD_REQUEST).build();
         }
 
         // ! Update thumbnail
-        if(courseRequest.isEditedThumbnail()) {
-            courseDAO.setThumbnail(getLinkCloud(thumbnail.getBytes()));
+        if(thumbnail != null) {
+            CompletableFuture.runAsync(() -> {
+                try {
+                    courseDAO.setThumbnail(cloudService.getLinkCloud(thumbnail.getBytes()));
+                } catch (IOException e) {
+                    System.out.println("Update thumbnail course:  " + e.getMessage());
+                }
+            });
         }
 
         // ! Update field course
@@ -52,13 +61,11 @@ public class DataService {
             categoryService.updateCategoryForCourse(courseDAO, courseRequest.getCategories());
 
         // ! Update lessons
-        lessonService.updateLessonsOfCourse(lessons, courseDAO.getLessons());
+        lessonService.updateLessonsOfCourse(lessons, courseDAO.getLessons(), courseDAO, videos);
 
         courseRepository.save(courseDAO);
         return ResponObject.builder().status(HttpStatus.OK).content("").build();
     }
-
-
 
     public ResponObject getCourseById(int id) {
         Course course = courseRepository.findById(id).orElse(null);
@@ -73,49 +80,60 @@ public class DataService {
         var courses = courseRepository.getAll().orElse(null);
         return ResponObject.builder().status(HttpStatus.OK).content("Get successfully").content(courses).build();
     }
-    public ResponObject addCourse(CourseRequest request, List<LessonRequest> lessons, MultipartFile thumbnail, List<MultipartFile> videos){
+
+    public ResponObject addCourse(CourseRequest request, List<LessonRequest> lessons, MultipartFile thumbnail, List<MultipartFile> videos)  {
+
         var course = courseRepository.findByTitle(request.getTitle()).orElse(null);
-        if(course != null) return  ResponObject.builder().content("Course is already exist").status(HttpStatus.BAD_REQUEST).build();
-        try {
-            course = Course.builder()
-                    .price(request.getPrice())
-                    .title(request.getTitle())
-                    .description(request.getDesc())
-                    .discount(request.getDiscount())
-                    .thumbnail(getLinkCloud(thumbnail.getBytes()))
-                    .lessons(new ArrayList<>())
+        if (course != null)
+            return ResponObject.builder().content("Course is already exist").status(HttpStatus.BAD_REQUEST).build();
+
+            Course newCourse = Course.builder()
+                .price(request.getPrice())
+                .title(request.getTitle())
+                .description(request.getDesc())
+                .discount(request.getDiscount())
+                .lessons(new ArrayList<>())
+                .date(LocalDateTime.now())
+                .build();
+
+            CompletableFuture.runAsync(() -> {
+                try {
+                    newCourse.setThumbnail(cloudService.getLinkCloud(thumbnail.getBytes()));
+                } catch (IOException e) {
+                    System.out.println("Create course:  " + e.getMessage());
+                }
+            });
+
+        for(int i = 0; i < videos.size(); i++) {
+            int index = i;
+
+            Lesson temp = Lesson.builder()
+                    .title(lessons.get(index).getTitle())
+                    .linkVideo(lessons.get(index).getLinkVideo())
                     .date(LocalDateTime.now())
+                    .description(lessons.get(index).getDesc())
+                    .course(newCourse)
                     .build();
-            courseRepository.save(course);
-
-            if(!lessons.isEmpty()) {
-                for(int i = 0; i < lessons.size(); i++) {
-
-                    var temp = Lesson.builder()
-                            .description(lessons.get(i).getDesc())
-                            .title(lessons.get(i).getTitle())
-                            .linkVideo(lessons.get(i).getLinkVideo())
-                            .date(LocalDateTime.now())
-                            .build();
-                    if(videos != null && videos.size() > i) {
-                        temp.setVideo(getLinkCloud(videos.get(i).getBytes()));
-                    }
-                    course.getLessons().add(temp);
+            CompletableFuture.runAsync(() -> {
+                try {
+                    setVideoForLesson(temp, videos.get(index).getBytes());
                     lessonRepository.save(temp);
                 }
-            }
+                catch (Exception e) {
+                    System.out.println("add: " + e.getMessage());
+                }
+            });
         }
-        catch (Exception ex) {
-            System.out.println(ex.getMessage());
-            return  ResponObject.builder().content("Error while creating course").status(HttpStatus.BAD_REQUEST).build();
-        }
-        return  ResponObject.builder().content("Create successfully").status(HttpStatus.OK).build();
+        courseRepository.save(newCourse);
+        return ResponObject.builder().content("Create success").status(HttpStatus.OK).build();
     }
 
-    public String getLinkCloud(byte[] file) throws IOException {
-        Map map = cloud.uploader().upload(file, ObjectUtils.asMap("resource_type", "auto", "folder", "dacs"));
-        System.out.println(map.get("secure_url"));
-        return (String) map.get("secure_url");
+    public void test(List<MultipartFile> videos) {
+        System.out.println(videos.get(0));
+    }
+
+    public void setVideoForLesson(Lesson lesson, byte[] file) throws IOException {
+         lesson.setVideo(cloudService.getLinkCloud(file));
     }
 
     public boolean isValidCourse(CourseRequest request) {

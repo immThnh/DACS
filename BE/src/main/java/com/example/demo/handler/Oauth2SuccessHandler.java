@@ -35,6 +35,6 @@ public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
                     .build();
             userRepository.save(user);
         }
-        response.sendRedirect("http://localhost:8080/home");
+        response.sendRedirect("http://localhost:3000");
     }
 }

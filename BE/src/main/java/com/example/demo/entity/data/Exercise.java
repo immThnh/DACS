@@ -13,7 +13,7 @@ import java.util.Map;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Excercise {
+public class Exercise {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -23,4 +23,7 @@ public class Excercise {
     @MapKeyColumn(name = "question")
     @Column(name = "isTrue")
     private Map<String, Boolean> answers;
+
+    @ManyToOne
+    private Lesson lesson;
 }

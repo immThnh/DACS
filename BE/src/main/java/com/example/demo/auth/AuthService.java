@@ -30,7 +30,7 @@ import java.util.Map;
 public class AuthService {
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
-    private final AuthenticationManager authenticationManager;
+    public final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final TwilioService twilioService;
@@ -73,6 +73,7 @@ public class AuthService {
 
     public boolean isUsedEmail(String email) {
         var user = userRepository.findByEmail(email).orElse(null);
+        System.out.println(user);
         return user != null;
     }
 
