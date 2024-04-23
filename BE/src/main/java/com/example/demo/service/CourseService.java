@@ -106,7 +106,6 @@ public class CourseService {
 
             newCourse.setCategories(new ArrayList<>());
             categoryService.addCategoriesForCourse(newCourse, request.getCategories());
-            System.out.println(newCourse.getCategories());
 
             CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                 try {
@@ -127,9 +126,10 @@ public class CourseService {
                         .linkVideo(lessons.get(index).getLinkVideo())
                         .date(LocalDateTime.now())
                         .description(lessons.get(index).getDesc())
-                        .course(newCourse) // ! Lưu như này là thừa vì khi newCourse.getLessons().add(temp) là đã đủ set quan hệ
+                        .course(newCourse) // ! thiết lập quan hệ ở cả đối tượng con lesson
                         .build();
 
+                // ! thiết lập quan hệ ở cả đối tươợng cha là course => lưu ở cả cha và con đảm bảo nhất quán quan hệ
                 newCourse.getLessons().add(temp);
 
                 CompletableFuture<Void> futureTemp = CompletableFuture.runAsync(() -> {
@@ -142,7 +142,6 @@ public class CourseService {
                 });
                 // ! Việc lưu như này là không cần thiết vì cascade ở Course, khi lưu course thì lesson sẽ được lưu theo
 //                lessonRepository.save(temp);
-
                 futures.add(futureTemp);
             }
         }
@@ -151,6 +150,7 @@ public class CourseService {
 
         CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
         allOf.join();
+
 
         return ResponObject.builder().content("Create success").status(HttpStatus.OK).build();
     }

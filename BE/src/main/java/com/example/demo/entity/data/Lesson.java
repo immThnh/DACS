@@ -23,8 +23,8 @@ public class Lesson {
     private String video;
     private LocalDateTime date;
 
-//    @ManyToOne(cascade = CascadeType.PERSIST)
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
+//    @ManyToOne
     @JsonIgnore
     private Course course ;
 

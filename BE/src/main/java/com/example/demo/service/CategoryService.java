@@ -44,7 +44,6 @@ public class CategoryService {
 
     public void addCategoriesForCourse(Course course, Set<Integer> categories) {
         if(categories == null) {
-            System.out.println("opl");
             course.setCategories(null);
             return;
         }
