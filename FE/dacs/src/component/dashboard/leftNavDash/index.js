@@ -39,7 +39,7 @@ function LeftNavDash() {
         }
     };
     return (
-        <div className={clsx(styles.Wrapper)}>
+        <div className={clsx(styles.Wrapper, "fixed z-header h-full")}>
             <nav className={clsx(styles.container)}>
                 <div className={clsx(styles.sectionNav)}>
                     <li className={styles.title}>OVERVIEW</li>

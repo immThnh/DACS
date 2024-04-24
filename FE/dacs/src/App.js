@@ -1,11 +1,12 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { publicRoutes, adminRoutes } from "./router";
+import styles from "./App.module.scss";
 import { Toaster } from "sonner";
 import Header from "./layout/Header";
 import Footer from "./layout/Footer";
 import LeftNavDash from "./component/dashboard/leftNavDash";
 import HeaderAdmin from "./layout/adminLayout/headerAdmin";
-import { redirect } from "react-router-dom";
+import clsx from "clsx";
 
 function App() {
     return (
@@ -36,12 +37,17 @@ function App() {
                                     <HeaderAdmin></HeaderAdmin>
                                     <div className="flex bg-white">
                                         <LeftNavDash></LeftNavDash>
-                                        <route.component />
+                                        <div
+                                            className={clsx(
+                                                styles.adminContent
+                                            )}
+                                        >
+                                            <route.component />
+                                        </div>
                                     </div>
                                 </>
                             }
-                        >
-                        </Route>
+                        ></Route>
                     ))}
                     {/* <Redirect exact  to="/404" /> */}
                 </Routes>

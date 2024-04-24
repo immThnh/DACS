@@ -137,7 +137,7 @@ public class LessonService {
                     .orElse(null);
             if (currentLesson != null) {
                 System.out.println("update lesson");
-                currentLesson.setDescription(newLesson.getDesc());
+                currentLesson.setDescription(newLesson.getDescription());
                 currentLesson.setTitle(newLesson.getTitle());
                 currentLesson.setLinkVideo(newLesson.getLinkVideo());
                 if(newLesson.getIsEditedVideo() == 1) {
@@ -159,7 +159,7 @@ public class LessonService {
             } else {
                 System.out.println("create lesson");
                 Lesson temp = Lesson.builder()
-                        .description(newLesson.getDesc())
+                        .description(newLesson.getDescription())
                         .title(newLesson.getTitle())
                         .linkVideo(newLesson.getLinkVideo())
                         .course(course)

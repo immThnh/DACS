@@ -36,10 +36,11 @@ public class Course {
             joinColumns = @JoinColumn(name = "course_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name="category_id", referencedColumnName = "id")
     )
-    @JsonManagedReference
+//    @JsonManagedReference
     private List<Category> categories;
 
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Lesson> lessons;
 }

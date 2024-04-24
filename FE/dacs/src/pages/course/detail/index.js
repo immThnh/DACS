@@ -1,159 +1,183 @@
-import * as React from "react";
-import styles from "./Details.module.scss";
-import clsx from "clsx";
-import { toast } from "sonner";
-import * as dataApi from "../../../api/apiService/dataService";
-import { useParams } from "react-router-dom";
-const CurriculumItem = ({ item, isHighlighted }) => (
-    <div
-        className={clsx(styles.curriculumItem, {
-            [styles.highlighted]: isHighlighted,
-        })}
-    >
-        <div className={styles.curriculumItemNumber}>{item.number}</div>
-        <div className={styles.curriculumItemTitle}>{item.title}</div>
+// index.js
+import React, { useState } from "react"; // This imports the useState hook
+import styles from "./DetailCourse.module.scss";
+
+const PlayIcon = () => (
+    <div className={styles.playIcon}>
+        <img
+            src="https://cdn.builder.io/api/v1/image/assets/TEMP/91b4c2d063585c32b868da3584ddb0514cbf2955902271549e68b7c3ffeb1802?apiKey=9349475655ee4a448868f824f5feb11d&"
+            alt="Play icon"
+        />
     </div>
 );
 
-const CourseDetails = ({ course, expanded }) => (
+const TimeInfo = ({ icon, time }) => (
+    <div className={styles.timeInfo}>
+        <img src={icon} alt="Clock icon" className={styles.clockIcon} />
+        <div className={styles.time}>{time} Minutes</div>
+    </div>
+);
+const LessonItem = ({
+    id,
+    title,
+    lesson,
+    time,
+    isHighlighted,
+    videoUrl,
+    onVideoSelect,
+}) => (
     <div
-        className={clsx(styles.courseDetailsWrapper, {
-            [styles.expanded]: expanded,
-        })}
+        className={`${styles.lessonItem} ${
+            isHighlighted ? styles.highlighted : ""
+        }`}
+        onClick={() => onVideoSelect(id, videoUrl)}
     >
-        <h3 className={styles.courseDetailsTitle}>Curriculum</h3>
-        <div className={styles.courseCurriculum}>
-            {course.curriculum.map((item, index) => (
-                <CurriculumItem
-                    key={index}
-                    item={item}
-                    isHighlighted={index % 2 === 0}
-                />
-            ))}
+        <div className={styles.lessonInfo}>
+            <div className={styles.lessonTitle}>{title}</div>
+            <div className={styles.lessonNumber}>{lesson}</div>
+        </div>
+        <div className={styles.timeInfo}>
+            <TimeInfo
+                icon={
+                    isHighlighted
+                        ? "https://cdn.builder.io/api/v1/image/assets/TEMP/23214151b02736ebba19b562aabfd0bc3fc955a52ce1a15c8b59fd722461241d?apiKey=9349475655ee4a448868f824f5feb11d&"
+                        : "https://cdn.builder.io/api/v1/image/assets/TEMP/23214151b02736ebba19b562aabfd0bc3fc955a52ce1a15c8b59fd722461241d?apiKey=9349475655ee4a448868f824f5feb11d&"
+                }
+                time={time}
+            />
         </div>
     </div>
 );
 
-function Details() {
-    const { id } = useParams();
-    const [courses, setCourse] = React.useState();
-	const course = {
-        title: "Web Design Fundamentals",
-        description:
-            "Learn the fundamentals of web design, including HTML, CSS, and responsive design principles. Develop the skills to create visually appealing and user-friendly websites.",
-        images: [
-            {
-                src: "https://picsum.photos/id/238/800",
-                alt: "Course Image 1",
-            },
-            {
-                src: "https://picsum.photos/id/239/800",
-                alt: "Course Image 2",
-            },
-            {
-                src: "https://picsum.photos/id/240/800",
-                alt: "Course Image 3",
-            },
-        ],
-        duration: "4 Weeks",
-        level: "Beginner",
-        author: "John Smith",
-        price: "336.000",
-        curriculum: [
-            {
-                number: "01",
-                title: "Introduction to HTML",
-            },
-            {
-                number: "02",
-                title: "Styling with CSS",
-            },
-            {
-                number: "03",
-                title: "Introduction to Responsive Design",
-            },
-            {
-                number: "04",
-                title: "Design Principles for Web",
-            },
-            {
-                number: "05",
-                title: "Building a Basic Website",
-            },
-            {
-                number: "06",
-                title: "Introduction to HTML",
-            },
-            {
-                number: "07",
-                title: "Introduction to HTML",
-            },
-        ],
-    };
-    React.useEffect(() => {
-        const fetchApi = () => {
-            toast.promise(dataApi.getCourseById(id), {
-                loading: "Loading...",
-                success: (data) => {
-                    console.log(data);
-                    setCourse(data);
-                    return "Get data successfully";
-                },
-				error: (error) => {
-					return error.content
-				}
-            });
-        };
-		fetchApi();
-    }, []);
+const CourseSection = ({ sectionNumber, sectionTitle, lessons }) => (
+    <section className={styles.courseSection}>
+        <div className={styles.sectionHeader}>
+            <div className={styles.sectionNumber}>{sectionNumber}</div>
+            <h2 className={styles.sectionTitle}>{sectionTitle}</h2>
+        </div>
+        {lessons.map((lesson, index) => (
+            <LessonItem key={index} {...lesson} />
+        ))}
+    </section>
+);
+
+const CourseHero = ({ videoUrl }) => {
+    const videoId = videoUrl.split("v=")[1];
+    const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+
     return (
-        <div className={styles.detailsContainer}>
-            <div className={styles.courseCard}>
-                <div
-                    className={clsx(
-                        styles.courseHeader,
-                        styles.someOtherCondition && styles.additionalClass
-                    )}
-                >
-                    <div className={styles.courseInfo}>
-                        <h2 className={styles.courseTitle}>{course.title}</h2>
-                        <p className={styles.courseDescription}>
-                            {course.description}
-                        </p>
-                    </div>
-                    <div className={styles.coursePrice}>{course.price} VND</div>
-                    <div className={styles.courseCta}>Add To Cart</div>
-                </div>
-                <div className={styles.courseImages}>
-                    {course.images.map((image, index) => (
-                        <div key={index} className={styles.courseImageWrapper}>
-                            <img
-                                src={image.src}
-                                alt={image.alt}
-                                className={styles.courseImage}
-                            />
-                        </div>
+        <section className={styles.courseHero}>
+            <iframe
+                src={embedUrl}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className={styles.videoPlayer}
+            ></iframe>
+            <PlayIcon />
+        </section>
+    );
+};
+
+const CourseIntro = () => (
+    <section className={styles.courseIntro}>
+        <div className={styles.introContent}>
+            <h1 className={styles.courseTitle}>UI/UX Design Courses</h1>
+            <p className={styles.courseDescription}>
+                Welcome to our UI/UX Design course! This comprehensive program
+                will equip you with the knowledge and skills to create
+                exceptional user interfaces (UI) and enhance user experiences
+                (UX). Dive into the world of design thinking, wireframing,
+                prototyping, and usability testing. Below is an overview of the
+                curriculum
+            </p>
+        </div>
+    </section>
+);
+
+function DetailCourse() {
+    const [currentVideoUrl, setCurrentVideoUrl] = useState("");
+    const [highlightedId, setHighlightedId] = useState(null);
+    const handleVideoSelect = (id, videoUrl) => {
+        setCurrentVideoUrl(videoUrl);
+        setHighlightedId(id);
+    };
+    const courseSections = [
+        {
+            sectionNumber: "01",
+            sectionTitle: "Introduction to UI/UX Design",
+            lessons: [
+                {
+                    id: 1,
+                    title: "Understanding UI/UX Design Principles",
+                    lesson: "Lesson 02",
+                    time: "45",
+                    videoUrl: "https://www.youtube.com/watch?v=o_VDcEy029M",
+                },
+                {
+                    id: 2, // Unique identifier for the lesson
+                    title: "Understanding UI/UX Design Principles",
+                    lesson: "Lesson 01",
+                    time: "45",
+                    videoUrl: "https://www.youtube.com/watch?v=V4jLEdwTqvY",
+                },
+            ],
+        },
+        {
+            sectionNumber: "02",
+            sectionTitle: "Introduction to UI/UX Design",
+            lessons: [
+                {
+                    id: 3,
+                    title: "Understanding UI/UX Design Principles",
+                    lesson: "Lesson 01",
+                    time: "45",
+                    videoUrl: "video-url-1.mp4",
+                },
+                {
+                    id: 4,
+                    title: "Understanding UI/UX Design Principles",
+                    lesson: "Lesson 01",
+                    time: "45",
+                    videoUrl: "video-url-1.mp4",
+                },
+            ],
+        },
+    ];
+
+    return (
+        <>
+            <main className={styles.uiUxCourse}>
+                <CourseIntro />
+                <CourseHero videoUrl={currentVideoUrl} />
+                <div className={styles.courseSectionsContainer}>
+                    {courseSections.map((section) => (
+                        <section
+                            className={styles.courseSection}
+                            key={section.sectionNumber}
+                        >
+                            <div className={styles.sectionHeader}>
+                                <div className={styles.sectionNumber}>
+                                    {section.sectionNumber}
+                                </div>
+                                <h2 className={styles.sectionTitle}>
+                                    {section.sectionTitle}
+                                </h2>
+                            </div>
+                            {section.lessons.map((lesson) => (
+                                <LessonItem
+                                    key={lesson.id}
+                                    {...lesson}
+                                    onVideoSelect={handleVideoSelect}
+                                    isHighlighted={lesson.id === highlightedId}
+                                />
+                            ))}
+                        </section>
                     ))}
                 </div>
-                <div className={styles.courseMeta}>
-                    <div className={styles.courseDetails}>
-                        <div className={styles.courseDuration}>
-                            {course.duration}
-                        </div>
-                        <div className={styles.courseLevel}>{course.level}</div>
-                    </div>
-                </div>
-                <div className={styles.courseDetailsWrapper}>
-                    <div className={styles.curriculumTitle}>Curriculum</div>
-                    <div className={styles.courseCurriculum}>
-                        {course.curriculum.map((item, index) => (
-                            <CurriculumItem key={index} item={item} />
-                        ))}
-                    </div>
-                </div>
-            </div>
-        </div>
+            </main>
+        </>
     );
 }
 
-export default Details;
+export default DetailCourse;

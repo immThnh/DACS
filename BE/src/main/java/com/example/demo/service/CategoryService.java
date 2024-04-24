@@ -29,7 +29,7 @@ public class CategoryService {
         return cate;
     }
 
-    public void updateCategoriesForCourse(Course course, Set<Integer> categories) {
+    public void updateCategoriesForCourse(Course course, List<Integer> categories) {
         List<Category> newCategories = new ArrayList<>();
         for(var temp : categories) {
             var cate = categoryRepository.findById(temp).orElse(null);
@@ -42,7 +42,7 @@ public class CategoryService {
         course.getCategories().removeIf(old -> !newCategories.contains(old));
     }
 
-    public void addCategoriesForCourse(Course course, Set<Integer> categories) {
+    public void addCategoriesForCourse(Course course, List<Integer> categories) {
         if(categories == null) {
             course.setCategories(null);
             return;

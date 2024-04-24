@@ -6,7 +6,7 @@ import clsx from "clsx";
 function AdminHeader() {
     return (
         <div
-            className={clsx("d-flex", styles.dashContainer, {
+            className={clsx("z-header d-flex fixed", styles.dashContainer, {
                 [styles.dashboard3]: true,
             })}
         >
@@ -71,8 +71,8 @@ function AdminHeader() {
                         </div>
                     </div>
                 </div> */}
-            {/* </div> */}
-            {/* <div className={styles.navigationSidebarMenuLi1}>
+                {/* </div> */}
+                {/* <div className={styles.navigationSidebarMenuLi1}>
                 <div className={styles.sideBarBg1} />
                 <div className={styles.products5}>
                     <div className={styles.hideBg2} />

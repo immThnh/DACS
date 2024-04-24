@@ -490,7 +490,7 @@
     width: 1201px;
     flex-direction: column;
     justify-content: flex-start;
-    padding: 0 var(--padding-12xs) var(--padding-11xl);
+    // padding: 0 var(--padding-12xs) var(--padding-11xl);
     box-sizing: border-box;
     position: relative;
     gap: var(--gap-11xl);
@@ -1502,6 +1502,7 @@
 }
 
 .dashContainer {
+    position: fixed;
     background-color: #fff;
     width: 100%;
     flex-direction: row-reverse;

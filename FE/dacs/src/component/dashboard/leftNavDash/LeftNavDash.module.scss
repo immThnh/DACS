@@ -1,8 +1,12 @@
+@import "/src/component/globalStyles/GlobalStyles.scss";
+
 $bg-hover: rgba(145, 158, 171, 0.08);
+
 $border-color: #e9ecee;
 .Wrapper {
     border-right: 1px solid $border-color;
-    // height: 1060px;
+    margin-top: $h-header;
+    background-color: white;
 }
 
 .container {

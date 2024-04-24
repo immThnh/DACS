@@ -63,6 +63,7 @@ export const getCourseById = async (id) => {
 };
 
 export const updateCourse = async (id, course, lessons, thumbnail, videos) => {
+    console.log(course);
     const formData = new FormData();
     const json = JSON.stringify(course);
     const courseBlob = new Blob([json], {
@@ -74,19 +75,21 @@ export const updateCourse = async (id, course, lessons, thumbnail, videos) => {
         type: "application/json",
     });
 
-    //post multi file indirectly
     for (let i = 0; i < videos.length; i++) {
         formData.append("videos", videos[i]);
     }
     formData.append("course", courseBlob);
     formData.append("lessons", lessonsBlob);
     formData.append("thumbnail", thumbnail);
-    console.log(lessons);
-
     try {
         const result = await instance.putForm(
             `/data/course/edit/${id}`,
-            formData
+            formData,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            }
         );
         return result;
     } catch (error) {
@@ -102,4 +105,3 @@ export const removeCourse = async (id) => {
         return Promise.reject(error);
     }
 };
-

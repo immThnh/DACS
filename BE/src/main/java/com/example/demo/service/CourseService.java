@@ -73,12 +73,12 @@ public class CourseService {
         }
 
         // ! Update field course
-        courseDAO.setDescription(courseRequest.getDesc());
+        courseDAO.setDescription(courseRequest.getDescription());
         courseDAO.setDiscount(courseRequest.getDiscount());
         courseDAO.setTitle(courseRequest.getTitle());
 
         // ! Update category
-        if(courseRequest.isEditedCategories())
+        if(courseRequest.getIsEditedCategories() == 1)
             categoryService.updateCategoriesForCourse(courseDAO, courseRequest.getCategories());
 
         // ! Update lessons
@@ -98,7 +98,7 @@ public class CourseService {
         Course newCourse = Course.builder()
                 .price(request.getPrice())
                 .title(request.getTitle())
-                .description(request.getDesc())
+                .description(request.getDescription())
                 .discount(request.getDiscount())
                 .lessons(new ArrayList<>())
                 .date(LocalDateTime.now())
@@ -125,7 +125,7 @@ public class CourseService {
                         .title(lessons.get(index).getTitle())
                         .linkVideo(lessons.get(index).getLinkVideo())
                         .date(LocalDateTime.now())
-                        .description(lessons.get(index).getDesc())
+                        .description(lessons.get(index).getDescription())
                         .course(newCourse) // ! thiết lập quan hệ ở cả đối tượng con lesson
                         .build();
 

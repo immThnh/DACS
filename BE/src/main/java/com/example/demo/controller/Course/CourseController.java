@@ -47,6 +47,7 @@ public class CourseController {
     @PutMapping("/edit/{id}")
     public ResponseEntity<String> updateCourse(@PathVariable int id, @RequestPart CourseRequest course, @RequestPart List<LessonRequest> lessons, @RequestPart(required = false) MultipartFile thumbnail, @RequestPart(value = "videos", required = false) List<MultipartFile> videos)  {
        try {
+           System.out.println(course + " :" + lessons);
            var result = courseService.updateCourse(id, course, lessons, thumbnail, videos);
            return ResponseEntity.status(result.getStatus()).body(result.getContent().toString());
        }

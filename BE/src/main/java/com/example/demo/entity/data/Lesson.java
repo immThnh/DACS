@@ -1,5 +1,6 @@
 package com.example.demo.entity.data;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,10 +24,9 @@ public class Lesson {
     private String video;
     private LocalDateTime date;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-//    @ManyToOne
-    @JsonIgnore
-    private Course course ;
+    @ManyToOne
+    @JsonBackReference
+    private Course course;
 
     @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Exercise> exercises = new ArrayList<>();

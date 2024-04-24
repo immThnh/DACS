@@ -18,13 +18,12 @@ public class CourseRequest {
     private String title;
     private int price;
     private int discount;
-    private String desc;
+    private String description;
     private LocalDateTime date;
-    private Set<Integer> categories;
-    private List<Lesson> lessons;
-
-    private boolean isEditedThumbnail;
-    private boolean isEditedCategories;
+    private List<Integer> categories;
+    private List<Lesson> sections;
+    private int isEditedThumbnail;
+    private int isEditedCategories;
 
     public CourseRequest(String temp) {}
 }

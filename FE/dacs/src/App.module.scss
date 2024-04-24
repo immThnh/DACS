@@ -1,3 +1,4 @@
+@import "./component/globalStyles/GlobalStyles.scss";
 .App {
     text-align: center;
 }
@@ -58,4 +59,10 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.adminContent {
+    padding-top: $h-header;
+    padding-left: $w-lefNav;
+    width: 100%;
 }

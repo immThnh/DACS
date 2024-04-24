@@ -60,16 +60,11 @@ function CreateCourse() {
     };
 
     const handleSelectChange = (e) => {
-        let newCate = [];
-        e.forEach(({ value, name }) => {
-            newCate = [...newCate, value];
-        });
         setFormData({
             ...formData,
-            categories: [...newCate],
+            categories: [...e],
         });
     };
-
     const handleRemoveItemPrevivew = (e, type, index) => {
         if (type === "video") {
             console.log(index);
@@ -114,12 +109,7 @@ function CreateCourse() {
         const fetchApi = async () => {
             try {
                 const result = await DataApi.getAllCategories();
-                var listOption = [];
-                result.forEach((category) => {
-                    const { id, name } = category;
-                    listOption.push({ value: id, label: name });
-                });
-                setOptions(listOption);
+                setOptions(result);
             } catch (error) {
                 console.log("Error while get categories");
             }
@@ -140,8 +130,14 @@ function CreateCourse() {
         });
 
         const featchApi = async () => {
+            let newCategories = [];
+            formData.categories.forEach((cate) => newCategories.push(cate.id));
+            const newFormData = {
+                ...formData,
+                categories: newCategories,
+            };
             toast.promise(
-                DataApi.createCourse(formData, lessons, thumbnail, videos),
+                DataApi.createCourse(newFormData, lessons, thumbnail, videos),
                 {
                     loading: "Loading...",
                     success: () => {
@@ -223,7 +219,9 @@ function CreateCourse() {
                                 <Select
                                     isMulti
                                     onChange={handleSelectChange}
-                                    // defaultValue={selectedOption}
+                                    value={formData.categories}
+                                    getOptionLabel={(x) => x.name}
+                                    getOptionValue={(x) => x.id}
                                     options={options}
                                     styles={{
                                         control: (baseStyles, state) => ({

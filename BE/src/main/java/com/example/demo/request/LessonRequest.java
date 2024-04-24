@@ -16,7 +16,7 @@ public class LessonRequest {
     private int id;
     private String linkVideo;
     private String title;
-    private String desc;
+    private String description;
     private LocalDateTime date;
     private boolean isEdited;
     private int isEditedVideo = 0;
