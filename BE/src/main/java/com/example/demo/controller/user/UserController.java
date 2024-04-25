@@ -1,33 +1,38 @@
-package com.example.demo.controller;
+package com.example.demo.controller.user;
 
 import com.example.demo.auth.*;
-import com.example.demo.jwt.JwtService;
+import com.example.demo.dto.ResponObject;
+import com.example.demo.entity.user.User;
 import com.example.demo.mail.MailRequest;
 import com.example.demo.mail.MailService;
-import com.example.demo.twilio.TwilioService;
+import com.example.demo.service.UserService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/auth")
-public class AuthController {
+@RequestMapping("/api/v1/user")
+public class UserController {
     private final AuthService authService;
     private final MailService mailService;
-    private final TwilioService twilioService;
+    private final UserService userService;
+
+    @GetMapping("/getAll")
+    public ResponseEntity<ResponObject> getAllUsers() {
+        var result = userService.getAllUser();
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
 
 
     @PostMapping("/login")
-    public ResponseEntity<String> authenticate(@RequestBody AuthenticationRequest request) {
-        String token = authService.authenticate(request);
-        if (token != null) {
-            return ResponseEntity.ok(token);
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Tài khoản hoặc mật khẩu không chính xác!");
+    public ResponseEntity<ResponObject> authenticate(@RequestBody AuthenticationRequest request) {
+        var res = authService.authenticate(request);
+        return ResponseEntity.status(res.getStatus()).body(res);
     }
 
     @PostMapping("/register")
@@ -38,7 +43,7 @@ public class AuthController {
     }
 
     @PostMapping("/send-verify-email")
-    public ResponseEntity<String> sendVerifyEmail(@RequestBody MailRequest email) throws MessagingException {
+    public ResponseEntity<String> sendVerifyEmail(@RequestBody MailRequest email) {
         if (authService.isUsedEmail(email.getEmail())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email đã tồn tại!"); // 400
         }

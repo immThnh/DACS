@@ -1,7 +1,6 @@
-package com.example.demo.controller.Category;
+package com.example.demo.controller.category;
 
 import com.example.demo.entity.data.Category;
-import com.example.demo.repository.data.CategoryRepository;
 import com.example.demo.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,11 +28,11 @@ public class CategoryController {
     }
     @GetMapping("/{id}")
     public ResponseEntity<Category> getById(@PathVariable int id) {
-        var categories = categoryService.getById(id);
-        if(categories == null) {
+        var category = categoryService.getById(id);
+        if(category == null) {
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(categories);
+        return ResponseEntity.ok(category);
     }
 
 }

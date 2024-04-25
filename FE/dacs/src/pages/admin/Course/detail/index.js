@@ -5,7 +5,6 @@ import clsx from "clsx";
 import * as dataApi from "../../../../api/apiService/dataService";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
-import { clear } from "@testing-library/user-event/dist/clear";
 
 const TimeInfo = ({ icon, time }) => (
     <div className={styles.timeInfo}>

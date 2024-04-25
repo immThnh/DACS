@@ -2,10 +2,10 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { publicRoutes, adminRoutes } from "./router";
 import styles from "./App.module.scss";
 import { Toaster } from "sonner";
-import Header from "./layout/Header";
-import Footer from "./layout/Footer";
+import Header from "./layout/header";
+import Footer from "./layout/footer";
 import LeftNavDash from "./component/dashboard/leftNavDash";
-import HeaderAdmin from "./layout/adminLayout/headerAdmin";
+import HeaderAdmin from "./layout/headerAdmin";
 import clsx from "clsx";
 
 function App() {
@@ -21,7 +21,9 @@ function App() {
                             element={
                                 <>
                                     <Header />
-                                    <route.component />
+                                    <div className={clsx("pt-header")}>
+                                        <route.component />
+                                    </div>
                                     <Footer />
                                 </>
                             }

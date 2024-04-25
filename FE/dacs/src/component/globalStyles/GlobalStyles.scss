@@ -11,6 +11,9 @@ $bg-hover: rgba(145, 158, 171, 0.08);
 $border-color: #e9ecee;
 $h-header: 99px;
 $w-lefNav: 240px;
+$h-m-header: 144px;
+$b-shadow: rgba(145, 158, 171, 0.2) 0px 0px 2px 0px,
+    rgba(145, 158, 171, 0.12) 0px 1;
 
 body {
     margin: 0;
@@ -163,4 +166,24 @@ a {
 
 .z-header {
     z-index: 1000;
+}
+
+.mt-header {
+    margin-top: $h-header;
+}
+.pt-header {
+    padding-top: $h-m-header;
+}
+
+.boxShadow {
+    box-shadow: rgba(145, 158, 171, 0.2) 0px 0px 2px 0px,
+        rgba(145, 158, 171, 0.12) 0px 12px 24px -4px;
+}
+
+.des-line-3 {
+    -webkit-line-clamp: 3;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }

@@ -1,6 +1,7 @@
 package com.example.demo.repository.data;
 
 import com.example.demo.entity.data.Category;
+import com.example.demo.entity.data.Course;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -13,4 +14,6 @@ public interface CategoryRepository extends JpaRepository<Category, Integer> {
     Optional<List<Category>> getAllCategories();
 
     Optional<Category> findByName(String name);
+
+//    Optional<List<Category>> findByCourses(Course course);
 }

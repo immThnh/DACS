@@ -1,5 +1,5 @@
 import * as React from "react";
-import logo from "../assets/images/logo.png";
+import logo from "../../assets/images/logo.png";
 import { useState } from "react";
 export default function Footer() {
     const [isAdminPage, setIsAdminPage] = useState(false);

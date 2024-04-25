@@ -12,5 +12,6 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 public class ResponObject {
     private HttpStatus status;
+    private String mess;
     private Object content;
 }

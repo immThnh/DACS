@@ -31,7 +31,7 @@
 .SwiperBulletcustom {
     width: 32px;
     height: 8px;
-    background-color: #ccc;
+    background-color: white;
     border-radius: 4px;
     margin-right: 8px;
     opacity: 1;
@@ -39,5 +39,5 @@
 
 .swiper-pagination-bullet-active.SwiperBulletcustom {
     width: 50px;
-    background-color: #007bff;
+    background-color: #a855f7;
 }

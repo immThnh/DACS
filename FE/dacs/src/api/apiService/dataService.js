@@ -25,13 +25,13 @@ export const createCourse = async (
         type: "application/json",
     });
 
-    //post multi file indirectly
     for (let i = 0; i < videos.length; i++) {
         formData.append("videos", videos[i]);
     }
     formData.append("course", courseBlob);
     formData.append("lessons", lessonsBlob);
     formData.append("thumbnail", thumbnail);
+    console.log(course);
 
     try {
         const response = await instance.post("/data/course/create", formData, {

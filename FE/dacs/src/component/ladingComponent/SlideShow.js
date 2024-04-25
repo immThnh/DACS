@@ -10,15 +10,17 @@ const PromoSlideshow = () => {
     const slides = [
         {
             img: background,
-            title: "Khoa hoc 1 dang giam gia",
-            description: "Loasdaaaaaaaaaaaaaaa",
-            buttonText: "MUA NGAY",
+            title: "Lorem ipsum dolor",
+            description:
+                "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eos, natus fugiat quod unde aliquid eius facere dignissimos aut quidem. Temporibus sapiente eligendi reiciendis dolorem rerum nobis fugit magnam, dolore corrupti!",
+            buttonText: "Register Now",
         },
         {
             img: background,
-            title: "Khoa hoc 2 dang giam gia",
-            description: "saaddddddddddddddddddddddddddd",
-            buttonText: "MUA NGAY",
+            title: "Lorem ipsum dolor",
+            description:
+                "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eos, natus fugiat quod unde aliquid eius facere dignissimos aut quidem. Temporibus sapiente eligendi reiciendis dolorem rerum nobis fugit magnam, dolore corrupti!",
+            buttonText: "Register Now",
         },
         // More slides...
     ];

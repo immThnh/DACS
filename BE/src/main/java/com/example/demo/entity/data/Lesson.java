@@ -24,7 +24,7 @@ public class Lesson {
     private String video;
     private LocalDateTime date;
 
-    @ManyToOne
+    @ManyToOne()
     @JsonBackReference
     private Course course;
 

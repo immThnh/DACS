@@ -1,6 +1,9 @@
-// index.js
-import React, { useState } from "react"; // This imports the useState hook
+import React, { useEffect, useState } from "react"; // This imports the useState hook
 import styles from "./DetailCourse.module.scss";
+import { useParams } from "react-router-dom";
+import { toast } from "sonner";
+import clsx from "clsx";
+import * as dataApi from "../../../api/apiService/dataService";
 
 const PlayIcon = () => (
     <div className={styles.playIcon}>
@@ -61,119 +64,141 @@ const CourseSection = ({ sectionNumber, sectionTitle, lessons }) => (
     </section>
 );
 
-const CourseHero = ({ videoUrl }) => {
-    const videoId = videoUrl.split("v=")[1];
-    const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+const CourseHero = ({ video = "", thumbnail }) => {
+    if (!video.startsWith("https://res.cloudinary.com")) {
+        var parts = video.split("/");
+        var videoId = parts[parts.length - 1].split("?")[0];
+        videoId = `https://www.youtube.com/embed/${videoId}`;
+    }
 
     return (
-        <section className={styles.courseHero}>
-            <iframe
-                src={embedUrl}
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className={styles.videoPlayer}
-            ></iframe>
-            <PlayIcon />
+        <section className={clsx(styles.courseHero)}>
+            {video.startsWith("https://res.cloudinary.com") && video !== "" && (
+                <video
+                    controls
+                    className={clsx(
+                        styles.videoPlayer,
+                        "rounded-lg cursor-pointer h-full"
+                    )}
+                >
+                    <source src={video} type="video/mp4" />
+                </video>
+            )}
+            {!video.startsWith("https://res.cloudinary.com") &&
+                video !== "" && (
+                    <iframe
+                        title="Video"
+                        src={videoId}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        className={clsx(styles.videoPlayer, "rounded-lg")}
+                    ></iframe>
+                )}
+            {video === "" ? <img src={thumbnail} alt="Course thumbnail" /> : ""}
         </section>
     );
 };
 
-const CourseIntro = () => (
+const CourseIntro = ({ name = "Course name", desc = "Course description" }) => (
     <section className={styles.courseIntro}>
         <div className={styles.introContent}>
-            <h1 className={styles.courseTitle}>UI/UX Design Courses</h1>
-            <p className={styles.courseDescription}>
-                Welcome to our UI/UX Design course! This comprehensive program
-                will equip you with the knowledge and skills to create
-                exceptional user interfaces (UI) and enhance user experiences
-                (UX). Dive into the world of design thinking, wireframing,
-                prototyping, and usability testing. Below is an overview of the
-                curriculum
-            </p>
+            <h1 className={styles.courseTitle}>{name}</h1>
+            <p className={styles.courseDescription}>{desc}</p>
         </div>
     </section>
 );
-
+const initFormData = {
+    title: "",
+    desc: "",
+    price: "",
+    thumbnail: "",
+    date: "",
+    categories: [],
+};
 function DetailCourse() {
     const [currentVideoUrl, setCurrentVideoUrl] = useState("");
     const [highlightedId, setHighlightedId] = useState(null);
-    const handleVideoSelect = (id, videoUrl) => {
-        setCurrentVideoUrl(videoUrl);
+    const [course, setCourse] = useState(initFormData);
+    const { id } = useParams();
+
+    const handleVideoSelect = (id, video, linkVideo) => {
+        if (video !== "" && linkVideo === "") {
+            console.log(typeof linkVideo);
+            setCurrentVideoUrl(video);
+        } else {
+            setCurrentVideoUrl(linkVideo);
+        }
         setHighlightedId(id);
     };
-    const courseSections = [
-        {
-            sectionNumber: "01",
-            sectionTitle: "Introduction to UI/UX Design",
-            lessons: [
-                {
-                    id: 1,
-                    title: "Understanding UI/UX Design Principles",
-                    lesson: "Lesson 02",
-                    time: "45",
-                    videoUrl: "https://www.youtube.com/watch?v=o_VDcEy029M",
+
+    useEffect(() => {
+        const fetchApi = () => {
+            toast.promise(dataApi.getCourseById(id), {
+                loading: "Loading...",
+                success: (data) => {
+                    setCourse(data.content);
+                    return "Get data is successful";
                 },
-                {
-                    id: 2, // Unique identifier for the lesson
-                    title: "Understanding UI/UX Design Principles",
-                    lesson: "Lesson 01",
-                    time: "45",
-                    videoUrl: "https://www.youtube.com/watch?v=V4jLEdwTqvY",
+                error: (error) => {
+                    return error.content;
                 },
-            ],
-        },
-        {
-            sectionNumber: "02",
-            sectionTitle: "Introduction to UI/UX Design",
-            lessons: [
-                {
-                    id: 3,
-                    title: "Understanding UI/UX Design Principles",
-                    lesson: "Lesson 01",
-                    time: "45",
-                    videoUrl: "video-url-1.mp4",
-                },
-                {
-                    id: 4,
-                    title: "Understanding UI/UX Design Principles",
-                    lesson: "Lesson 01",
-                    time: "45",
-                    videoUrl: "video-url-1.mp4",
-                },
-            ],
-        },
-    ];
+            });
+        };
+
+        fetchApi();
+    }, []);
 
     return (
         <>
-            <main className={styles.uiUxCourse}>
-                <CourseIntro />
-                <CourseHero videoUrl={currentVideoUrl} />
-                <div className={styles.courseSectionsContainer}>
-                    {courseSections.map((section) => (
-                        <section
-                            className={styles.courseSection}
-                            key={section.sectionNumber}
+            <main className={clsx(styles.uiUxCourse, "container")}>
+                <CourseIntro name={course.title} desc={course.description} />
+
+                <div className={clsx("w-full")}>
+                    <div className={clsx("row")}>
+                        <div
+                            className={clsx(styles.videoContainer, "col-lg-8")}
                         >
-                            <div className={styles.sectionHeader}>
-                                <div className={styles.sectionNumber}>
-                                    {section.sectionNumber}
+                            {" "}
+                            <CourseHero
+                                video={currentVideoUrl}
+                                thumbnail={course.thumbnail}
+                            />
+                        </div>
+                        <div
+                            className={clsx(
+                                styles.courseSectionsContainer,
+                                "col-lg-4"
+                            )}
+                        >
+                            <section className={styles.courseSection}>
+                                <div className={styles.sectionHeader}>
+                                    <div className={styles.sectionNumber}>
+                                        Curriculum
+                                    </div>
+                                    <div className={styles.sectionTitle}></div>
                                 </div>
-                                <h2 className={styles.sectionTitle}>
-                                    {section.sectionTitle}
-                                </h2>
-                            </div>
-                            {section.lessons.map((lesson) => (
-                                <LessonItem
-                                    key={lesson.id}
-                                    {...lesson}
-                                    onVideoSelect={handleVideoSelect}
-                                    isHighlighted={lesson.id === highlightedId}
-                                />
-                            ))}
-                        </section>
-                    ))}
+                                {course.lessons &&
+                                    course.lessons.map((lesson, index) => (
+                                        <LessonItem
+                                            key={index}
+                                            {...lesson}
+                                            index={index}
+                                            onVideoSelect={() => {
+                                                handleVideoSelect(
+                                                    lesson.id,
+                                                    lesson.video,
+                                                    lesson.linkVideo
+                                                );
+                                            }}
+                                            isHighlighted={
+                                                lesson.id === highlightedId
+                                            }
+                                        />
+                                    ))}
+                            </section>
+                        </div>
+                    </div>
                 </div>
             </main>
         </>

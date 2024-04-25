@@ -1,8 +1,6 @@
 package com.example.demo.entity.data;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,13 +17,15 @@ import java.util.Set;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "name")
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
-    @ManyToMany(mappedBy = "categories", fetch = FetchType.LAZY)
-//    @JsonBackReference
+
+    @ManyToMany(mappedBy = "categories")
+//! không được sử dụng @JsonBackReference() với Collections
     @JsonIgnore
     private List<Course> courses = new ArrayList<>();
 }

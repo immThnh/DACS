@@ -1,6 +1,6 @@
 package com.example.demo.entity.data;
 
-import com.example.demo.entity.auth.User;
+import com.example.demo.entity.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

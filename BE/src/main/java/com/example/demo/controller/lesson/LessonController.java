@@ -1,4 +1,4 @@
-package com.example.demo.controller.Lesson;
+package com.example.demo.controller.lesson;
 
 
 import com.example.demo.dto.ResponObject;

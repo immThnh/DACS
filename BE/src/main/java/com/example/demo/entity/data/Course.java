@@ -1,7 +1,6 @@
 package com.example.demo.entity.data;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ManyToAny;
@@ -17,6 +16,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,13 +30,12 @@ public class Course {
     private String thumbnail;
     private String alias;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany()
     @JoinTable(
             name = "course_category",
             joinColumns = @JoinColumn(name = "course_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name="category_id", referencedColumnName = "id")
     )
-//    @JsonManagedReference
     private List<Category> categories;
 
 

@@ -21,7 +21,7 @@ public class CourseRequest {
     private String description;
     private LocalDateTime date;
     private List<Integer> categories;
-    private List<Lesson> sections;
+    private List<Lesson> lessons;
     private int isEditedThumbnail;
     private int isEditedCategories;
 

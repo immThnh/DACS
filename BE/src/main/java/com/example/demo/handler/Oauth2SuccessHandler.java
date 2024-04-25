@@ -1,8 +1,8 @@
 package com.example.demo.handler;
 
 import com.example.demo.auth.AuthService;
-import com.example.demo.entity.auth.Role;
-import com.example.demo.entity.auth.User;
+import com.example.demo.entity.user.Role;
+import com.example.demo.entity.user.User;
 import com.example.demo.repository.UserRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

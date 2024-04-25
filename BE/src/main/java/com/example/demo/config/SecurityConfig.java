@@ -1,32 +1,19 @@
 package com.example.demo.config;
 
-import com.example.demo.entity.auth.Permission;
-import com.example.demo.entity.auth.Role;
 import com.example.demo.handler.LogoutHandler;
 import com.example.demo.handler.Oauth2SuccessHandler;
 import com.example.demo.jwt.JwtFilter;
-import jakarta.persistence.AssociationOverride;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-
-import static com.example.demo.entity.auth.Permission.*;
-import static com.example.demo.entity.auth.Role.ADMIN;
-import static com.example.demo.entity.auth.Role.MANAGER;
-import static org.springframework.http.HttpMethod.*;
 
 @Configuration
 @RequiredArgsConstructor

@@ -1,6 +1,6 @@
 import SignUp from "../pages/signUp";
 import Login from "../pages/login";
-import LandingPage from "../pages/landing/LandingPageComponent";
+import LandingPage from "../pages/landing";
 import AdminPage from "../pages/admin";
 import NotFoundPage from "../pages/notFound";
 import ListCourse from "../pages/admin/Course/list";
@@ -15,8 +15,8 @@ const publicRoutes = [
     { path: "/sign-up", component: SignUp },
     { path: "/login", component: Login },
     { path: "*", component: NotFoundPage },
-    { path: "/course", component: Course },
-    { path: "/course/detail", component: DetailCourse },
+    { path: "/course/:id", component: Course },
+    { path: "/course/detail/:id", component: DetailCourse },
 ];
 
 const adminRoutes = [

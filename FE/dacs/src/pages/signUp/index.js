@@ -1,12 +1,14 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import OAuth2Form from "../../component/authenComponent/OAuth2Form.js";
+import OAuth2Form from "../../component/auth/OAuth2Form.js";
 import * as authService from "../../api/apiService/authService.js";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import eyeSlash from "../../assets/images/eye-slash.png";
 import { useDispatch, useSelector } from "react-redux";
 import loginSlice from "../../redux/reducers/loginReducer.js";
+import styles from "../login/Login.module.scss";
+import clsx from "clsx";
 export default function SignUp() {
     const [lastClickTime, setLastClickTime] = useState(0);
     const [countdown, setCountdown] = useState(0);
@@ -62,7 +64,6 @@ export default function SignUp() {
             return;
         }
         if (countdown === 0) {
-            console.log("Send Code");
             const fetchApi = async () => {
                 toast.promise(authService.sendMail(formData["email"]), {
                     loading: "Sending mail...",
@@ -162,7 +163,7 @@ export default function SignUp() {
 
     return (
         <div className="w-full flex">
-            <section className="m-auto mt-40 flex flex-col p-10 mt-10 max-w-full text-base leading-6 bg-white rounded-xl text-neutral-800 w-[540px] max-md:px-5 max-md:mt-10">
+            <section className="boxShadow m-auto mt-40 flex flex-col p-10 mt-10 max-w-full text-base leading-6 bg-white rounded-xl text-neutral-800 w-[540px] max-md:px-5 max-md:mt-10">
                 <h2 className="text-4xl font-semibold text-center max-md:max-w-full">
                     Sign Up
                 </h2>
@@ -193,7 +194,7 @@ export default function SignUp() {
                                 )}
                             </div>
                         </div>
-                        <div className="flex-1 ml-5">
+                        <div className={clsx("flex-1 ml-5")}>
                             <div className="text-left">
                                 <label
                                     htmlFor="lastName"
@@ -218,7 +219,7 @@ export default function SignUp() {
                             </div>
                         </div>
                     </div>
-                    <div className="mt-5 text-left">
+                    <div className={clsx(styles.fieldForm, "text-left")}>
                         <label
                             htmlFor="email"
                             className="font-medium max-md:max-w-full"
@@ -242,7 +243,7 @@ export default function SignUp() {
                             </div>
                         )}
                     </div>
-                    <div className="mt-5 text-left">
+                    <div className={clsx(styles.fieldForm, "text-left")}>
                         <label
                             htmlFor="password"
                             className="font-medium max-md:max-w-full"
@@ -277,7 +278,7 @@ export default function SignUp() {
                             </div>
                         )}
                     </div>
-                    <div className="mt-5 text-left">
+                    <div className={clsx(styles.fieldForm, "text-left")}>
                         <label
                             htmlFor="confirmPassword"
                             className="font-medium max-md:max-w-full"
@@ -311,7 +312,7 @@ export default function SignUp() {
                             </div>
                         )}
                     </div>
-                    <div className="mt-5 text-left">
+                    <div className={clsx(styles.fieldForm, "text-left")}>
                         <label
                             htmlFor="code"
                             className="font-medium max-md:max-w-full"

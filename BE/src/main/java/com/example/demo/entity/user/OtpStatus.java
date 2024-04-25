@@ -1,4 +1,4 @@
-package com.example.demo.entity.auth;
+package com.example.demo.entity.user;
 
 public enum OtpStatus {
     DELIVERED, FAILED

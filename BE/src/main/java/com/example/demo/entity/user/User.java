@@ -1,4 +1,4 @@
-package com.example.demo.entity.auth;
+package com.example.demo.entity.user;
 
 import com.example.demo.entity.data.Course;
 import com.example.demo.jwt.Token;

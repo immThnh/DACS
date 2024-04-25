@@ -1,6 +1,6 @@
 package com.example.demo.auth;
 
-import com.example.demo.entity.auth.Role;
+import com.example.demo.entity.user.Role;
 import lombok.*;
 import org.springframework.stereotype.Component;
 

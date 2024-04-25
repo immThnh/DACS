@@ -10,7 +10,7 @@ import btnClose from "../../../../assets/images/btnClose.svg";
 
 const initFormData = {
     title: "",
-    desc: "",
+    description: "",
     price: "",
     thumbnail: "",
     date: "",
@@ -82,7 +82,7 @@ function CreateCourse() {
         let lesson = {
             stt: "",
             title: "",
-            desc: "",
+            description: "",
             video: "",
             linkVideo: "",
         };
@@ -95,6 +95,7 @@ function CreateCourse() {
     };
 
     const handleInputLessonChange = (e, index) => {
+        console.log(e.target.dataset.section);
         const { name, value } = e.target;
         const updateLessons = [...lessons];
         updateLessons[index] = {
@@ -146,7 +147,7 @@ function CreateCourse() {
                     },
                     error: (error) => {
                         console.log(error);
-                        return error;
+                        return error.mess;
                     },
                 }
             );
@@ -197,8 +198,8 @@ function CreateCourse() {
                         </div>
                         <div className={clsx(styles.formField)}>
                             <textarea
-                                name="desc"
-                                value={formData.desc}
+                                name="description"
+                                value={formData.description}
                                 onChange={handleInputChange}
                                 className={clsx(styles.formInput, "h-22")}
                                 type="text"
@@ -336,7 +337,7 @@ function CreateCourse() {
                                                     }}
                                                 >
                                                     {" "}
-                                                    Remove
+                                                    Remove lesson
                                                 </div>
                                             </div>
                                             <div
@@ -345,6 +346,7 @@ function CreateCourse() {
                                                 )}
                                             >
                                                 <input
+                                                    data-section="1"
                                                     name={`title`}
                                                     onChange={(e) => {
                                                         handleInputLessonChange(
@@ -372,8 +374,8 @@ function CreateCourse() {
                                                 )}
                                             >
                                                 <textarea
-                                                    name="desc"
-                                                    value={lesson.desc}
+                                                    name="description"
+                                                    value={lesson.description}
                                                     onChange={(e) => {
                                                         handleInputLessonChange(
                                                             e,

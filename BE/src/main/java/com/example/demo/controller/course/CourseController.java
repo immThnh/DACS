@@ -1,4 +1,4 @@
-package com.example.demo.controller.Course;
+package com.example.demo.controller.course;
 
 import com.example.demo.dto.ResponObject;
 import com.example.demo.request.CourseRequest;
@@ -21,16 +21,16 @@ public class CourseController {
     private final CourseService courseService;
 
     @PostMapping("/create")
-    public ResponseEntity<String> create(@RequestPart CourseRequest course, @RequestPart(required = false) ArrayList<LessonRequest> lessons,
+    public ResponseEntity<ResponObject> create(@RequestPart CourseRequest course, @RequestPart(required = false) ArrayList<LessonRequest> lessons,
                                        @RequestPart MultipartFile thumbnail, @RequestPart(value = "videos", required = false) List<MultipartFile> videos ) throws InterruptedException {
         var result = courseService.addCourse(course, lessons, thumbnail, videos);
-        return ResponseEntity.status(result.getStatus()).body(result.getContent().toString());
+        return ResponseEntity.status(result.getStatus()).body(result);
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<List<Course>> getAll() {
+    public ResponseEntity<ResponObject> getAll() {
         var result = courseService.getAllCourse();
-        return ResponseEntity.status(result.getStatus()).body((List<Course>) result.getContent());
+        return ResponseEntity.status(result.getStatus()).body(result);
     }
 
     @GetMapping("/{id}")
@@ -45,16 +45,9 @@ public class CourseController {
     }
 
     @PutMapping("/edit/{id}")
-    public ResponseEntity<String> updateCourse(@PathVariable int id, @RequestPart CourseRequest course, @RequestPart List<LessonRequest> lessons, @RequestPart(required = false) MultipartFile thumbnail, @RequestPart(value = "videos", required = false) List<MultipartFile> videos)  {
-       try {
-           System.out.println(course + " :" + lessons);
+    public ResponseEntity<ResponObject> updateCourse(@PathVariable int id, @RequestPart CourseRequest course, @RequestPart List<LessonRequest> lessons, @RequestPart(required = false) MultipartFile thumbnail, @RequestPart(value = "videos", required = false) List<MultipartFile> videos)  {
            var result = courseService.updateCourse(id, course, lessons, thumbnail, videos);
-           return ResponseEntity.status(result.getStatus()).body(result.getContent().toString());
-       }
-       catch (Exception ex) {
-           System.out.println("updateCourseController: " + ex.getMessage());
-           return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error updating course");
-       }
+           return ResponseEntity.status(result.getStatus()).body(result);
     }
 
 

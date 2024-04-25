@@ -1,27 +1,25 @@
 package com.example.demo.auth;
 
-import com.example.demo.entity.auth.Role;
-import com.example.demo.entity.auth.User;
+import com.example.demo.dto.ResponObject;
+import com.example.demo.entity.user.Role;
+import com.example.demo.entity.user.User;
 import com.example.demo.jwt.JwtService;
 import com.example.demo.jwt.Token;
 import com.example.demo.mail.MailRequest;
 import com.example.demo.repository.TokenRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.twilio.TwilioService;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,13 +39,16 @@ public class AuthService {
             return true;
     }
 
-    public String authenticate(AuthenticationRequest auth) {
+    public ResponObject authenticate(AuthenticationRequest auth) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(auth.getEmail(), auth.getPassword()));
             var user = userRepository.findByEmail(auth.getEmail()).orElse(null);
+            if(user == null) {
+                return ResponObject.builder().status(HttpStatus.BAD_REQUEST).content("User is not exist.").build();
+            }
             Token token = new Token(jwtService.generateToken(user));
             user.setToken(token);
-            return token.getToken();
+            return ResponObject.builder().status(HttpStatus.OK).content(token).build();
         }
         catch (AuthenticationException ex) {
             System.out.println(ex.getMessage() + "Xác thực người dùng thất bại!");

@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.cloudinary.CloudService;
 import com.example.demo.entity.data.Category;
 import com.example.demo.entity.data.Lesson;
+import com.example.demo.repository.data.CategoryRepository;
 import com.example.demo.request.CourseRequest;
 import com.example.demo.request.LessonRequest;
 import com.example.demo.dto.ResponObject;
@@ -33,32 +34,36 @@ public class CourseService {
     private final CloudService cloudService;
     private final CategoryService categoryService;
     private final LessonService lessonService;
+    private final CategoryRepository categoryRepository;
 
     public ResponObject getCourseById(int id) {
         Course course = courseRepository.findById(id).orElse(null);
         if (course == null) {
-            return ResponObject.builder().content("Course is not exist!").status(HttpStatus.BAD_REQUEST).build();
+            return ResponObject.builder().mess("Course is not exist!").status(HttpStatus.BAD_REQUEST).build();
         }
         return ResponObject.builder().content(course).status(HttpStatus.OK).build();
     }
     public ResponObject getCourseByAlias(String alias) {
         Course course = courseRepository.findByAlias(alias).orElse(null);
         if (course == null) {
-            return ResponObject.builder().content("Course is not exist!").status(HttpStatus.BAD_REQUEST).build();
+            return ResponObject.builder().mess("Course is not exist!").status(HttpStatus.BAD_REQUEST).build();
         }
         return ResponObject.builder().content(course).status(HttpStatus.OK).build();
     }
 
     public ResponObject getAllCourse() {
         var courses = courseRepository.getAll().orElse(null);
-        return ResponObject.builder().status(HttpStatus.OK).content("Get successfully").content(courses).build();
+        if(courses == null) {
+            return ResponObject.builder().status(HttpStatus.BAD_REQUEST).mess("Don't have any course").build();
+        }
+        return ResponObject.builder().status(HttpStatus.OK).mess("Get successfully").content(courses).build();
     }
 
 
     public ResponObject updateCourse(int id, CourseRequest courseRequest, List<LessonRequest> lessons, MultipartFile thumbnail, List<MultipartFile> videos) {
         var courseDAO = courseRepository.findById(id).orElse(null);
         if(courseDAO == null) {
-            return ResponObject.builder().content("Course is not exist!").status(HttpStatus.BAD_REQUEST).build();
+            return ResponObject.builder().mess("Course is not exist!").status(HttpStatus.BAD_REQUEST).build();
         }
 
         // ! Update thumbnail
@@ -85,13 +90,13 @@ public class CourseService {
         lessonService.updateLessonsOfCourse(lessons, courseDAO.getLessons(), courseDAO, videos);
 
         courseRepository.save(courseDAO);
-        return ResponObject.builder().status(HttpStatus.OK).content("").build();
+        return ResponObject.builder().status(HttpStatus.OK).mess("Update successfully").build();
     }
 
     public ResponObject addCourse(CourseRequest request, List<LessonRequest> lessons, MultipartFile thumbnail, List<MultipartFile> videos)  {
         var course = courseRepository.findByTitle(request.getTitle()).orElse(null);
         if (course != null)
-            return ResponObject.builder().content("Course is already exist").status(HttpStatus.BAD_REQUEST).build();
+            return ResponObject.builder().mess("Course is already exist").status(HttpStatus.BAD_REQUEST).build();
 
         List<CompletableFuture<Void>> futures = new ArrayList<>();
 
@@ -152,20 +157,20 @@ public class CourseService {
         allOf.join();
 
 
-        return ResponObject.builder().content("Create success").status(HttpStatus.OK).build();
+        return ResponObject.builder().mess("Create success").status(HttpStatus.OK).build();
     }
 
    public ResponObject deleteCourseById(int id) {
         var course = courseRepository.findById(id).orElse(null);
         if(course == null) {
-            return ResponObject.builder().status(HttpStatus.BAD_REQUEST).content("Course is not exist!").build();
+            return ResponObject.builder().status(HttpStatus.BAD_REQUEST).mess("Course is not exist!").build();
         }
 
         courseRepository.delete(course);
-        return ResponObject.builder().content("Delete course successfully!").status(HttpStatus.OK).build();
+        return ResponObject.builder().mess("Delete course successfully!").status(HttpStatus.OK).build();
    }
 
-    public void setVideoForLesson(Lesson lesson, byte[] file) throws IOException {
+    public void setVideoForLesson(Lesson lesson, byte[] file)  {
          lesson.setVideo(cloudService.getLinkCloud(file));
     }
 

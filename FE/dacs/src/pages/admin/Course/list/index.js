@@ -32,7 +32,7 @@ function ListCourse() {
         const fetchApi = async () => {
             try {
                 const result = await dataApi.getAllCourse();
-                setCourses(result);
+                setCourses(result.content);
             } catch (error) {
                 console.log(error.response.data);
             }

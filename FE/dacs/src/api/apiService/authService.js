@@ -8,7 +8,7 @@ export const register = async ({
 }) => {
     try {
         const res = await instance.post(
-            "/auth/register",
+            "/user/register",
             {
                 firstName,
                 lastName,
@@ -28,7 +28,7 @@ export const register = async ({
 export const login = async ({ email, password }) => {
     try {
         const res = await instance.post(
-            "/auth/login",
+            "/user/login",
             {
                 email,
                 password,
@@ -43,9 +43,10 @@ export const login = async ({ email, password }) => {
 };
 
 export const sendMail = async (email) => {
+    console.log(email);
     try {
         const res = await instance.post(
-            "/auth/send-verify-email",
+            "/user/send-verify-email",
             {
                 email,
             },
@@ -63,7 +64,7 @@ export const sendMail = async (email) => {
 export const sendResetPasswordEmail = async (email) => {
     try {
         return await instance.post(
-            "/auth/send-reset-password-email",
+            "/user/send-reset-password-email",
             { email },
             { "content-type": "application/json" }
         );
@@ -75,7 +76,7 @@ export const sendResetPasswordEmail = async (email) => {
 export const validateCode = async ({ email, code }) => {
     try {
         return await instance.post(
-            "/auth/verify-reset-password-code",
+            "/user/verify-reset-password-code",
             {
                 email,
                 code,
@@ -88,7 +89,7 @@ export const validateCode = async ({ email, code }) => {
 export const resetPassword = async ({ email, password }) => {
     try {
         return await instance.post(
-            "/auth/reset-password",
+            "/user/reset-password",
             {
                 email,
                 password,
@@ -97,6 +98,14 @@ export const resetPassword = async ({ email, password }) => {
                 "content-type": "application/json",
             }
         );
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getAllUser = async () => {
+    try {
+        return await instance.get("/api/v1/user/getAll");
     } catch (error) {
         return Promise.reject(error);
     }

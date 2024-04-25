@@ -1,7 +1,8 @@
-import NavigationTopBar from "../../../component/dashboard/NavigationTopBar";
+import NavigationTopBar from "../../component/dashboard/NavigationTopBar";
 import styles from "./HeaderAdmin.module.scss";
-import logo from "../../../assets/images/logo.png";
+import logo from "../../assets/images/logo.png";
 import clsx from "clsx";
+import { Link } from "react-router-dom";
 
 function AdminHeader() {
     return (
@@ -21,13 +22,15 @@ function AdminHeader() {
                 })}
             >
                 <div className={styles.logoContainer}>
-                    <div className={styles.logo}>
-                        <img src={logo} alt="" />
-                        <h3 className={styles.brightWeb}>
-                            <span>Dream</span>
-                            <span className={styles.stack}> Chasers</span>
-                        </h3>
-                    </div>
+                    <Link to="/">
+                        <div className={styles.logo}>
+                            <img src={logo} alt="Logo Dream Chasers" />
+                            <h3 className={styles.brightWeb}>
+                                <span>Dream</span>
+                                <span className={styles.stack}> Chasers</span>
+                            </h3>
+                        </div>
+                    </Link>
                 </div>
 
                 {/* <ProductNavigation /> */}

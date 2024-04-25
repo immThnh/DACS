@@ -366,7 +366,7 @@ function EditCourse() {
                                                 }}
                                             >
                                                 {" "}
-                                                Remove
+                                                Remove lesson
                                             </div>
                                         </div>
                                         <div className={clsx(styles.formField)}>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from "react";
-import OAuth2Form from "../../component/authenComponent/OAuth2Form.js";
+import OAuth2Form from "../../component/auth/OAuth2Form.js";
 import * as authService from "../../../src/api/apiService/authService.js";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -7,7 +7,9 @@ import loginSlice from "../../redux/reducers/loginReducer.js";
 import { useDispatch } from "react-redux";
 import { Dialog, Transition } from "@headlessui/react";
 import ShowPassword from "../../component/authenComponent/ShowPassword.js";
-import { ForgotPasswordModal, ResetPasswordModal } from '../../component/Modals.js';
+import clsx from "clsx";
+import styles from "./Login.module.scss";
+
 export default function Login() {
     const initFormForgotData = {
         email: "",
@@ -93,7 +95,8 @@ export default function Login() {
         const fetchApi = async () => {
             toast.promise(authService.login({ ...formData }), {
                 loading: "Loading...",
-                success: () => {
+                success: (data) => {
+                    setCode(data.content.token);
                     dispatch(loginSlice.actions.setLogin(true));
                     navigate("/");
                     return "Welcome to Dream Chasers";
@@ -246,13 +249,13 @@ export default function Login() {
 
     return (
         <div className="w-full flex">
-            <section className="m-auto mt-40 flex flex-col p-10 mt-10 max-w-full text-base leading-6 bg-white rounded-xl text-neutral-800 w-[540px] max-md:px-5 max-md:mt-10">
+            <section className="boxShadow m-auto mt-40 flex flex-col p-10 mt-10 max-w-full text-base leading-6 bg-white rounded-xl text-neutral-800 w-[540px] max-md:px-5 max-md:mt-10">
                 <h2 className="text-4xl font-semibold text-center max-md:max-w-full">
                     Login
                 </h2>
 
                 <form onSubmit={handleSubmit} method="post">
-                    <div className="mt-5 text-left">
+                    <div className={clsx(styles.fieldForm, "text-left")}>
                         <label
                             htmlFor="email"
                             className="font-medium max-md:max-w-full"
@@ -276,14 +279,14 @@ export default function Login() {
                             </div>
                         )}
                     </div>
-                    <div className="mt-5 text-left">
+                    <div className={clsx(styles.fieldForm, "text-left")}>
                         <label
                             htmlFor="password"
                             className="font-medium max-md:max-w-full"
                         >
                             Password
                         </label>
-                        <div className="flex p-2.5 mt-2.5 bg-gray-50 rounded-lg border border-gray-100 border-solid text-stone-500 max-md:flex-wrap">
+                        <div className=" flex p-2.5 mt-2.5 bg-gray-50 rounded-lg border border-gray-100 border-solid text-stone-500 max-md:flex-wrap">
                             <input
                                 type="password"
                                 id="password"
@@ -378,7 +381,12 @@ export default function Login() {
                                         {!validEmailUser && (
                                             <>
                                                 {" "}
-                                                <div className="mt-5 text-left">
+                                                <div
+                                                    className={clsx(
+                                                        styles.fieldForm,
+                                                        "text-left"
+                                                    )}
+                                                >
                                                     <label
                                                         htmlFor="email"
                                                         className="font-medium max-md:max-w-full"
@@ -406,7 +414,12 @@ export default function Login() {
                                                         </div>
                                                     )}
                                                 </div>
-                                                <div className="mt-5 text-left">
+                                                <div
+                                                    className={clsx(
+                                                        styles.fieldForm,
+                                                        "text-left"
+                                                    )}
+                                                >
                                                     <label
                                                         htmlFor="code"
                                                         className="font-medium max-md:max-w-full"
@@ -458,7 +471,12 @@ export default function Login() {
                                         )}
                                         {validEmailUser && (
                                             <>
-                                                <div className="mt-5 text-left">
+                                                <div
+                                                    className={clsx(
+                                                        styles.fieldForm,
+                                                        "text-left"
+                                                    )}
+                                                >
                                                     <label
                                                         htmlFor="email"
                                                         className="font-medium max-md:max-w-full"
@@ -478,7 +496,12 @@ export default function Login() {
                                                         />
                                                     </div>
                                                 </div>
-                                                <div className="mt-5 text-left">
+                                                <div
+                                                    className={clsx(
+                                                        styles.fieldForm,
+                                                        "text-left"
+                                                    )}
+                                                >
                                                     <label
                                                         htmlFor="passwordForgot"
                                                         className="font-medium max-md:max-w-full"
@@ -513,7 +536,12 @@ export default function Login() {
                                                         </div>
                                                     )}
                                                 </div>
-                                                <div className="mt-5 text-left">
+                                                <div
+                                                    className={clsx(
+                                                        styles.fieldForm,
+                                                        "text-left"
+                                                    )}
+                                                >
                                                     <label
                                                         htmlFor="cofirmPassword"
                                                         className="font-medium max-md:max-w-full"
