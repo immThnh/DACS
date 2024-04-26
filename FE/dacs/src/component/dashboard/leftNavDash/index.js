@@ -4,6 +4,7 @@ import appDash from "../../../assets/images/app_dash.svg";
 import eDash from "../../../assets/images/ecommerce_dash.svg";
 import icUser from "../../../assets/images/ic_user.svg";
 import icCourse from "../../../assets/images/icCourse.svg";
+import icCategory from "../../../assets/images/ic_category_.svg";
 import { Link } from "react-router-dom";
 function LeftNavDash() {
     const handleOnSub = (e) => {
@@ -21,6 +22,11 @@ function LeftNavDash() {
                 sub.classList.toggle("d-block");
                 link.classList.toggle(clsx(styles.active));
                 break;
+            case "Category":
+                sub = document.getElementById("subCategory");
+                link = document.getElementById("categoryLink");
+                sub.classList.toggle("d-block");
+                link.classList.toggle(clsx(styles.active));
             default:
                 break;
         }
@@ -33,11 +39,11 @@ function LeftNavDash() {
         switch (element.id) {
             case "list":
                 break;
-
             default:
                 break;
         }
     };
+
     return (
         <div className={clsx(styles.Wrapper, "fixed z-header h-full")}>
             <nav className={clsx(styles.container)}>
@@ -173,7 +179,6 @@ function LeftNavDash() {
                             id="courseLink"
                             className={clsx(styles.actionLink)}
                         >
-                            {" "}
                             <span className={clsx(styles.icon)}>
                                 <img src={icCourse} alt="" />
                             </span>
@@ -215,16 +220,6 @@ function LeftNavDash() {
                                         </span>
                                     </li>
                                 </Link>
-                                <Link className={clsx(styles.subItem)} to="">
-                                    <li className="d-flex">
-                                        <span
-                                            className={clsx(styles.dotItem)}
-                                        ></span>
-                                        <span className={clsx(styles.text)}>
-                                            Details
-                                        </span>
-                                    </li>
-                                </Link>
                                 <Link
                                     className={clsx(styles.subItem)}
                                     to="/admin/course/create"
@@ -238,13 +233,75 @@ function LeftNavDash() {
                                         </span>
                                     </li>
                                 </Link>
-                                <Link className={clsx(styles.subItem)} to="">
+                            </ul>
+                        </div>
+                        <div
+                            onClick={handleOnSub}
+                            id="categoryLink"
+                            className={clsx(styles.actionLink)}
+                        >
+                            <span className={clsx(styles.icon)}>
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    height="24"
+                                    viewBox="0 -960 960 960"
+                                    width="24"
+                                    fill="#768490"
+                                >
+                                    <path d="m260-520 220-360 220 360H260ZM700-80q-75 0-127.5-52.5T520-260q0-75 52.5-127.5T700-440q75 0 127.5 52.5T880-260q0 75-52.5 127.5T700-80Zm-580-20v-320h320v320H120Zm580-60q42 0 71-29t29-71q0-42-29-71t-71-29q-42 0-71 29t-29 71q0 42 29 71t71 29Zm-500-20h160v-160H200v160Zm202-420h156l-78-126-78 126Zm78 0ZM360-340Zm340 80Z" />
+                                </svg>
+                            </span>
+                            <span
+                                className={clsx(
+                                    styles.nameAction,
+                                    styles.label
+                                )}
+                            >
+                                Category
+                            </span>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                aria-hidden="true"
+                                role="img"
+                                className="arrow MuiBox-root css-3o0h5k iconify iconify--eva"
+                                width="1em"
+                                height="1em"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    fill="currentColor"
+                                    d="M10 19a1 1 0 0 1-.64-.23a1 1 0 0 1-.13-1.41L13.71 12L9.39 6.63a1 1 0 0 1 .15-1.41a1 1 0 0 1 1.46.15l4.83 6a1 1 0 0 1 0 1.27l-5 6A1 1 0 0 1 10 19"
+                                ></path>
+                            </svg>
+                        </div>
+                        <div
+                            id="subCategory"
+                            className={clsx(styles.subContent)}
+                        >
+                            <ul className={clsx(styles.subList)}>
+                                <Link
+                                    className={clsx(styles.subItem)}
+                                    to="/admin/category/list"
+                                >
                                     <li className="d-flex">
                                         <span
                                             className={clsx(styles.dotItem)}
                                         ></span>
                                         <span className={clsx(styles.text)}>
-                                            Edit
+                                            List
+                                        </span>
+                                    </li>
+                                </Link>
+                                <Link
+                                    className={clsx(styles.subItem)}
+                                    to="/admin/category/create"
+                                >
+                                    <li className="d-flex">
+                                        <span
+                                            className={clsx(styles.dotItem)}
+                                        ></span>
+                                        <span className={clsx(styles.text)}>
+                                            Create
                                         </span>
                                     </li>
                                 </Link>

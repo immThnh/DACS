@@ -1,18 +1,15 @@
-import styles from "./List.module.scss";
+import { useEffect, useState } from "react";
+import styles from "../../Course/list/List.module.scss";
 import clsx from "clsx";
+import { toast } from "sonner";
+import * as dataApi from "../../../../api/apiService/dataService";
 import { Link } from "react-router-dom";
 import deleteIcon from "../../../../assets/images/delete.svg";
 import viewIcon from "../../../../assets/images/view.svg";
 import editIcon from "../../../../assets/images/edit.svg";
-import { useEffect, useState } from "react";
-import * as dataApi from "../../../../api/apiService/dataService";
-import Select from "react-select";
-import { toast } from "sonner";
-import { data } from "autoprefixer";
 
-function ListCourse() {
+function ListCategory() {
     const [courses, setCourses] = useState([]);
-    const [options, setOptions] = useState([]);
     const handleRemoveCourse = (id) => {
         console.log(id);
         const fetchApi = async () => {
@@ -31,62 +28,13 @@ function ListCourse() {
         fetchApi();
     };
 
-    const handleSelectChange = (e) => {
-        const fetchApi = () => {
-            toast.promise(dataApi.getCoursesByCategory(e.id), {
-                loading: "loading...",
-                success: (data) => {
-                    setCourses(data.content);
-                    return "Get data successfully";
-                },
-                error: (error) => {
-                    return error;
-                },
-            });
-        };
-
-        const debounceApi = debounce(fetchApi);
-        debounceApi();
-    };
-
-    const handleSearchInputChange = (e) => {
-        const fetchApi = () => {
-            toast.promise(dataApi.getCourseByName(e.target.value), {
-                loading: "loading...",
-                success: (data) => {
-                    setCourses(data.content);
-                    return "Get data successfully";
-                },
-                error: (error) => {
-                    console.log(error);
-                    return error;
-                },
-            });
-        };
-        const debounceApi = debounce(fetchApi, 1000);
-        debounceApi();
-    };
-    let timerId;
-    const debounce = (func, delay = 600) => {
-        return () => {
-            clearTimeout(timerId);
-            timerId = setTimeout(() => {
-                func();
-            }, delay);
-        };
-    };
-
     useEffect(() => {
         const fetchApi = async () => {
             try {
                 const result = await dataApi.getAllCourse();
-                let categories = [];
-                categories = await dataApi.getAllCategories();
-                categories.push({ id: "-1", name: "All" });
                 setCourses(result.content);
-                setOptions(categories);
             } catch (error) {
-                console.log(error.response);
+                console.log(error.response.data);
             }
         };
         fetchApi();
@@ -134,25 +82,30 @@ function ListCourse() {
                             )}
                         >
                             <div className={clsx(styles.contentItem)}>
-                                <div
-                                    // className={clsx(styles.cbb)
-                                    className={clsx(styles.formSelect)}
-                                >
+                                <div className={clsx(styles.cbb)}>
                                     <label htmlFor="">Category</label>
-                                    <Select
-                                        onChange={handleSelectChange}
-                                        getOptionLabel={(x) => x.name}
-                                        getOptionValue={(x) => x.id}
-                                        options={options}
-                                        styles={{
-                                            control: (baseStyles, state) => ({
-                                                ...baseStyles,
-                                                borderColor: state.isFocused
-                                                    ? "black"
-                                                    : "#e9ecee",
-                                            }),
-                                        }}
-                                    />
+                                    <select
+                                        defaultValue={"1"}
+                                        className={clsx(styles.formSelect)}
+                                    >
+                                        <option selected>All</option>
+                                        <option
+                                            className={clsx(styles.option)}
+                                            value="1"
+                                        >
+                                            One
+                                        </option>
+                                        <option value="2">Two</option>
+                                        <option value="3">Three</option>
+                                    </select>
+                                    <svg
+                                        className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-oi4g4"
+                                        focusable="false"
+                                        aria-hidden="true"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path d="M12,16 C11.7663478,16.0004565 11.5399121,15.9190812 11.36,15.77 L5.36,10.77 C4.93474074,10.4165378 4.87653776,9.78525926 5.23,9.36 C5.58346224,8.93474074 6.21474074,8.87653776 6.64,9.23 L12,13.71 L17.36,9.39 C17.5665934,9.2222295 17.8315409,9.14373108 18.0961825,9.17188444 C18.3608241,9.2000378 18.6033268,9.33252029 18.77,9.54 C18.9551341,9.74785947 19.0452548,10.0234772 19.0186853,10.3005589 C18.9921158,10.5776405 18.8512608,10.8311099 18.63,11 L12.63,15.83 C12.444916,15.955516 12.2231011,16.0153708 12,16 Z"></path>
+                                    </svg>
                                 </div>
                             </div>
                             <div className={clsx(styles.contentItem)}>
@@ -160,7 +113,7 @@ function ListCourse() {
                                     id="seachWrap"
                                     className={clsx(styles.search)}
                                 >
-                                    {/* <svg
+                                    <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         aria-hidden="true"
                                         role="img"
@@ -173,9 +126,8 @@ function ListCourse() {
                                             fill="currentColor"
                                             d="m20.71 19.29l-3.4-3.39A7.92 7.92 0 0 0 19 11a8 8 0 1 0-8 8a7.92 7.92 0 0 0 4.9-1.69l3.39 3.4a1 1 0 0 0 1.42 0a1 1 0 0 0 0-1.42M5 11a6 6 0 1 1 6 6a6 6 0 0 1-6-6"
                                         ></path>
-                                    </svg> */}
+                                    </svg>
                                     <input
-                                        onChange={handleSearchInputChange}
                                         id="searchInput"
                                         type="search"
                                         placeholder="Search.."
@@ -358,4 +310,4 @@ function ListCourse() {
     );
 }
 
-export default ListCourse;
+export default ListCategory;

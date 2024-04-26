@@ -15,6 +15,7 @@ instance.interceptors.response.use(
         return res.data;
     },
     function (error) {
+        console.log(error);
         return Promise.reject(error);
     }
 );

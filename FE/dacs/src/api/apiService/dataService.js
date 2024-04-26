@@ -1,3 +1,4 @@
+import { clear } from "@testing-library/user-event/dist/clear";
 import instance, { setToken } from "../instance";
 export const getAllCategories = async () => {
     try {
@@ -82,5 +83,23 @@ export const removeCourse = async (id) => {
         return result;
     } catch (error) {
         return Promise.reject(error);
+    }
+};
+
+export const getCoursesByCategory = (id) => {
+    console.log(id);
+    try {
+        return instance.get(`/data/course/category?id=${id}`);
+    } catch (error) {
+        console.log(error.mess);
+        Promise.reject(error);
+    }
+};
+
+export const getCourseByName = (title) => {
+    try {
+        return instance.get(`/data/course?title=${title}`);
+    } catch (error) {
+        Promise.reject(error.mess);
     }
 };

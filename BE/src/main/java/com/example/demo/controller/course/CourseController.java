@@ -37,11 +37,29 @@ public class CourseController {
         var result = courseService.getCourseById(id);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
-    @GetMapping("/alias/{alias}")
-    public ResponseEntity<ResponObject> getCourseByAlias(@PathVariable  String alias) {
-        var result = courseService.getCourseByAlias(alias);
+
+    @GetMapping("/category")
+    public ResponseEntity<ResponObject> getCourseByCategoryId(@RequestParam("id") int id) {
+        var result = courseService.getAllCourseByCategoryId(id);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
+    @GetMapping("")
+    public ResponseEntity<ResponObject> getCourseByCourseTitle(@RequestParam("title") String title) {
+        System.out.println(title);
+        var result = courseService.getAllCourseByCourseTitle(title);
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
+// @GetMapping("")
+//    public ResponseEntity<ResponObject> getCourseByCategoryIdAndCourseTitle(@RequestParam("category") int id, @RequestParam("title") String title) {
+//        var result = courseService.getAllCourseByCategoryIdAndTitle(id, title);
+//        return ResponseEntity.status(result.getStatus()).body(result);
+//    }
+
+//    @GetMapping("/alias/{alias}")
+//    public ResponseEntity<ResponObject> getCourseByAlias(@PathVariable  String alias) {
+//        var result = courseService.getCourseByAlias(alias);
+//        return ResponseEntity.status(result.getStatus()).body(result);
+//    }
 
     @PutMapping("/edit/{id}")
     public ResponseEntity<ResponObject> updateCourse(@PathVariable int id, @RequestPart CourseDTO course, @RequestPart(required = false) MultipartFile thumbnail, @RequestPart(value = "videos", required = false) List<MultipartFile> videos)  {

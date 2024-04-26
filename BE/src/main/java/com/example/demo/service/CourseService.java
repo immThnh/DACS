@@ -20,8 +20,10 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 @Data
 @RequiredArgsConstructor
@@ -42,13 +44,13 @@ public class CourseService {
         return ResponObject.builder().content(course).status(HttpStatus.OK).build();
     }
 
-    public ResponObject getCourseByAlias(String alias) {
-        Course course = courseRepository.findByAlias(alias).orElse(null);
-        if (course == null) {
-            return ResponObject.builder().mess("Course is not exist!").status(HttpStatus.BAD_REQUEST).build();
-        }
-        return ResponObject.builder().content(course).status(HttpStatus.OK).build();
-    }
+//    public ResponObject getCourseByAlias(String alias) {
+//        Course course = courseRepository.findByAlias(alias).orElse(null);
+//        if (course == null) {
+//            return ResponObject.builder().mess("Course is not exist!").status(HttpStatus.BAD_REQUEST).build();
+//        }
+//        return ResponObject.builder().content(course).status(HttpStatus.OK).build();
+//    }
 
     public ResponObject getAllCourse() {
         var courses = courseRepository.getAll().orElse(null);
@@ -232,5 +234,30 @@ public class CourseService {
         courseRepository.delete(course);
         return ResponObject.builder().mess("Delete course successfully!").status(HttpStatus.OK).build();
     }
+
+    public ResponObject getAllCourseByCategoryIdAndTitle(int id, String title) {
+        List<Course> result = courseRepository.findAll();
+        if(!Objects.equals(title, ""))
+            result = result.stream().filter(c -> c.getTitle().contains(title)).toList();
+        if(id != -1) {
+            result = result.stream().filter(c -> c.getCategories().stream().anyMatch(ca -> ca.getId() == id)).toList();
+        }
+        return ResponObject.builder().status(HttpStatus.OK).content(result).mess("Get data successfully").build();
+    }
+
+    public ResponObject getAllCourseByCategoryId(int id) {
+        List<Course> result = null;
+        if(id == -1) {
+            result = courseRepository.getAll().orElse(null);
+            return ResponObject.builder().status(HttpStatus.OK).content(result).mess("Get data successfully").build();
+        }
+        result = courseRepository.findByCategoryId(id).orElse(null);
+        return ResponObject.builder().status(HttpStatus.OK).content(result).mess("Get data successfully").build();
+    }
+    public ResponObject getAllCourseByCourseTitle(String  title) {
+        var result = courseRepository.findByTitleContaining(title).orElse(null);
+        return ResponObject.builder().status(HttpStatus.OK).content(result).mess("Get data successfully").build();
+    }
+
 
 }

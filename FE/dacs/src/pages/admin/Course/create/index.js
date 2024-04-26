@@ -7,7 +7,6 @@ import Select from "react-select";
 import * as DataApi from "../../../../api/apiService/dataService";
 import { toast } from "sonner";
 import btnClose from "../../../../assets/images/btnClose.svg";
-import { clear } from "@testing-library/user-event/dist/clear";
 
 const initFormData = {
     title: "",
@@ -250,6 +249,7 @@ function CreateCourse() {
                             <div
                                 className={clsx(styles.formField, "w-1/2 mr-9")}
                             >
+                           
                                 <Select
                                     isMulti
                                     onChange={handleSelectChange}

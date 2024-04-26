@@ -23,7 +23,6 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
-
     @ManyToMany(mappedBy = "categories")
 //! không được sử dụng @JsonBackReference() với Collections
     @JsonIgnore
