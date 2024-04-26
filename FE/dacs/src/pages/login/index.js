@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import loginSlice from "../../redux/reducers/loginReducer.js";
 import { useDispatch } from "react-redux";
 import { Dialog, Transition } from "@headlessui/react";
-import ShowPassword from "../../component/authenComponent/ShowPassword.js";
+import ShowPassword from "../../component/auth/ShowPassword.js";
 import clsx from "clsx";
 import styles from "./Login.module.scss";
 

@@ -8,20 +8,10 @@ export const getAllCategories = async () => {
     }
 };
 
-export const createCourse = async (
-    course,
-    lessons,
-    thumbnail = "",
-    videos = ""
-) => {
+export const createCourse = async (course, thumbnail = "", videos = "") => {
     const formData = new FormData();
     const json = JSON.stringify(course);
     const courseBlob = new Blob([json], {
-        type: "application/json",
-    });
-
-    const json1 = JSON.stringify(lessons);
-    const lessonsBlob = new Blob([json1], {
         type: "application/json",
     });
 
@@ -29,9 +19,7 @@ export const createCourse = async (
         formData.append("videos", videos[i]);
     }
     formData.append("course", courseBlob);
-    formData.append("lessons", lessonsBlob);
     formData.append("thumbnail", thumbnail);
-    console.log(course);
 
     try {
         const response = await instance.post("/data/course/create", formData, {
@@ -45,12 +33,38 @@ export const createCourse = async (
     }
 };
 
+export const updateCourse = async (id, course, thumbnail, videos) => {
+    console.log(course);
+    const formData = new FormData();
+    const json = JSON.stringify(course);
+    const courseBlob = new Blob([json], {
+        type: "application/json",
+    });
+
+    for (let i = 0; i < videos.length; i++) {
+        formData.append("videos", videos[i]);
+    }
+
+    formData.append("course", courseBlob);
+    formData.append("thumbnail", thumbnail);
+    try {
+        const result = await instance.putForm(
+            `/data/course/edit/${id}`,
+            formData
+        );
+        return result;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
 export const getAllCourse = async () => {
     try {
         const result = await instance.get("/data/course/getAll");
         return result;
     } catch (error) {
-        return Promise.reject(error.response.data);
+        console.log(error);
+        return Promise.reject(error);
     }
 };
 
@@ -59,41 +73,6 @@ export const getCourseById = async (id) => {
         return await instance.get(`/data/course/${id}`);
     } catch (error) {
         return Promise.reject(error.response.data);
-    }
-};
-
-export const updateCourse = async (id, course, lessons, thumbnail, videos) => {
-    console.log(course);
-    const formData = new FormData();
-    const json = JSON.stringify(course);
-    const courseBlob = new Blob([json], {
-        type: "application/json",
-    });
-
-    const json1 = JSON.stringify(lessons);
-    const lessonsBlob = new Blob([json1], {
-        type: "application/json",
-    });
-
-    for (let i = 0; i < videos.length; i++) {
-        formData.append("videos", videos[i]);
-    }
-    formData.append("course", courseBlob);
-    formData.append("lessons", lessonsBlob);
-    formData.append("thumbnail", thumbnail);
-    try {
-        const result = await instance.putForm(
-            `/data/course/edit/${id}`,
-            formData,
-            {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            }
-        );
-        return result;
-    } catch (error) {
-        return Promise.reject(error);
     }
 };
 

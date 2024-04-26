@@ -12,7 +12,6 @@ import java.util.HashMap;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ExercideDTO {
-
     private String question;
     private HashMap<String, Boolean> answers;
 }

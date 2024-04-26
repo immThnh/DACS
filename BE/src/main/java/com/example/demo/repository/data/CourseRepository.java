@@ -1,6 +1,7 @@
 package com.example.demo.repository.data;
 
 import com.example.demo.entity.data.Course;
+import com.example.demo.entity.data.Section;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,7 @@ public interface CourseRepository extends JpaRepository<Course, Integer> {
      Optional<Course> findById(int id);
 
     Optional<Course> findByAlias(String alias);
+
 
     @Query(value = "select * from course", nativeQuery = true)
     Optional<List<Course>> getAll();
