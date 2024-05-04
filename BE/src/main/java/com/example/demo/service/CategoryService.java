@@ -69,19 +69,23 @@ public class CategoryService {
 
     public ResponseObject updateCategoryById(int id, Category category) {
         var tempCategory = categoryRepository.findById(id).orElse(null);
-
+        var existName = categoryRepository.findByName(category.getName()).orElse(null);
         if (tempCategory == null) {
             return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Category does not exist!").build();
+        }
+        if(existName != null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("The category name existed!").build();
         }
         categoryRepository.save(category);
         return ResponseObject.builder().status(HttpStatus.OK).mess("Update successfully").build();
     }
 
-    public ResponseObject createCategory(Category category)
+    public ResponseObject createCategory(String name)
     {
-        var result = categoryRepository.findByName(category.getName()).orElse(null);
+        var result = categoryRepository.findByName(name).orElse(null);
         if(result == null) {
-            categoryRepository.save(category);
+            result = Category.builder().name(name).build();
+            categoryRepository.save(result);
             return ResponseObject.builder().status(HttpStatus.OK).mess("Create category successfully").build();
         }
         return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Category existed").build();

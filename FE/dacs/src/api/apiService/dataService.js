@@ -84,7 +84,6 @@ export const getAllCourse = async (page = 0, size = 5) => {
         );
         return result;
     } catch (error) {
-        console.log(error);
         return Promise.reject(error);
     }
 };
@@ -208,9 +207,9 @@ export const getCategoryById = (id) => {
 
 export const createCategory = (category) => {
     try {
-        return instance.post(`/data/category`, category);
+        return instance.post(`/data/category/create`, category);
     } catch (error) {
-        Promise.reject(error);
+        return Promise.reject(error);
     }
 };
 

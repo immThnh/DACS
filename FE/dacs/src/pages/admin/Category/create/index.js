@@ -6,14 +6,9 @@ import * as dataApi from "../../../../api/apiService/dataService";
 import { Navigate, redirect, useParams } from "react-router-dom";
 
 function CreateCategory() {
-    const { id } = useParams();
-    const [category, setCateogry] = useState({});
+    const [category, setCateogry] = useState();
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setCateogry({
-            ...category,
-            [name]: value,
-        });
+        setCateogry(e.target.value);
     };
 
     const handleSubmit = (e) => {
@@ -21,10 +16,11 @@ function CreateCategory() {
         toast.promise(dataApi.createCategory(category), {
             loading: "Loading...",
             success: (data) => {
+                setCateogry("");
                 return data.mess;
             },
             error: (error) => {
-                return error;
+                return error.mess;
             },
         });
     };
@@ -44,7 +40,7 @@ function CreateCategory() {
                             <input
                                 required
                                 onChange={handleInputChange}
-                                value={category.name}
+                                value={category}
                                 name="name"
                                 data-validate
                                 className={clsx(styles.formInput)}

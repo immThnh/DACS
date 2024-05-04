@@ -188,6 +188,7 @@ function CreateCourse() {
 
         const thumbnail = formData.thumbnail;
         const courseVideo = formData.video;
+        formData.video = "";
 
         const videos = [];
         formData.sections.forEach((section) => {
@@ -230,7 +231,6 @@ function CreateCourse() {
         const fetchApi = async () => {
             try {
                 const result = await DataApi.getAllCategories(0, 99999999);
-                console.log(result);
                 setOptions(result.content.content);
             } catch (error) {
                 console.log(error.mess);

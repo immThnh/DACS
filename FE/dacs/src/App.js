@@ -24,7 +24,6 @@ function App() {
                                     <div className={clsx("pt-header")}>
                                         <route.component />
                                     </div>
-                                    <Footer />
                                 </>
                             }
                         />

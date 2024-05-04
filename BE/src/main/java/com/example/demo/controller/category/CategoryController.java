@@ -47,9 +47,9 @@ public class CategoryController {
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 
-    @PostMapping("")
-    public ResponseEntity<ResponseObject> create(@RequestBody Category category) {
-        var result = categoryService.createCategory(category);
+    @PostMapping("/create")
+    public ResponseEntity<ResponseObject> create(@RequestBody String name) {
+        var result = categoryService.createCategory(name);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 

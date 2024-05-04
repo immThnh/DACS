@@ -16,23 +16,27 @@ import {
     ChevronUpDownIcon,
 } from "@heroicons/react/20/solid";
 import { Listbox, Transition } from "@headlessui/react";
+import Modal from "../../../../component/modal";
 
 const selectes = [5, 10, 25];
 
 function ListCourse() {
+    const [deletedModalOpen, setDeletedModalOpen] = useState(false);
     const [courses, setCourses] = useState([]);
     const [options, setOptions] = useState([]);
     const [totalData, setTotalData] = useState(0);
+    const [deleteId, setDeleteId] = useState(null);
     const [selected, setSelected] = useState(selectes[0]);
     const [page, setPage] = useState(0);
     const [reRender, setReRender] = useState();
-    const handleRemoveCourse = (id) => {
-        console.log(id);
+
+    const handleRemoveCourse = () => {
         const fetchApi = async () => {
-            toast.promise(dataApi.softDeleteCourse(id), {
+            toast.promise(dataApi.softDeleteCourse(deleteId), {
                 loading: "Removing...",
                 success: () => {
                     setReRender(!reRender);
+                    setDeletedModalOpen(false);
                     return "Remove successfully";
                 },
                 error: (error) => {
@@ -53,6 +57,15 @@ function ListCourse() {
         if (action === "previous" && page > 0) {
             setPage((prev) => prev - 1);
         }
+    };
+
+    const handleCloseModal = () => {
+        setDeletedModalOpen(false);
+    };
+
+    const openDeleteModal = (id) => {
+        setDeleteId(id);
+        setDeletedModalOpen(true);
     };
 
     const handleSelectChange = (e) => {
@@ -360,7 +373,7 @@ function ListCourse() {
                                                         </Link>
                                                         <button
                                                             onClick={() =>
-                                                                handleRemoveCourse(
+                                                                openDeleteModal(
                                                                     course.id
                                                                 )
                                                             }
@@ -523,6 +536,13 @@ function ListCourse() {
                     </div>
                 </div>
             </div>
+            <Modal
+                isOpen={deletedModalOpen}
+                closeModal={handleCloseModal}
+                title={"Delete"}
+                description={"Are you sure want to delete?"}
+                handleRemove={handleRemoveCourse}
+            ></Modal>
         </div>
     );
 }

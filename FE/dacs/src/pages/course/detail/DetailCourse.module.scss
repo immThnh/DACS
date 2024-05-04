@@ -5,7 +5,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
-    padding: 79px 20px;
+    padding: 0px 20px;
 }
 .courseSectionsContainer {
     // display: grid;
@@ -13,13 +13,17 @@
     // gap: 20px; /* Space between sections */
     // justify-content: center;
     max-width: 1280px;
+    height: 100%;
+    position: fixed;
+    top: 144px;
+    right: 0;
+    padding: 0 !important;
     // margin: 0 auto;
 }
 
 .courseSection {
     display: flex;
     flex: 0 0 auto;
-    margin: 0 10px;
     max-width: 100%;
     flex-direction: row;
     border: #fff;
@@ -97,6 +101,7 @@
 
 .videoContainer {
     height: 490px;
+    padding: 0 !important;
 }
 
 .courseHero {
@@ -180,8 +185,9 @@
     align-items: flex-start; /* Align items to the start of the section */
     background-color: #fff;
     border-radius: 10px;
-    padding: 20px;
-    padding-right: 6px;
+    padding-top: 20px !important;
+    padding-bottom: 20px !important;
+    padding-right: 0px !important;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     height: 100%;
     overflow-y: scroll;
@@ -194,7 +200,6 @@
     }
 
     .sectionTitle {
-        margin-bottom: 20px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -224,6 +229,7 @@
 .sectionNumber {
     color: var(--Grey-15, #262626);
     text-align: right;
+    margin-bottom: 26px;
 
     font: 700 50px/40% "Be Vietnam Pro", -apple-system, Roboto, Helvetica,
         sans-serif;
@@ -275,12 +281,10 @@
         opacity: 0.7;
     }
     cursor: pointer;
-    border-radius: 6px;
     border: 1px solid rgba(241, 241, 243, 1);
     width: 100%;
-    padding: 10px 4px 10px 6px;
-    margin-bottom: 20px;
     margin-left: 0;
+    padding: 14px 6px;
     text-align: start;
     max-width: 683px;
 }
@@ -354,4 +358,36 @@
 
 .time {
     font-family: "Be Vietnam Pro", -apple-system, Roboto, Helvetica, sans-serif;
+}
+
+.curriculumItem {
+    display: flex;
+    // border-bottom: 1px solid #ffffff;
+    align-items: start;
+    background-color: #f2f5f7;
+    border: 1px solid #ccc;
+    flex-direction: column;
+    text-align: start;
+}
+
+.curriculumItemTitle {
+    color: var(--Grey-20, #333);
+    font: 700 16px "Be Vietnam Pro", sans-serif;
+    margin: 8px;
+    border-radius: 8px;
+    display: flex;
+}
+
+.wrapLesson {
+    background: white;
+    border-top: 1px solid #ccc;
+}
+.lessonItem {
+    font-size: 14px;
+    line-height: 25px;
+    text-align: center;
+}
+
+.courseCurriculum {
+    width: 100%;
 }

@@ -89,7 +89,6 @@ public class CourseService {
             }
         }
 
-        course.setVideo(courseDTO.getVideo());
 
         if(courseVideo != null) {
             if (Objects.equals(courseDTO.getActionVideo(), "UPDATE")) {
@@ -106,6 +105,7 @@ public class CourseService {
                 course.setVideo(null);
             }
         }
+       
 
 
         // ! Update field course

@@ -14,6 +14,7 @@ import {
     ChevronRightIcon,
     ChevronUpDownIcon,
 } from "@heroicons/react/20/solid";
+import Modal from "../../../../component/modal";
 
 const selectes = [5, 10, 25];
 
@@ -24,12 +25,16 @@ function HistoryDeleted() {
     const [selected, setSelected] = useState(selectes[0]);
     const [page, setPage] = useState(0);
     const [render, setRender] = useState();
-    const handleRemoveCourse = (id) => {
-        console.log(id);
+    const [deleteId, setDeleteId] = useState(null);
+    const [deletedModalOpen, setDeletedModalOpen] = useState(false);
+
+    const handleRemoveCourse = () => {
+        console.log(deleteId);
         const fetchApi = async () => {
-            toast.promise(dataApi.hardDeleteCourse(id), {
+            toast.promise(dataApi.hardDeleteCourse(deleteId), {
                 loading: "Removing...",
                 success: () => {
+                    setDeletedModalOpen(false);
                     setRender(!render);
                     return "Remove successfully";
                 },
@@ -75,6 +80,11 @@ function HistoryDeleted() {
         });
     };
 
+    const openDeleteModal = (id) => {
+        setDeleteId(id);
+        setDeletedModalOpen(true);
+    };
+
     const handleSearchInputChange = (e) => {
         const fetchApi = () => {
             toast.promise(dataApi.getCourseByName(e.target.value), {
@@ -102,6 +112,10 @@ function HistoryDeleted() {
                 func();
             }, delay);
         };
+    };
+
+    const handleCloseModal = () => {
+        setDeletedModalOpen(false);
     };
 
     useEffect(() => {
@@ -347,7 +361,7 @@ function HistoryDeleted() {
                                                             </button>
                                                             <button
                                                                 onClick={() =>
-                                                                    handleRemoveCourse(
+                                                                    openDeleteModal(
                                                                         course.id
                                                                     )
                                                                 }
@@ -513,6 +527,13 @@ function HistoryDeleted() {
                     </div>
                 </div>
             </div>
+            <Modal
+                isOpen={deletedModalOpen}
+                closeModal={handleCloseModal}
+                title={"Delete"}
+                description={"Are you sure want to delete?"}
+                handleRemove={handleRemoveCourse}
+            ></Modal>
         </div>
     );
 }

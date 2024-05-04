@@ -22,6 +22,7 @@ function ListCategory() {
     const [selected, setSelected] = useState(selectes[0]);
     const [page, setPage] = useState(0);
     const [render, setRender] = useState();
+    
     const handleRemoveCategory = () => {
         const fetchApi = async () => {
             toast.promise(dataApi.softDeleteCategoryById(deleteId), {

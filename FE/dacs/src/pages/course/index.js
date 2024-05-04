@@ -7,7 +7,7 @@ import { Link, useParams } from "react-router-dom";
 const CurriculumItem = ({ item, index, isHighlighted }) => {
     const handleOpenSubLesson = () => {
         const sub = document.getElementById(index);
-        sub.classList.toggle("disable");
+        sub.classList.toggle("disabled");
     };
     return (
         <div
@@ -16,7 +16,7 @@ const CurriculumItem = ({ item, index, isHighlighted }) => {
             })}
         >
             <div
-                className={clsx(styles.title, "flex  p-2 w-full ml-4")}
+                className={clsx(styles.title, "flex  p-2 w-full")}
                 onClick={handleOpenSubLesson}
             >
                 <svg
@@ -37,16 +37,17 @@ const CurriculumItem = ({ item, index, isHighlighted }) => {
                         "flex w-full justify-between"
                     )}
                 >
-                    <div className="w-3/4 line-clamp-2">
-                        Section {index + 1} - {item.title}
-                    </div>
+                    <div className="w-3/4 line-clamp-2">{item.title}</div>
                     <div className={clsx(styles.subTitle)}>
                         {item.lessons.length} lectures
                     </div>
                 </div>
             </div>
 
-            <div id={index} className={clsx(styles.wrapLesson, "w-full py-3")}>
+            <div
+                id={index}
+                className={clsx(styles.wrapLesson, "w-full py-2.5 disabled")}
+            >
                 {item.lessons &&
                     item.lessons.map((lesson, ind) => {
                         return (
@@ -89,11 +90,13 @@ const CourseDetails = ({ course, expanded }) => (
         <h3 className={styles.courseDetailsTitle}>Curriculum</h3>
         <div className={styles.courseCurriculum}>
             {course.sections.map((item, index) => (
-                <CurriculumItem
-                    key={index}
-                    item={item}
-                    isHighlighted={index % 2 === 0}
-                />
+                <>
+                    <CurriculumItem
+                        key={index}
+                        item={item}
+                        isHighlighted={index % 2 === 0}
+                    />
+                </>
             ))}
         </div>
     </div>
@@ -185,42 +188,6 @@ function Course() {
     return (
         <div className={clsx(styles.detailsContainer)}>
             <div className={styles.courseCard}>
-                <div
-                    className={clsx(
-                        styles.courseHeader,
-                        styles.someOtherCondition && styles.additionalClass
-                    )}
-                >
-                    <div className={styles.courseInfo}>
-                        <h2 className={styles.courseTitle}>{course.title}</h2>
-                        <p className={styles.courseDescription}>
-                            {course.description}
-                        </p>
-                    </div>
-                    <div className={clsx(styles.coursePrice, "b-shadow-light")}>
-                        {" "}
-                        {course.price !== 0 ? course.price + " VND" : "FREE"}
-                    </div>
-                    <Link to={`/course/detail/${id}`} className={styles.courseCta}>Enroll Now</Link>
-                </div>
-                <div className={styles.courseMeta}>
-                    <div className={styles.tags}>
-                        Tags:{" "}
-                        {course &&
-                            course.categories &&
-                            course.categories.length > 0 &&
-                            course.categories.map((ca, index) => {
-                                return (
-                                    <div
-                                        key={index}
-                                        className={styles.courseLevel}
-                                    >
-                                        {ca.name}
-                                    </div>
-                                );
-                            })}
-                    </div>
-                </div>
                 <div className={clsx(styles.content, "row")}>
                     <div
                         className={clsx(
@@ -228,6 +195,40 @@ function Course() {
                             " col-lg-8"
                         )}
                     >
+                        <div
+                            className={clsx(
+                                styles.courseHeader,
+                                styles.someOtherCondition &&
+                                    styles.additionalClass
+                            )}
+                        >
+                            <div className={styles.courseInfo}>
+                                <h2 className={styles.courseTitle}>
+                                    {course.title}
+                                </h2>
+                                <p className={styles.courseDescription}>
+                                    {course.description}
+                                </p>
+                            </div>
+                        </div>
+                        <div className={styles.courseMeta}>
+                            <div className={styles.tags}>
+                                Tags:{" "}
+                                {course &&
+                                    course.categories &&
+                                    course.categories.length > 0 &&
+                                    course.categories.map((ca, index) => {
+                                        return (
+                                            <div
+                                                key={index}
+                                                className={styles.courseLevel}
+                                            >
+                                                {ca.name}
+                                            </div>
+                                        );
+                                    })}
+                            </div>
+                        </div>
                         <div
                             className={clsx(
                                 styles.curriculumTitle,
@@ -249,15 +250,45 @@ function Course() {
                         </div>
                     </div>
                     <div className={clsx("col-lg-4")}>
-                        <div className={clsx("mx-2 b-shadow-light rounded-lg")}>
+                        <div
+                            className={clsx(
+                                styles.sticky,
+                                "mx-2 b-shadow rounded-lg"
+                            )}
+                        >
                             <div className={clsx(styles.courseImages)}>
-                                <img
-                                    src={course.thumbnail}
-                                    alt={course.thumbnail}
-                                    className={styles.courseImage}
-                                />
+                                <video
+                                    key={course.video}
+                                    controls
+                                    className="w-full"
+                                >
+                                    <source
+                                        src={course.video}
+                                        type="video/mp4"
+                                    />
+                                </video>
                             </div>
                             <div className={styles.courseDetails}>
+                                <div className="my-3">
+                                    <div className={clsx(styles.coursePrice)}>
+                                        {course.price !== 0
+                                            ? "Price: " +
+                                              course.price.toLocaleString(
+                                                  "vi-VN"
+                                              ) +
+                                              " VND"
+                                            : "Free Course"}
+                                    </div>
+                                    <Link
+                                        to={`/course/detail/${id}`}
+                                        className={clsx(
+                                            styles.courseCta,
+                                            "w-full"
+                                        )}
+                                    >
+                                        Enroll Now
+                                    </Link>
+                                </div>
                                 <div
                                     className={clsx("text-base font-semibold")}
                                 >
