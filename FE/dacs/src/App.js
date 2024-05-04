@@ -51,7 +51,6 @@ function App() {
                             }
                         ></Route>
                     ))}
-                    {/* <Redirect exact  to="/404" /> */}
                 </Routes>
                 <Toaster position="top-center" richColors />
             </div>

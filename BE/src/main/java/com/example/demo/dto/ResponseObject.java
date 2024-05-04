@@ -3,14 +3,12 @@ package com.example.demo.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 
 @Data
 @Builder
 @AllArgsConstructor
-public class ResponObject {
+public class ResponseObject {
     private HttpStatus status;
     private String mess;
     private Object content;

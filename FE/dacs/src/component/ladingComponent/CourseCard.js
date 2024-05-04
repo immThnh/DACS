@@ -1,6 +1,6 @@
 import React, { useState, memo, useEffect } from "react";
 import { Link } from "react-router-dom";
-import * as dataApi from "../../api/apiService/dataService";
+import * as dataApi from "../../api/apiService/dataService.js";
 
 function Badge({ children }) {
     return (
@@ -12,14 +12,14 @@ function Badge({ children }) {
 export const CourseCard = memo(
     ({ course, textBtn = "Get It Now", linkTo = "/" }) => {
         return (
-            <div className="course-card w-full md:w-1/3 px-4 flex flex-col mb-7">
+            <div className="course-card w-full md:w-1/3 lg:w-1/3 px-4 flex flex-col mb-7">
                 <div className="b-shadow bg-white rounded-xl border border-gray-100 p-6 flex flex-col">
                     <div className="flex justify-center">
                         <img
                             src={course.thumbnail}
                             alt=""
                             className="course-image rounded-t-lg mb-4 w-full object-cover"
-                            style={{ height: "200px", objectFit: "cover" }}
+                            style={{ height: "120px", objectFit: "contain" }}
                         />
                     </div>
                     <div className="flex justify-start space-x-2 mb-2">
@@ -30,7 +30,7 @@ export const CourseCard = memo(
                     <h3 className="text-md sm:text-lg font-semibold text-neutral-800 mb-2 truncate text-start">
                         {course.title}
                     </h3>
-                    <p className="des-line-3 text-neutral-600 text-xs sm:text-sm mb-4 line-clamp text-start">
+                    <p className="h-14 des-line-3 text-neutral-600 text-xs sm:text-sm mb-4 line-clamp text-start">
                         {course.description}
                     </p>
                     <Link
@@ -50,8 +50,8 @@ const CoursesComponent = () => {
     useEffect(() => {
         const fetchApi = async () => {
             try {
-                const result = await dataApi.getAllCourse();
-                setCourses(result.content);
+                const result = await dataApi.getAllCourse(0, 3);
+                setCourses(result.content.content);
             } catch (error) {
                 console.log("error: " + error);
             }

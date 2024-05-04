@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment } from "react";
 import OAuth2Form from "../../component/auth/OAuth2Form.js";
-import * as authService from "../../../src/api/apiService/authService.js";
+import * as authService from "../../api/apiService/authService.js";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import loginSlice from "../../redux/reducers/loginReducer.js";
@@ -129,7 +129,6 @@ export default function Login() {
                 {
                     loading: "Send email...",
                     success: (res) => {
-                        console.log(res);
                         setCode(res);
                         return "Send email successfully";
                     },

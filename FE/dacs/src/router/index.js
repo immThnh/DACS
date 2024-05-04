@@ -12,6 +12,10 @@ import Course from "../pages/course";
 import ListCategory from "../pages/admin/Category/list";
 import CategoryEdit from "../pages/admin/Category/edit";
 import CreateCategory from "../pages/admin/Category/create";
+import HistoryDeleted from "../pages/admin/Course/historyDeleted";
+import HistoryDeletedCategory from "../pages/admin/Category/historyDeleted";
+import ListUser from "../pages/admin/user/list";
+import ListDeletedUser from "../pages/admin/user/historyDeleted";
 
 const publicRoutes = [
     { path: "/", component: LandingPage },
@@ -27,10 +31,21 @@ const adminRoutes = [
     { path: "/admin/course/list", component: ListCourse },
     { path: "/admin/course/create", component: CreateCourse },
     { path: "/admin/course/edit/:id", component: EditCourse },
-    { path: "/admin/course/view/:id", component: DetailCourseAdmin },
+    { path: "/admin/course/detail/:id", component: DetailCourseAdmin },
+    { path: "/admin/course/historyDelete", component: HistoryDeleted },
     { path: "/admin/category/list", component: ListCategory },
     { path: "/admin/category/create", component: CreateCategory },
     { path: "/admin/category/edit/:id", component: CategoryEdit },
+    {
+        path: "/admin/category/historyDelete",
+        component: HistoryDeletedCategory,
+    },
+
+    { path: "/admin/user/list", component: ListUser },
+    { path: "/admin/user/create", component: CreateCourse },
+    { path: "/admin/user/edit/:id", component: EditCourse },
+    { path: "/admin/user/detail/:id", component: DetailCourseAdmin },
+    { path: "/admin/user/historyDelete", component: ListDeletedUser },
 ];
 
 export { publicRoutes, adminRoutes };

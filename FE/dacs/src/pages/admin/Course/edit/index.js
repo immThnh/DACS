@@ -260,7 +260,7 @@ function EditCourse() {
             try {
                 const result = await DataApi.getAllCategories();
 
-                setOptions(result);
+                setOptions(result.content.content);
 
                 toast.promise(DataApi.getCourseById(id), {
                     loading: "Loading...",

@@ -29,6 +29,7 @@ public class Course {
     private String description;
     private String thumbnail;
     private String alias;
+    private boolean isDeleted = false;
 
     @ManyToMany()
     @JoinTable(

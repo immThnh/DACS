@@ -7,6 +7,7 @@ import Select from "react-select";
 import * as DataApi from "../../../../api/apiService/dataService";
 import { toast } from "sonner";
 import btnClose from "../../../../assets/images/btnClose.svg";
+import axios from "axios";
 
 const initFormData = {
     title: "",
@@ -21,10 +22,13 @@ const initFormData = {
 function CreateCourse() {
     const [formData, setFormData] = useState(initFormData);
     const [options, setOptions] = useState([]);
+    const [errors, setErrors] = useState({});
     let timerId;
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+        errors[name] = "";
+        setErrors(errors);
         setFormData({
             ...formData,
             [name]: value,
@@ -51,6 +55,8 @@ function CreateCourse() {
             });
         }
         e.target.value = "";
+        errors[e.target.name] = "";
+        setErrors(errors);
     };
 
     const handleSelectChange = (e) => {
@@ -84,6 +90,9 @@ function CreateCourse() {
             [name]: value,
         };
         updateSections[sectionIndex] = { ...updateSection };
+
+        errors[name] = "";
+        setErrors(errors);
 
         setFormData({
             ...formData,
@@ -155,6 +164,18 @@ function CreateCourse() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        let errors = [];
+        // Object.keys(formData).forEach((key) => {
+        //     if (formData[key] === "") {
+        //         errors[key] = "This field is required.";
+        //     }
+        // });
+
+        // if (Object.keys(errors).length > 0) {
+        //     setErrors(errors);
+        //     return;
+        // }
+        // console.log(formData);
 
         const thumbnail = formData.thumbnail;
 
@@ -195,10 +216,11 @@ function CreateCourse() {
     useEffect(() => {
         const fetchApi = async () => {
             try {
-                const result = await DataApi.getAllCategories();
-                setOptions(result);
+                const result = await DataApi.getAllCategories(0, 99999999);
+                console.log(result);
+                setOptions(result.content.content);
             } catch (error) {
-                console.log("Error while get categories");
+                console.log(error.mess);
             }
         };
         fetchApi();
@@ -218,15 +240,22 @@ function CreateCourse() {
                     >
                         <div className={clsx(styles.formField)}>
                             <input
+                                required
                                 onChange={handleInputChange}
                                 value={formData.title}
                                 name="title"
+                                data-validate
                                 className={clsx(styles.formInput)}
                                 type="text"
                             />
                             <label className={clsx(styles.formLabel)}>
                                 Course Name
                             </label>
+                            {errors.title && (
+                                <div className="text-red-500 mt-1 text-sm ml-1">
+                                    {errors.title}
+                                </div>
+                            )}
                         </div>
                         <div className={clsx(styles.formField)}>
                             <textarea
@@ -244,12 +273,16 @@ function CreateCourse() {
                             >
                                 Description
                             </label>
+                            {errors.description && (
+                                <div className="text-red-500 mt-1 text-sm ml-1">
+                                    {errors.description}
+                                </div>
+                            )}
                         </div>
                         <div className={clsx("flex")}>
                             <div
                                 className={clsx(styles.formField, "w-1/2 mr-9")}
                             >
-                           
                                 <Select
                                     isMulti
                                     onChange={handleSelectChange}
@@ -257,6 +290,7 @@ function CreateCourse() {
                                     getOptionLabel={(x) => x.name}
                                     getOptionValue={(x) => x.id}
                                     options={options}
+                                    name="categories"
                                     styles={{
                                         control: (baseStyles, state) => ({
                                             ...baseStyles,
@@ -269,11 +303,11 @@ function CreateCourse() {
                                 <label className={clsx(styles.formLabel)}>
                                     Category
                                 </label>
-                                {/* <Combobox
-                                    fValueChange={handleInputChange}
-                                    title="Category"
-                                    list={["C#", "Java"]}
-                                ></Combobox> */}
+                                {errors.categories && (
+                                    <div className="text-red-500 mt-1 text-sm ml-1">
+                                        {errors.categories}
+                                    </div>
+                                )}
                             </div>
                             <div className={clsx(styles.formField, "w-1/2")}>
                                 <input
@@ -287,6 +321,11 @@ function CreateCourse() {
                                 <label className={clsx(styles.formLabel)}>
                                     Price
                                 </label>
+                                {errors.price && (
+                                    <div className="text-red-500 mt-1 text-sm ml-1">
+                                        {errors.price}
+                                    </div>
+                                )}
                             </div>
                         </div>
                         <div className="flex">
@@ -305,6 +344,11 @@ function CreateCourse() {
                                         <img src={fileSelect} alt="" />
                                     </div>
                                 </label>
+                                {errors.thumbnail && (
+                                    <div className="text-red-500 mt-1 text-sm ml-1">
+                                        {errors.thumbnail}
+                                    </div>
+                                )}
 
                                 <input
                                     name="thumbnail"
@@ -312,6 +356,7 @@ function CreateCourse() {
                                     id="thumbnail"
                                     type="file"
                                     hidden
+                                    accept=".jpg, .jpeg, .png"
                                 />
                             </div>
                             <div
@@ -339,16 +384,13 @@ function CreateCourse() {
                                                 styles.btnClosePreview
                                             )}
                                         >
-                                            {" "}
-                                            <img src={btnClose} alt="" />{" "}
+                                            <img src={btnClose} alt="" />
                                         </button>
                                     </div>
                                 )}
                             </div>
                         </div>
-
                         {/*NOTE Lesson */}
-
                         <h5 className="text-center font-semibold text-3xl">
                             Curriculum
                         </h5>
@@ -533,7 +575,7 @@ function CreateCourse() {
                                                                                 Video
                                                                             </span>
                                                                             <label
-                                                                                htmlFor={`video${index}`}
+                                                                                htmlFor={`video${section.title}${index}`}
                                                                                 className={clsx(
                                                                                     styles.formLabel2,
                                                                                     styles.labelFile
@@ -563,9 +605,10 @@ function CreateCourse() {
                                                                                         sectionIndex
                                                                                     );
                                                                                 }}
-                                                                                id={`video${index}`}
+                                                                                id={`video${section.title}${index}`}
                                                                                 type="file"
                                                                                 hidden
+                                                                                accept=".mp4"
                                                                             />
                                                                         </div>
                                                                         <div
@@ -581,6 +624,7 @@ function CreateCourse() {
                                                                                     )}
                                                                                 >
                                                                                     <video
+                                                                                        id="video"
                                                                                         controls
                                                                                         className="rounded-lg"
                                                                                     >
@@ -651,6 +695,39 @@ function CreateCourse() {
                                                                             Video
                                                                         </label>
                                                                     </div>
+
+                                                                    {/* <div
+                                                                        className={clsx(
+                                                                            styles.formField
+                                                                        )}
+                                                                    >
+                                                                        <input
+                                                                            name="duration"
+                                                                            value={
+                                                                                lesson.duration
+                                                                            }
+                                                                            onChange={(
+                                                                                e
+                                                                            ) => {
+                                                                                handleInputLessonChange(
+                                                                                    e,
+                                                                                    index,
+                                                                                    sectionIndex
+                                                                                );
+                                                                            }}
+                                                                            className={clsx(
+                                                                                styles.formInput
+                                                                            )}
+                                                                            type="time"
+                                                                        />
+                                                                        <label
+                                                                            className={clsx(
+                                                                                styles.formLabel
+                                                                            )}
+                                                                        >
+                                                                            Duration
+                                                                        </label>
+                                                                    </div> */}
                                                                 </div>
                                                             );
                                                         }

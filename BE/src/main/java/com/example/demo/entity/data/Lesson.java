@@ -24,6 +24,7 @@ public class Lesson {
     private String title;
     private String video;
     private LocalDateTime date;
+    private int duration;
 
     @ManyToOne()
     @JsonBackReference

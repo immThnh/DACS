@@ -1,32 +1,33 @@
 package com.example.demo;
 
+import com.example.demo.auth.AuthService;
+import com.example.demo.entity.user.Role;
+import com.example.demo.entity.user.User;
 import com.example.demo.jwt.JwtService;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.twilio.Config;
 import com.twilio.Twilio;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Async;
+
+import java.util.Arrays;
+import java.util.List;
 
 @SpringBootApplication
 @RequiredArgsConstructor
-@Async
 public class DemoApplication {
 	private final Config configTwilio;
 	private final UserRepository userRepository;
 	private final JwtService jwtService;
 
-	@PostConstruct
-	public void setUp() {
-		Twilio.init(configTwilio.getAccountsId(), configTwilio.getAuthToken());
-	}
-
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);
 	}
-
 
 //	@Bean
 //	CommandLineRunner commandLineRunner (AuthService authService) {

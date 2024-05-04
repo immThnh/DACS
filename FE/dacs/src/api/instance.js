@@ -15,7 +15,6 @@ instance.interceptors.response.use(
         return res.data;
     },
     function (error) {
-        console.log(error);
         return Promise.reject(error);
     }
 );
@@ -24,6 +23,5 @@ instance.interceptors.request.use(function (config) {
     if (token != null) config.headers.Authorization = `Bearer ${token}`;
     return config;
 });
-
 
 export default instance;

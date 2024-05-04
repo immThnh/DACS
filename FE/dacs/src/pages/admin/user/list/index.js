@@ -1,34 +1,37 @@
-import styles from "./List.module.scss";
+import styles from "../../Course/list/List.module.scss";
 import clsx from "clsx";
 import { Link } from "react-router-dom";
 import deleteIcon from "../../../../assets/images/delete.svg";
-import noDataIcon from "../../../../assets/images/ic_noData.svg";
 import viewIcon from "../../../../assets/images/view.svg";
+import avatar from "../../../../assets/images/avatar_25.jpg";
+import noDataIcon from "../../../../assets/images/ic_noData.svg";
 import editIcon from "../../../../assets/images/edit.svg";
 import { Fragment, useEffect, useState } from "react";
-import * as dataApi from "../../../../api/apiService/dataService";
+import * as authApi from "../../../../api/apiService/authService";
 import Select from "react-select";
 import { toast } from "sonner";
+import { Dialog, Listbox, Transition } from "@headlessui/react";
 import {
     CheckIcon,
+    ChevronUpDownIcon,
     ChevronLeftIcon,
     ChevronRightIcon,
-    ChevronUpDownIcon,
 } from "@heroicons/react/20/solid";
-import { Listbox, Transition } from "@headlessui/react";
 
 const selectes = [5, 10, 25];
 
-function ListCourse() {
-    const [courses, setCourses] = useState([]);
+function ListUser() {
+    const [users, setUsers] = useState([]);
     const [options, setOptions] = useState([]);
-    const [totalData, setTotalData] = useState(0);
     const [selected, setSelected] = useState(selectes[0]);
     const [page, setPage] = useState(0);
-    const handleRemoveCourse = (id) => {
-        console.log(id);
+    const [totalData, setTotalData] = useState(0);
+    const [deletedModalOpen, setDeletedModalOpen] = useState(false);
+    const [deleteId, setDeleteId] = useState(null);
+
+    const handleRemoveUser = () => {
         const fetchApi = async () => {
-            toast.promise(dataApi.softDeleteCourse(id), {
+            toast.promise(authApi.softDeleteUser(deleteId), {
                 loading: "Removing...",
                 success: () => {
                     window.location.reload();
@@ -43,23 +46,30 @@ function ListCourse() {
         fetchApi();
     };
 
-    const handlePageData = async (action) => {
-        const currentTotalData = page * selected + selected;
-        if (action === "next" && currentTotalData < totalData) {
-            console.log("a");
-            setPage((prev) => prev + 1);
-        }
-        if (action === "previous" && page > 0) {
-            setPage((prev) => prev - 1);
-        }
+    const handleRemoveElement = (id) => {
+        console.log(id);
+        const fetchApi = async () => {
+            toast.promise(authApi.softDeleteUser(id), {
+                loading: "Removing...",
+                success: () => {
+                    window.location.reload();
+                    return "Remove successfully";
+                },
+                error: (error) => {
+                    return error.content;
+                },
+            });
+        };
+
+        fetchApi();
     };
 
     const handleSelectChange = (e) => {
         const fetchApi = () => {
-            toast.promise(dataApi.getCoursesByCategory(e.id, page, selected), {
+            toast.promise(authApi.getUserByRole(e.name, page, selected), {
                 loading: "loading...",
                 success: (data) => {
-                    setCourses(data.content.content);
+                    setUsers(data.content.content);
                     setTotalData(data.content.totalElements);
                     return "Get data successfully";
                 },
@@ -73,28 +83,14 @@ function ListCourse() {
         debounceApi();
     };
 
-    const handleSelectPageSizeChange = (size) => {
-        setSelected(size);
-        const fetchApi = async () => {
-            try {
-                const result = await dataApi.getAllCourse(page, size);
-                setCourses(result.content.content);
-                setTotalData(result.content.totalElements);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        fetchApi();
-    };
-
     const handleSearchInputChange = (e) => {
         const fetchApi = () => {
             toast.promise(
-                dataApi.getCourseByName(e.target.value, page, selected),
+                authApi.getUserByName(e.target.value, page, selected),
                 {
                     loading: "loading...",
                     success: (data) => {
-                        setCourses(data.content.content);
+                        setUsers(data.content.content);
                         setTotalData(data.content.totalElements);
                         return "Get data successfully";
                     },
@@ -107,6 +103,19 @@ function ListCourse() {
         };
         const debounceApi = debounce(fetchApi, 1000);
         debounceApi();
+    };
+
+    const handleSelectPageSizeChange = (size) => {
+        setSelected(size);
+        const fetchApi = async () => {
+            try {
+                const result = await authApi.getUserByPage(page, size);
+                setUsers(result.content.content);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchApi();
     };
 
     let timerId;
@@ -123,13 +132,16 @@ function ListCourse() {
     useEffect(() => {
         const fetchApi = async () => {
             try {
-                const result = await dataApi.getAllCourse(0, 5);
-                let categories = [];
-                categories = await dataApi.getAllCategories(0, 99999);
-                categories.content.content.push({ id: "-1", name: "All" });
-                setCourses(result.content.content);
+                const result = await authApi.getAllUser();
+                let array = [];
+                const roles = await authApi.getAllRole();
+                roles.content.map((value, index) =>
+                    array.push({ id: index, name: value })
+                );
+                array.push({ id: "-1", name: "All" });
                 setTotalData(result.content.totalElements);
-                setOptions(categories.content.content);
+                setOptions(array);
+                setUsers(result.content.content);
             } catch (error) {
                 console.log(error);
             }
@@ -137,20 +149,48 @@ function ListCourse() {
         fetchApi();
     }, []);
 
-    console.log(courses);
+    useEffect(() => {
+        const fetchApi = async () => {
+            try {
+                const result = await authApi.getUserByPage(page, selected);
+                setUsers(result.content.content);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchApi();
+    }, [page]);
+
+    const handlePageData = async (action) => {
+        const currentTotalData = page * selected + selected;
+        if (action === "next" && currentTotalData < totalData) {
+            console.log("a");
+            setPage((prev) => prev + 1);
+        }
+        if (action === "previous" && page > 0) {
+            setPage((prev) => prev - 1);
+        }
+    };
+
+    const handleCloseModal = () => {
+        setDeletedModalOpen(false);
+    };
+
+    const openDeleteModal = (id) => {
+        setDeleteId(id);
+        setDeletedModalOpen(true);
+    };
+
     return (
         <div className="flex justify-center w-full ">
             <div className="container mt-5 mx-14">
                 <div className="wrapMainDash">
                     <div className={clsx(styles.topMain)}>
                         <div className={clsx(styles.itemTopMain)}>
-                            <h4>List</h4>
+                            <h4>LIST USER</h4>
                         </div>
                         <div className={clsx(styles.itemTopMain)}>
-                            <Link
-                                to={"/admin/course/create"}
-                                className={styles.btnCreate}
-                            >
+                            <Link to={"/sign-up"} className={styles.btnCreate}>
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     aria-hidden="true"
@@ -168,7 +208,7 @@ function ListCourse() {
                                         ></path>
                                     </g>
                                 </svg>
-                                New Course
+                                New User
                             </Link>
                         </div>
                     </div>
@@ -181,8 +221,11 @@ function ListCourse() {
                             )}
                         >
                             <div className={clsx(styles.contentItem)}>
-                                <div className={clsx(styles.formSelect)}>
-                                    <label htmlFor="">Category</label>
+                                <div
+                                    // className={clsx(styles.cbb)
+                                    className={clsx(styles.formSelect)}
+                                >
+                                    <label htmlFor="">Role</label>
                                     <Select
                                         onChange={handleSelectChange}
                                         getOptionLabel={(x) => x.name}
@@ -221,19 +264,15 @@ function ListCourse() {
                                 )}
                             >
                                 <div className="col-lg-1">Id</div>
-                                <div className="col-lg-5">Course</div>
-                                <div className="col-lg-2">Create at</div>
-                                <div className="col-lg-2">Price</div>
+                                <div className="col-lg-5">User</div>
+                                <div className="col-lg-2">Phone Number</div>
+                                <div className="col-lg-2">Role</div>
                                 <div className="col-lg-2">Action</div>
                             </div>
                             <div className={clsx(styles.containerData)}>
-                                {courses &&
-                                    courses.map((course, index) => {
-                                        const dateTime = new Date(course.date);
-                                        const date =
-                                            dateTime.toLocaleDateString();
-                                        const time =
-                                            dateTime.toLocaleTimeString();
+                                {users &&
+                                    users.length &&
+                                    users.map((element, index) => {
                                         return (
                                             <div
                                                 key={index}
@@ -253,7 +292,7 @@ function ListCourse() {
                                                             styles.name
                                                         )}
                                                     >
-                                                        {course.id}
+                                                        {element.id}
                                                     </div>
                                                 </div>
                                                 <div
@@ -269,7 +308,9 @@ function ListCourse() {
                                                     >
                                                         <img
                                                             src={
-                                                                course.thumbnail
+                                                                !element.avatar
+                                                                    ? avatar
+                                                                    : element.avatar
                                                             }
                                                             alt=""
                                                         />
@@ -280,17 +321,16 @@ function ListCourse() {
                                                                 styles.name
                                                             )}
                                                         >
-                                                            {course.title}
+                                                            {element.firstName +
+                                                                " " +
+                                                                element.lastName}
                                                         </div>
                                                         <div
                                                             className={clsx(
                                                                 styles.categories
                                                             )}
                                                         >
-                                                            {course.category &&
-                                                                course.category.join(
-                                                                    ", "
-                                                                )}
+                                                            {element.email}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -305,9 +345,9 @@ function ListCourse() {
                                                             styles.name
                                                         )}
                                                     >
-                                                        {date}
-                                                        <br />
-                                                        {time}
+                                                        {element.phoneNumber}
+                                                        {!element.phoneNumber &&
+                                                            "empty"}
                                                     </div>
                                                 </div>
                                                 <div
@@ -321,9 +361,15 @@ function ListCourse() {
                                                             styles.name
                                                         )}
                                                     >
-                                                        {course.price === 0
-                                                            ? "Free"
-                                                            : `${course.price} VND`}
+                                                        {/* {element.role &&
+                                                                element.role.map(
+                                                                    (
+                                                                        r,
+                                                                        index
+                                                                    ) => r
+                                                                )
+                                                                } */}
+                                                        {element.role}
                                                     </div>
                                                 </div>
 
@@ -340,7 +386,7 @@ function ListCourse() {
                                                         )}
                                                     >
                                                         <Link
-                                                            to={`/admin/course/view/${course.id}`}
+                                                            to={`/admin/user/view/${element.id}`}
                                                         >
                                                             <img
                                                                 src={viewIcon}
@@ -348,7 +394,7 @@ function ListCourse() {
                                                             />
                                                         </Link>
                                                         <Link
-                                                            to={`/admin/course/edit/${course.id}`}
+                                                            to={`/admin/user/edit/${element.id}`}
                                                         >
                                                             <img
                                                                 src={editIcon}
@@ -357,8 +403,8 @@ function ListCourse() {
                                                         </Link>
                                                         <button
                                                             onClick={() =>
-                                                                handleRemoveCourse(
-                                                                    course.id
+                                                                openDeleteModal(
+                                                                    element.id
                                                                 )
                                                             }
                                                         >
@@ -373,25 +419,24 @@ function ListCourse() {
                                             </div>
                                         );
                                     })}
-                                {!courses ||
-                                    (!courses.length && (
-                                        <div
+                                {!users && (
+                                    <div
+                                        className={clsx(
+                                            styles.noData,
+                                            "flex flex-col justify-center text-center"
+                                        )}
+                                    >
+                                        <img
+                                            src={noDataIcon}
+                                            alt=""
                                             className={clsx(
-                                                styles.noData,
-                                                "flex flex-col justify-center text-center"
+                                                styles.noDataImg,
+                                                "m-auto w-32"
                                             )}
-                                        >
-                                            <img
-                                                src={noDataIcon}
-                                                alt=""
-                                                className={clsx(
-                                                    styles.noDataImg,
-                                                    "m-auto w-32"
-                                                )}
-                                            />
-                                            <span>No Data</span>
-                                        </div>
-                                    ))}
+                                        />
+                                        <span>No Data</span>
+                                    </div>
+                                )}
                             </div>
                             <div className={clsx(styles.footer)}>
                                 <div className={styles.footerItem}>
@@ -520,8 +565,74 @@ function ListCourse() {
                     </div>
                 </div>
             </div>
+
+            <Transition appear show={deletedModalOpen} as={Fragment}>
+                <Dialog
+                    as="div"
+                    className="relative z-10"
+                    onClose={handleCloseModal}
+                >
+                    <Transition.Child
+                        as={Fragment}
+                        enter="ease-out duration-300"
+                        enterFrom="opacity-0"
+                        enterTo="opacity-100"
+                        leave="ease-in duration-200"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                    >
+                        <div className="fixed inset-0 bg-black bg-opacity-25" />
+                    </Transition.Child>
+
+                    <div className="fixed inset-0 overflow-y-auto overlay">
+                        <div className="flex min-h-full items-center justify-center p-4 text-center">
+                            <Transition.Child
+                                as={Fragment}
+                                enter="ease-out duration-300"
+                                enterFrom="opacity-0 scale-95"
+                                enterTo="opacity-100 scale-100"
+                                leave="ease-in duration-200"
+                                leaveFrom="opacity-100 scale-100"
+                                leaveTo="opacity-0 scale-95"
+                            >
+                                <Dialog.Panel className="z-50 w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                    <h2 className={styles.titleModal}>
+                                        Delete
+                                    </h2>
+                                    <div
+                                        className={clsx(
+                                            styles.descModal,
+                                            "mt-3"
+                                        )}
+                                    >
+                                        Are you sure want to delete?
+                                    </div>
+                                    <div
+                                        className={clsx(
+                                            "flex justify-end mt-4"
+                                        )}
+                                    >
+                                        <button
+                                            onClick={handleRemoveUser}
+                                            className={clsx("btnModal delete")}
+                                        >
+                                            Delete
+                                        </button>
+                                        <button
+                                            onClick={handleCloseModal}
+                                            className={clsx("btnModal cancel")}
+                                        >
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </Dialog.Panel>
+                            </Transition.Child>
+                        </div>
+                    </div>
+                </Dialog>
+            </Transition>
         </div>
     );
 }
 
-export default ListCourse;
+export default ListUser;

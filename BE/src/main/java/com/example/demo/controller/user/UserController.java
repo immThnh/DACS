@@ -1,8 +1,7 @@
 package com.example.demo.controller.user;
 
 import com.example.demo.auth.*;
-import com.example.demo.dto.ResponObject;
-import com.example.demo.entity.user.User;
+import com.example.demo.dto.ResponseObject;
 import com.example.demo.mail.MailRequest;
 import com.example.demo.mail.MailService;
 import com.example.demo.service.UserService;
@@ -12,8 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/user")
@@ -22,15 +19,40 @@ public class UserController {
     private final MailService mailService;
     private final UserService userService;
 
+
     @GetMapping("/getAll")
-    public ResponseEntity<ResponObject> getAllUsers() {
-        var result = userService.getAllUser();
+    public ResponseEntity<ResponseObject> getAllUsersByPage(@RequestParam(defaultValue = "0") int page , @RequestParam(defaultValue = "5") int size) {
+        var result = userService.getAllByPage(page, size);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 
+    @GetMapping("/getAllDeleted")
+    public ResponseEntity<ResponseObject> getAllDeleted(@RequestParam(defaultValue = "0") int page , @RequestParam(defaultValue = "5") int size) {
+        var result = userService.getAllDeletedByPage(page, size);
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
+
+    @GetMapping("/getAllRole")
+    public ResponseEntity<ResponseObject> getAllRole() {
+        var result = userService.getAllRole();
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<ResponseObject> getUserByRole(@RequestParam(value = "role") String role,
+         @RequestParam(defaultValue = "0") int page , @RequestParam(defaultValue = "5") int size){
+        var result = userService.getUserByRole(role, page, size);
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
+    @GetMapping("/search")
+    public ResponseEntity<ResponseObject> getUserByName(@RequestParam(value = "name") String name,
+         @RequestParam(defaultValue = "0") int page , @RequestParam(defaultValue = "5") int size){
+        var result = userService.getUserByName(name, page, size);
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
 
     @PostMapping("/login")
-    public ResponseEntity<ResponObject> authenticate(@RequestBody AuthenticationRequest request) {
+    public ResponseEntity<ResponseObject> authenticate(@RequestBody AuthenticationRequest request) {
         var res = authService.authenticate(request);
         return ResponseEntity.status(res.getStatus()).body(res);
     }
@@ -85,6 +107,24 @@ public class UserController {
         if(!authService.isValidPhoneNumber(request.getPhoneNumber())) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Số điện thoại chưa được đăng kí!");
         if(!authService.sendOtpVerification(request)) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Gửi OTP thất bại!");
         return ResponseEntity.ok("Gửi mã xác nhận thành công!");
+    }
+
+    @PutMapping("/delete/soft/{id}")
+    public ResponseEntity<ResponseObject> softDelete(@PathVariable int id) {
+        var result = userService.softDelete(id);
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
+
+    @DeleteMapping("/delete/hard/{id}")
+    public ResponseEntity<ResponseObject> hardDelete(@PathVariable int id) {
+        var result = userService.hardDelete(id);
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
+
+    @PutMapping("/restore/{id}")
+    public ResponseEntity<ResponseObject> restoreUser(@PathVariable int id) {
+        var result = userService.restoreUserById(id);
+        return ResponseEntity.status(result.getStatus()).body(result);
     }
 
 }

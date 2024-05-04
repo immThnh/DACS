@@ -3,7 +3,7 @@ import styles from "./DetailCourse.module.scss";
 import { useParams } from "react-router-dom";
 import { toast } from "sonner";
 import clsx from "clsx";
-import * as dataApi from "../../../api/apiService/dataService";
+import * as dataApi from "../../../api/apiService/dataService.js";
 
 const PlayIcon = () => (
     <div className={styles.playIcon}>

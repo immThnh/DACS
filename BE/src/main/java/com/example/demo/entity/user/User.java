@@ -28,6 +28,7 @@ public class User implements UserDetails {
     private String lastName;
     private String avatar;
     private String phoneNumber;
+    private boolean isDeleted = false;
 
     @OneToOne
     @JoinColumn(name = "token_id")
@@ -47,6 +48,7 @@ public class User implements UserDetails {
     )
     private Set<Course> courses = new HashSet<>();
 
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @Override

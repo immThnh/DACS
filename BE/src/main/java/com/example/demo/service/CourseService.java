@@ -1,16 +1,16 @@
 package com.example.demo.service;
 
 import com.example.demo.cloudinary.CloudService;
-import com.example.demo.dto.ResponObject;
+import com.example.demo.dto.ResponseObject;
 import com.example.demo.entity.data.Course;
 import com.example.demo.entity.data.Lesson;
 import com.example.demo.entity.data.Section;
-import com.example.demo.repository.data.CategoryRepository;
 import com.example.demo.repository.data.CourseRepository;
-import com.example.demo.repository.data.LessonRepository;
 import com.example.demo.dto.CourseDTO;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 @Data
 @RequiredArgsConstructor
@@ -36,12 +35,12 @@ public class CourseService {
     private final LessonService lessonService;
     private final SectionService sectionService;
 
-    public ResponObject getCourseById(int id) {
+    public ResponseObject getCourseById(int id) {
         Course course = courseRepository.findById(id).orElse(null);
         if (course == null) {
-            return ResponObject.builder().mess("Course is not exist!").status(HttpStatus.BAD_REQUEST).build();
+            return ResponseObject.builder().mess("Course is not exist!").status(HttpStatus.BAD_REQUEST).build();
         }
-        return ResponObject.builder().content(course).status(HttpStatus.OK).build();
+        return ResponseObject.builder().content(course).status(HttpStatus.OK).build();
     }
 
 //    public ResponObject getCourseByAlias(String alias) {
@@ -52,32 +51,40 @@ public class CourseService {
 //        return ResponObject.builder().content(course).status(HttpStatus.OK).build();
 //    }
 
-    public ResponObject getAllCourse() {
-        var courses = courseRepository.getAll().orElse(null);
-        if (courses == null) {
-            return ResponObject.builder().status(HttpStatus.BAD_REQUEST).mess("Don't have any course").build();
-        }
-        return ResponObject.builder().status(HttpStatus.OK).mess("Get successfully").content(courses).build();
+    public ResponseObject getAllCourse(int page, int size) {
+        var courses = courseRepository.findAllByIsDeleted(false, PageRequest.of(page, size));
+
+        return ResponseObject.builder().status(HttpStatus.OK).mess("Get successfully").content(courses).build();
     }
 
-    public ResponObject updateCourse(int id, CourseDTO courseDTO, MultipartFile thumbnail, List<MultipartFile> videos) {
+    public ResponseObject getAllCourseDeleted(int page,int size) {
+        var courses = courseRepository.findAllByIsDeleted(true, PageRequest.of(page, size));
+        return ResponseObject.builder().status(HttpStatus.OK).mess("Get successfully").content(courses).build();
+    }
+
+    public ResponseObject updateCourse(int id, CourseDTO courseDTO, MultipartFile thumbnail, List<MultipartFile> videos) {
         var course = courseRepository.findById(id).orElse(null);
         if (course == null) {
-            return ResponObject.builder().mess("Course does not exist!").status(HttpStatus.BAD_REQUEST).build();
+            return ResponseObject.builder().mess("Course does not exist!").status(HttpStatus.BAD_REQUEST).build();
         }
 
         // ! Update thumbnail
+        CompletableFuture<Void> fThumbnail;
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
         if (thumbnail != null) {
             if(courseDTO.getIsEditedThumbnail() == 1) {
-                CompletableFuture.runAsync(() -> {
+                fThumbnail = CompletableFuture.runAsync(() -> {
                     try {
                         course.setThumbnail(cloudService.uploadImage(thumbnail.getBytes()));
                     } catch (IOException e) {
                         System.out.println("Update thumbnail course:  " + e.getMessage());
                     }
                 });
+                futures.add(fThumbnail);
             }
             if(courseDTO.getIsEditedThumbnail() == 2) {
+                System.out.println("Remove thumbnail");
                 course.setThumbnail(null);
             }
         }
@@ -109,7 +116,7 @@ public class CourseService {
                         System.out.println("Upload videos: " + e.getMessage());
                     }
                 });
-                future.join();
+                futures.add(future);
                 urlVideos = atmVideos.get();
                 System.out.println(urlVideos);
             }
@@ -144,15 +151,16 @@ public class CourseService {
                 }
             }
         }
-
+        CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+        allOf.join();
         courseRepository.save(course);
-        return ResponObject.builder().status(HttpStatus.OK).mess("Update successfully").build();
+        return ResponseObject.builder().status(HttpStatus.OK).mess("Update successfully").build();
     }
 
-    public ResponObject addCourse(CourseDTO request, MultipartFile thumbnail, List<MultipartFile> videos) {
+    public ResponseObject addCourse(CourseDTO request, MultipartFile thumbnail, List<MultipartFile> videos) {
         var course = courseRepository.findByTitle(request.getTitle()).orElse(null);
         if (course != null){
-            return ResponObject.builder().mess("Course is already exist").status(HttpStatus.BAD_REQUEST).build();
+            return ResponseObject.builder().mess("Course is already exist").status(HttpStatus.BAD_REQUEST).build();
         }
 
         List<CompletableFuture<Void>> futures = new ArrayList<>();
@@ -222,42 +230,64 @@ public class CourseService {
         catch (Exception e) {
             System.out.println(e);
         }
-        return ResponObject.builder().mess("Create success").status(HttpStatus.OK).build();
+        return ResponseObject.builder().mess("Create success").status(HttpStatus.OK).build();
     }
 
-    public ResponObject deleteCourseById(int id) {
+    public ResponseObject softDelete(int id) {
         var course = courseRepository.findById(id).orElse(null);
         if (course == null) {
-            return ResponObject.builder().status(HttpStatus.BAD_REQUEST).mess("Course is not exist!").build();
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Course is not exist!").build();
         }
-
-        courseRepository.delete(course);
-        return ResponObject.builder().mess("Delete course successfully!").status(HttpStatus.OK).build();
+        course.setDeleted(true);
+        courseRepository.save(course);
+        return ResponseObject.builder().mess("Delete course successfully!").status(HttpStatus.OK).build();
     }
 
-    public ResponObject getAllCourseByCategoryIdAndTitle(int id, String title) {
+    public ResponseObject hardDelete(int id) {
+        var course = courseRepository.findById(id).orElse(null);
+        if (course == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Course is not exist!").build();
+        }
+        courseRepository.delete(course);
+        return ResponseObject.builder().mess("Delete course successfully!").status(HttpStatus.OK).build();
+    }
+
+    public ResponseObject getAllCourseByCategoryIdAndTitle(int id, String title) {
         List<Course> result = courseRepository.findAll();
         if(!Objects.equals(title, ""))
             result = result.stream().filter(c -> c.getTitle().contains(title)).toList();
         if(id != -1) {
             result = result.stream().filter(c -> c.getCategories().stream().anyMatch(ca -> ca.getId() == id)).toList();
         }
-        return ResponObject.builder().status(HttpStatus.OK).content(result).mess("Get data successfully").build();
+        return ResponseObject.builder().status(HttpStatus.OK).content(result).mess("Get data successfully").build();
     }
 
-    public ResponObject getAllCourseByCategoryId(int id) {
-        List<Course> result = null;
-        if(id == -1) {
-            result = courseRepository.getAll().orElse(null);
-            return ResponObject.builder().status(HttpStatus.OK).content(result).mess("Get data successfully").build();
-        }
-        result = courseRepository.findByCategoryId(id).orElse(null);
-        return ResponObject.builder().status(HttpStatus.OK).content(result).mess("Get data successfully").build();
+    public ResponseObject getAllCourseByCategoryId(int id, int page, int size) {
+
+       var result = courseRepository.findByCategoryId(id, PageRequest.of(page, size));
+        return ResponseObject.builder().status(HttpStatus.OK).content(result).mess("Get data successfully").build();
     }
-    public ResponObject getAllCourseByCourseTitle(String  title) {
-        var result = courseRepository.findByTitleContaining(title).orElse(null);
-        return ResponObject.builder().status(HttpStatus.OK).content(result).mess("Get data successfully").build();
+    public ResponseObject getAllCourseDeletedByCategoryId(int id, int page, int size) {
+
+       var result = courseRepository.findByCategoryIdAndIsDeleted(id, PageRequest.of(page, size));
+        return ResponseObject.builder().status(HttpStatus.OK).content(result).mess("Get data successfully").build();
+    }
+    public ResponseObject getAllCourseByCourseTitle(String  title, int page, int size) {
+        var result = courseRepository.findByTitleContaining(title, PageRequest.of(page, size));
+        return ResponseObject.builder().status(HttpStatus.OK).content(result).mess("Get data successfully").build();
     }
 
+    public ResponseObject restoreCourseById(int id) {
+        var course = courseRepository.findById(id).orElse(null);
+        if(course == null) return ResponseObject.builder().mess("Course does not exist").status(HttpStatus.BAD_REQUEST).build();
+        course.setDeleted(false);
+        courseRepository.save(course);
+        return ResponseObject.builder().mess("Restore successfully").status(HttpStatus.OK).build();
+    }
 
+    public ResponseObject getAllByPageable (int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        var courses = courseRepository.findAllByIsDeleted(false, pageable);
+        return ResponseObject.builder().status(HttpStatus.OK).content(courses).build();
+    }
 }

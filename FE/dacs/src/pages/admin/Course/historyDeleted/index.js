@@ -1,25 +1,23 @@
-import styles from "./List.module.scss";
+import styles from "../list/List.module.scss";
 import clsx from "clsx";
-import { Link } from "react-router-dom";
 import deleteIcon from "../../../../assets/images/delete.svg";
+import restoreIcon from "../../../../assets/images/restore.svg";
 import noDataIcon from "../../../../assets/images/ic_noData.svg";
-import viewIcon from "../../../../assets/images/view.svg";
-import editIcon from "../../../../assets/images/edit.svg";
 import { Fragment, useEffect, useState } from "react";
 import * as dataApi from "../../../../api/apiService/dataService";
 import Select from "react-select";
 import { toast } from "sonner";
+import { Listbox, Transition } from "@headlessui/react";
 import {
     CheckIcon,
     ChevronLeftIcon,
     ChevronRightIcon,
     ChevronUpDownIcon,
 } from "@heroicons/react/20/solid";
-import { Listbox, Transition } from "@headlessui/react";
 
 const selectes = [5, 10, 25];
 
-function ListCourse() {
+function HistoryDeleted() {
     const [courses, setCourses] = useState([]);
     const [options, setOptions] = useState([]);
     const [totalData, setTotalData] = useState(0);
@@ -28,7 +26,7 @@ function ListCourse() {
     const handleRemoveCourse = (id) => {
         console.log(id);
         const fetchApi = async () => {
-            toast.promise(dataApi.softDeleteCourse(id), {
+            toast.promise(dataApi.hardDeleteCourse(id), {
                 loading: "Removing...",
                 success: () => {
                     window.location.reload();
@@ -43,24 +41,14 @@ function ListCourse() {
         fetchApi();
     };
 
-    const handlePageData = async (action) => {
-        const currentTotalData = page * selected + selected;
-        if (action === "next" && currentTotalData < totalData) {
-            console.log("a");
-            setPage((prev) => prev + 1);
-        }
-        if (action === "previous" && page > 0) {
-            setPage((prev) => prev - 1);
-        }
-    };
-
     const handleSelectChange = (e) => {
         const fetchApi = () => {
-            toast.promise(dataApi.getCoursesByCategory(e.id, page, selected), {
+            toast.promise(dataApi.getCoursesDeletedByCategory(e.id), {
                 loading: "loading...",
                 success: (data) => {
                     setCourses(data.content.content);
                     setTotalData(data.content.totalElements);
+
                     return "Get data successfully";
                 },
                 error: (error) => {
@@ -73,37 +61,32 @@ function ListCourse() {
         debounceApi();
     };
 
-    const handleSelectPageSizeChange = (size) => {
-        setSelected(size);
-        const fetchApi = async () => {
-            try {
-                const result = await dataApi.getAllCourse(page, size);
-                setCourses(result.content.content);
-                setTotalData(result.content.totalElements);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        fetchApi();
+    const handleRestoreCourse = (id) => {
+        toast.promise(dataApi.restoreCourseById(id), {
+            loading: "loading...",
+            success: (data) => {
+                window.location.reload();
+                return data.mess;
+            },
+            error: (error) => {
+                return error.mess;
+            },
+        });
     };
 
     const handleSearchInputChange = (e) => {
         const fetchApi = () => {
-            toast.promise(
-                dataApi.getCourseByName(e.target.value, page, selected),
-                {
-                    loading: "loading...",
-                    success: (data) => {
-                        setCourses(data.content.content);
-                        setTotalData(data.content.totalElements);
-                        return "Get data successfully";
-                    },
-                    error: (error) => {
-                        console.log(error);
-                        return error;
-                    },
-                }
-            );
+            toast.promise(dataApi.getCourseByName(e.target.value), {
+                loading: "loading...",
+                success: (data) => {
+                    setCourses(data.content);
+                    return "Get data successfully";
+                },
+                error: (error) => {
+                    console.log(error);
+                    return error;
+                },
+            });
         };
         const debounceApi = debounce(fetchApi, 1000);
         debounceApi();
@@ -123,7 +106,10 @@ function ListCourse() {
     useEffect(() => {
         const fetchApi = async () => {
             try {
-                const result = await dataApi.getAllCourse(0, 5);
+                const result = await dataApi.getAllCourseDeleted(
+                    page,
+                    selected
+                );
                 let categories = [];
                 categories = await dataApi.getAllCategories(0, 99999);
                 categories.content.content.push({ id: "-1", name: "All" });
@@ -137,39 +123,37 @@ function ListCourse() {
         fetchApi();
     }, []);
 
-    console.log(courses);
+    const handlePageData = async (action) => {
+        const currentTotalData = page * selected + selected;
+        if (action === "next" && currentTotalData < totalData) {
+            console.log("a");
+            setPage((prev) => prev + 1);
+        }
+        if (action === "previous" && page > 0) {
+            setPage((prev) => prev - 1);
+        }
+    };
+
+    const handleSelectPageSizeChange = (size) => {
+        setSelected(size);
+        const fetchApi = async () => {
+            try {
+                const result = await dataApi.getAllCourse(page, size);
+                setCourses(result.content.content);
+                setTotalData(result.content.totalElements);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchApi();
+    };
     return (
         <div className="flex justify-center w-full ">
             <div className="container mt-5 mx-14">
                 <div className="wrapMainDash">
                     <div className={clsx(styles.topMain)}>
                         <div className={clsx(styles.itemTopMain)}>
-                            <h4>List</h4>
-                        </div>
-                        <div className={clsx(styles.itemTopMain)}>
-                            <Link
-                                to={"/admin/course/create"}
-                                className={styles.btnCreate}
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    aria-hidden="true"
-                                    role="img"
-                                    className="component-iconify MuiBox-root css-1t9pz9x iconify iconify--mingcute"
-                                    width="20px"
-                                    height="20px"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <g fill="none">
-                                        <path d="M24 0v24H0V0zM12.593 23.258l-.011.002l-.071.035l-.02.004l-.014-.004l-.071-.035c-.01-.004-.019-.001-.024.005l-.004.01l-.017.428l.005.02l.01.013l.104.074l.015.004l.012-.004l.104-.074l.012-.016l.004-.017l-.017-.427c-.002-.01-.009-.017-.017-.018m.265-.113l-.013.002l-.185.093l-.01.01l-.003.011l.018.43l.005.012l.008.007l.201.093c.012.004.023 0 .029-.008l.004-.014l-.034-.614c-.003-.012-.01-.02-.02-.022m-.715.002a.023.023 0 0 0-.027.006l-.006.014l-.034.614c0 .012.007.02.017.024l.015-.002l.201-.093l.01-.008l.004-.011l.017-.43l-.003-.012l-.01-.01z"></path>
-                                        <path
-                                            fill="currentColor"
-                                            d="M11 20a1 1 0 1 0 2 0v-7h7a1 1 0 1 0 0-2h-7V4a1 1 0 1 0-2 0v7H4a1 1 0 1 0 0 2h7z"
-                                        ></path>
-                                    </g>
-                                </svg>
-                                New Course
-                            </Link>
+                            <h4 className="uppercase">History Deleted</h4>
                         </div>
                     </div>
 
@@ -181,7 +165,10 @@ function ListCourse() {
                             )}
                         >
                             <div className={clsx(styles.contentItem)}>
-                                <div className={clsx(styles.formSelect)}>
+                                <div
+                                    // className={clsx(styles.cbb)
+                                    className={clsx(styles.formSelect)}
+                                >
                                     <label htmlFor="">Category</label>
                                     <Select
                                         onChange={handleSelectChange}
@@ -230,168 +217,173 @@ function ListCourse() {
                                 {courses &&
                                     courses.map((course, index) => {
                                         const dateTime = new Date(course.date);
+
                                         const date =
                                             dateTime.toLocaleDateString();
                                         const time =
                                             dateTime.toLocaleTimeString();
+
                                         return (
-                                            <div
-                                                key={index}
-                                                className={clsx(
-                                                    styles.item,
-                                                    "row rounded-lg"
-                                                )}
-                                            >
+                                            <>
                                                 <div
+                                                    key={index}
                                                     className={clsx(
-                                                        styles.field,
-                                                        "col-lg-1"
+                                                        styles.item,
+                                                        "row rounded-lg"
                                                     )}
                                                 >
                                                     <div
                                                         className={clsx(
-                                                            styles.name
+                                                            styles.field,
+                                                            "col-lg-1"
                                                         )}
                                                     >
-                                                        {course.id}
-                                                    </div>
-                                                </div>
-                                                <div
-                                                    className={clsx(
-                                                        styles.field,
-                                                        "col-lg-5 flex "
-                                                    )}
-                                                >
-                                                    <div
-                                                        className={clsx(
-                                                            styles.cssImg
-                                                        )}
-                                                    >
-                                                        <img
-                                                            src={
-                                                                course.thumbnail
-                                                            }
-                                                            alt=""
-                                                        />
-                                                    </div>
-                                                    <div className="overflow-hidden">
                                                         <div
                                                             className={clsx(
                                                                 styles.name
                                                             )}
                                                         >
-                                                            {course.title}
+                                                            {course.id}
                                                         </div>
+                                                    </div>
+                                                    <div
+                                                        className={clsx(
+                                                            styles.field,
+                                                            "col-lg-5 flex "
+                                                        )}
+                                                    >
                                                         <div
                                                             className={clsx(
-                                                                styles.categories
+                                                                styles.cssImg
                                                             )}
                                                         >
-                                                            {course.category &&
-                                                                course.category.join(
-                                                                    ", "
+                                                            <img
+                                                                src={
+                                                                    course.thumbnail
+                                                                }
+                                                                alt=""
+                                                            />
+                                                        </div>
+                                                        <div className="overflow-hidden">
+                                                            <div
+                                                                className={clsx(
+                                                                    styles.name
                                                                 )}
+                                                            >
+                                                                {course.title}
+                                                            </div>
+                                                            <div
+                                                                className={clsx(
+                                                                    styles.categories
+                                                                )}
+                                                            >
+                                                                {course.category &&
+                                                                    course.category.join(
+                                                                        ", "
+                                                                    )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div
+                                                        className={clsx(
+                                                            styles.field,
+                                                            "col-lg-2"
+                                                        )}
+                                                    >
+                                                        <div
+                                                            className={clsx(
+                                                                styles.name
+                                                            )}
+                                                        >
+                                                            {date}
+                                                            <br />
+                                                            {time}
+                                                        </div>
+                                                    </div>
+                                                    <div
+                                                        className={clsx(
+                                                            styles.field,
+                                                            "col-lg-2"
+                                                        )}
+                                                    >
+                                                        <div
+                                                            className={clsx(
+                                                                styles.name
+                                                            )}
+                                                        >
+                                                            {course.price === 0
+                                                                ? "Free"
+                                                                : `${course.price} VND`}
+                                                        </div>
+                                                    </div>
+
+                                                    <div
+                                                        className={clsx(
+                                                            styles.field,
+                                                            "col-lg-2"
+                                                        )}
+                                                    >
+                                                        <div
+                                                            className={clsx(
+                                                                styles.name,
+                                                                "flex gap-4"
+                                                            )}
+                                                        >
+                                                            <button
+                                                                type="button"
+                                                                onClick={() =>
+                                                                    handleRestoreCourse(
+                                                                        course.id
+                                                                    )
+                                                                }
+                                                            >
+                                                                <img
+                                                                    src={
+                                                                        restoreIcon
+                                                                    }
+                                                                    alt=""
+                                                                />
+                                                            </button>
+                                                            <button
+                                                                onClick={() =>
+                                                                    handleRemoveCourse(
+                                                                        course.id
+                                                                    )
+                                                                }
+                                                            >
+                                                                <img
+                                                                    src={
+                                                                        deleteIcon
+                                                                    }
+                                                                    alt=""
+                                                                    className="cursor-pointer"
+                                                                />
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div
-                                                    className={clsx(
-                                                        styles.field,
-                                                        "col-lg-2"
-                                                    )}
-                                                >
-                                                    <div
-                                                        className={clsx(
-                                                            styles.name
-                                                        )}
-                                                    >
-                                                        {date}
-                                                        <br />
-                                                        {time}
-                                                    </div>
-                                                </div>
-                                                <div
-                                                    className={clsx(
-                                                        styles.field,
-                                                        "col-lg-2"
-                                                    )}
-                                                >
-                                                    <div
-                                                        className={clsx(
-                                                            styles.name
-                                                        )}
-                                                    >
-                                                        {course.price === 0
-                                                            ? "Free"
-                                                            : `${course.price} VND`}
-                                                    </div>
-                                                </div>
-
-                                                <div
-                                                    className={clsx(
-                                                        styles.field,
-                                                        "col-lg-2"
-                                                    )}
-                                                >
-                                                    <div
-                                                        className={clsx(
-                                                            styles.name,
-                                                            "flex gap-4"
-                                                        )}
-                                                    >
-                                                        <Link
-                                                            to={`/admin/course/view/${course.id}`}
-                                                        >
-                                                            <img
-                                                                src={viewIcon}
-                                                                alt=""
-                                                            />
-                                                        </Link>
-                                                        <Link
-                                                            to={`/admin/course/edit/${course.id}`}
-                                                        >
-                                                            <img
-                                                                src={editIcon}
-                                                                alt=""
-                                                            />
-                                                        </Link>
-                                                        <button
-                                                            onClick={() =>
-                                                                handleRemoveCourse(
-                                                                    course.id
-                                                                )
-                                                            }
-                                                        >
-                                                            <img
-                                                                src={deleteIcon}
-                                                                alt=""
-                                                                className="cursor-pointer"
-                                                            />
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            </>
                                         );
                                     })}
-                                {!courses ||
-                                    (!courses.length && (
-                                        <div
+
+                                {!courses.length && (
+                                    <div
+                                        className={clsx(
+                                            styles.noData,
+                                            "flex flex-col justify-center text-center"
+                                        )}
+                                    >
+                                        <img
+                                            src={noDataIcon}
+                                            alt=""
                                             className={clsx(
-                                                styles.noData,
-                                                "flex flex-col justify-center text-center"
+                                                styles.noDataImg,
+                                                "m-auto w-32"
                                             )}
-                                        >
-                                            <img
-                                                src={noDataIcon}
-                                                alt=""
-                                                className={clsx(
-                                                    styles.noDataImg,
-                                                    "m-auto w-32"
-                                                )}
-                                            />
-                                            <span>No Data</span>
-                                        </div>
-                                    ))}
+                                        />
+                                        <span>No Data</span>
+                                    </div>
+                                )}
                             </div>
                             <div className={clsx(styles.footer)}>
                                 <div className={styles.footerItem}>
@@ -524,4 +516,4 @@ function ListCourse() {
     );
 }
 
-export default ListCourse;
+export default HistoryDeleted;

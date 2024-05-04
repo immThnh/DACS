@@ -1,8 +1,19 @@
-import { clear } from "@testing-library/user-event/dist/clear";
 import instance, { setToken } from "../instance";
-export const getAllCategories = async () => {
+export const getAllCategories = async (page = 0, size = 9999999) => {
     try {
-        const res = await instance.get("/data/category/getAll");
+        const res = await instance.get(
+            `/data/category/getAll?page=${page}&size=${size}`
+        );
+        return res;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+export const getAllCategoryDeleted = async (page, size) => {
+    try {
+        const res = await instance.get(
+            `/data/category/getAllDeleted?page=${page}&size=${size}`
+        );
         return res;
     } catch (error) {
         return Promise.reject(error);
@@ -35,8 +46,8 @@ export const createCourse = async (course, thumbnail = "", videos = "") => {
 };
 
 export const updateCourse = async (id, course, thumbnail, videos) => {
-    console.log(course);
     const formData = new FormData();
+    console.log(course);
     const json = JSON.stringify(course);
     const courseBlob = new Blob([json], {
         type: "application/json",
@@ -59,9 +70,22 @@ export const updateCourse = async (id, course, thumbnail, videos) => {
     }
 };
 
-export const getAllCourse = async () => {
+export const getAllCourse = async (page = 0, size = 5) => {
     try {
-        const result = await instance.get("/data/course/getAll");
+        const result = await instance.get(
+            `/data/course/getAll?page=${page}&size=${size}`
+        );
+        return result;
+    } catch (error) {
+        console.log(error);
+        return Promise.reject(error);
+    }
+};
+export const getAllCourseDeleted = async (page, size) => {
+    try {
+        const result = await instance.get(
+            `/data/course/getAllDeleted?page=${page}&size=${size}`
+        );
         return result;
     } catch (error) {
         console.log(error);
@@ -77,29 +101,116 @@ export const getCourseById = async (id) => {
     }
 };
 
-export const removeCourse = async (id) => {
+export const softDeleteCourse = async (id) => {
     try {
-        const result = await instance.delete(`/data/course/delete/${id}`);
+        const result = await instance.put(`/data/course/delete/soft/${id}`);
+        return result;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+export const hardDeleteCourse = async (id) => {
+    try {
+        const result = await instance.delete(`/data/course/delete/hard/${id}`);
         return result;
     } catch (error) {
         return Promise.reject(error);
     }
 };
 
-export const getCoursesByCategory = (id) => {
-    console.log(id);
+export const getCoursesDeletedByCategory = (id, page, size) => {
     try {
-        return instance.get(`/data/course/category?id=${id}`);
+        return instance.get(
+            `/data/course/deleted/category?id=${id}&page=${page}&size=${size}`
+        );
+    } catch (error) {
+        console.log(error.mess);
+        Promise.reject(error);
+    }
+};
+export const getCoursesByCategory = (id, page, size) => {
+    try {
+        return instance.get(
+            `/data/course/category?id=${id}&page=${page}&size=${size}`
+        );
     } catch (error) {
         console.log(error.mess);
         Promise.reject(error);
     }
 };
 
-export const getCourseByName = (title) => {
+export const getCourseByName = (title, page, selected) => {
     try {
-        return instance.get(`/data/course?title=${title}`);
+        return instance.get(
+            `/data/course?title=${title}&page=${page}&selected=${selected}`
+        );
     } catch (error) {
         Promise.reject(error.mess);
+    }
+};
+
+export const softDeleteCategoryById = (id) => {
+    try {
+        return instance.put(`/data/category/delete/soft/${id}`);
+    } catch (error) {
+        Promise.reject(error);
+    }
+};
+
+export const hardDeleteCategoryById = (id) => {
+    try {
+        return instance.delete(`/data/category/delete/hard/${id}`);
+    } catch (error) {
+        Promise.reject(error);
+    }
+};
+export const restoreCategoryById = (id) => {
+    try {
+        return instance.put(`/data/category/restore/${id}`);
+    } catch (error) {
+        Promise.reject(error);
+    }
+};
+
+export const getCategoryByTitle = (name, page, selected) => {
+    console.log(name);
+    try {
+        return instance.get(
+            `/data/category?name=${name}&page=${page}&selected`
+        );
+    } catch (error) {
+        Promise.reject(error);
+    }
+};
+
+export const editCategory = (id, category) => {
+    try {
+        return instance.put(`/data/category/${id}`, category);
+    } catch (error) {
+        Promise.reject(error);
+    }
+};
+
+export const getCategoryById = (id) => {
+    try {
+        return instance.get(`/data/category/${id}`);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const createCategory = (category) => {
+    try {
+        return instance.post(`/data/category`, category);
+    } catch (error) {
+        Promise.reject(error);
+    }
+};
+
+export const restoreCourseById = (id) => {
+    try {
+        return instance.put(`data/course/restore/${id}`);
+    } catch (error) {
+        Promise.reject(error);
     }
 };

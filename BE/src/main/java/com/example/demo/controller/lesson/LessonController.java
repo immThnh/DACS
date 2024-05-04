@@ -1,7 +1,7 @@
 package com.example.demo.controller.lesson;
 
 
-import com.example.demo.dto.ResponObject;
+import com.example.demo.dto.ResponseObject;
 import com.example.demo.repository.data.LessonRepository;
 import com.example.demo.service.LessonService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class LessonController {
     private final LessonService lessonService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponObject> getById(@PathVariable  int id) {
+    public ResponseEntity<ResponseObject> getById(@PathVariable  int id) {
         var result = lessonService.getById(id);
         return ResponseEntity.status(result.getStatus()).body(result);
     }

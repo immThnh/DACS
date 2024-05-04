@@ -1,6 +1,6 @@
 package com.example.demo.auth;
 
-import com.example.demo.dto.ResponObject;
+import com.example.demo.dto.ResponseObject;
 import com.example.demo.entity.user.Role;
 import com.example.demo.entity.user.User;
 import com.example.demo.jwt.JwtService;
@@ -10,6 +10,7 @@ import com.example.demo.repository.TokenRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.twilio.TwilioService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -39,21 +41,41 @@ public class AuthService {
             return true;
     }
 
-    public ResponObject authenticate(AuthenticationRequest auth) {
+    public ResponseObject authenticate(AuthenticationRequest auth) {
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(auth.getEmail(), auth.getPassword()));
             var user = userRepository.findByEmail(auth.getEmail()).orElse(null);
             if(user == null) {
-                return ResponObject.builder().status(HttpStatus.BAD_REQUEST).content("User is not exist.").build();
+                return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).content("User is not exist.").build();
             }
             Token token = new Token(jwtService.generateToken(user));
             user.setToken(token);
-            return ResponObject.builder().status(HttpStatus.OK).content(token).build();
+            return ResponseObject.builder().status(HttpStatus.OK).content(token).build();
         }
         catch (AuthenticationException ex) {
             System.out.println(ex.getMessage() + "Xác thực người dùng thất bại!");
             return null;
         }
+    }
+
+    public ResponseObject getAllByPage(int page, int size) {
+        var result = userRepository.findAll(PageRequest.of(page, size));
+        return ResponseObject.builder().status(HttpStatus.OK).content(result).build();
+    }
+
+    public ResponseObject getAllUser() {
+        var users = userRepository.findAll();
+        return ResponseObject.builder().status(HttpStatus.OK).mess("Get data successfully").status(HttpStatus.OK).content(users).build();
+    }
+
+    public ResponseObject getAllRole() {
+        return ResponseObject.builder().status(HttpStatus.OK).content(Role.values()).build();
+    }
+
+    public ResponseObject getUserByRole(String role, int page, int size) {
+        if(Objects.equals(role, "All"))
+            return ResponseObject.builder().status(HttpStatus.OK).content(userRepository.findAll(PageRequest.of(page, size))).build();
+        return ResponseObject.builder().status(HttpStatus.OK).content(userRepository.findByRole(role, PageRequest.of(page, size))).build();
     }
 
     public boolean sendOtpVerification(OtpVerifyRequest request) {

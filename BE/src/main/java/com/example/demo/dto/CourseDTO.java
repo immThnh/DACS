@@ -1,5 +1,6 @@
 package com.example.demo.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +21,7 @@ public class CourseDTO {
     private LocalDateTime date;
     private List<Integer> categories;
     private List<SectionDTO> sections;
+    @JsonProperty("isEditThumbnail")
     private int isEditedThumbnail;
     private int isEditedCategories;
     private int isEdited;

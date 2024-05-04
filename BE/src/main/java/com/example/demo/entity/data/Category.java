@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -23,6 +24,8 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
+    private LocalDateTime date;
+    private boolean isDeleted = false;
     @ManyToMany(mappedBy = "categories")
 //! không được sử dụng @JsonBackReference() với Collections
     @JsonIgnore

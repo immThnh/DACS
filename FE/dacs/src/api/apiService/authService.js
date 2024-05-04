@@ -105,8 +105,78 @@ export const resetPassword = async ({ email, password }) => {
 
 export const getAllUser = async () => {
     try {
-        return await instance.get("/api/v1/user/getAll");
+        return await instance.get("/user/getAll?page=0&size=5");
     } catch (error) {
         return Promise.reject(error);
+    }
+};
+
+export const getAllDeletedUser = async () => {
+    try {
+        return await instance.get("/user/getAllDeleted?page=0&size=5");
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getAllRole = async () => {
+    try {
+        return await instance.get("/user/getAllRole");
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getUserByName = async (userName, page, size) => {
+    try {
+        return instance.get(
+            `/user/search?name=${userName}&page=${page}&size=${size}`
+        );
+    } catch (error) {
+        Promise.reject(error);
+    }
+};
+
+export const getUserByRole = (role, page, size) => {
+    try {
+        return instance.get(
+            `/user/filter?role=${role}&page=${page}&size=${size}`
+        );
+    } catch (error) {
+        Promise.reject(error);
+    }
+};
+
+export const getUserByPage = async (page, size) => {
+    try {
+        return instance.get(`/user/getAll?page=${page}&size=${size}`);
+    } catch (error) {
+        Promise.reject(error);
+    }
+};
+
+
+export const softDeleteUser = async (id) => {
+    try {
+        const result = await instance.put(`/user/delete/soft/${id}`);
+        return result;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+export const hardDeleteUser = async (id) => {
+    try {
+        const result = await instance.delete(`/user/delete/hard/${id}`);
+        return result;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const restoreUserById = async (id) => {
+    try {
+        return instance.put(`/user/restore/${id}`);
+    } catch (error) {
+        Promise.reject(error);
     }
 };

@@ -1,23 +1,17 @@
 package com.example.demo.service;
 
-import com.cloudinary.Cloudinary;
-import com.cloudinary.utils.ObjectUtils;
 import com.example.demo.cloudinary.CloudService;
-import com.example.demo.dto.ResponObject;
+import com.example.demo.dto.ResponseObject;
 import com.example.demo.dto.SectionDTO;
-import com.example.demo.entity.data.Course;
 import com.example.demo.dto.LessonDTO;
 import com.example.demo.entity.data.Lesson;
 import com.example.demo.entity.data.Section;
-import com.example.demo.mail.MailService;
 import com.example.demo.repository.data.LessonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -29,12 +23,12 @@ public class LessonService {
     private final LessonRepository lessonRepository;
     private final CloudService cloudService;
 
-    public ResponObject getById(int id) {
+    public ResponseObject getById(int id) {
         var lesson = lessonRepository.findById(id).orElse(null);
         if(lesson == null) {
-            return ResponObject.builder().content("Lesson is not exist!").status(HttpStatus.BAD_REQUEST).build();
+            return ResponseObject.builder().content("Lesson is not exist!").status(HttpStatus.BAD_REQUEST).build();
         }
-        return  ResponObject.builder().status(HttpStatus.OK).content(lesson).build();
+        return  ResponseObject.builder().status(HttpStatus.OK).content(lesson).build();
     }
 
 //    public void updateLessonsOfCourse(List<LessonRequest> newLessons, List<Lesson> currentLessons, Course course, List<MultipartFile> videos) {
@@ -112,7 +106,12 @@ public class LessonService {
 //        }
 //    }
     public int updateLessonsOfSection(List<LessonDTO> newLessons, List<Lesson> currentLessons, Section section, List<String> videos, int indexVideo) {
-        if(newLessons.isEmpty()) {
+        if(section.getLessons().size() == 0) {
+            System.out.println("No lesson added to section");
+            return indexVideo;
+        }
+
+        if(newLessons.isEmpty() && section.getLessons().size() != 0) {
             System.out.println("remove all lessons");
             for (var oldLesson:
                     currentLessons) {

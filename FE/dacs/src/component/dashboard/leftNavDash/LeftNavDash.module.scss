@@ -7,11 +7,13 @@ $border-color: #e9ecee;
     border-right: 1px solid $border-color;
     margin-top: $h-header;
     background-color: white;
+    width: 240px;
+    transition: all 0.3s ease-in-out;
 }
 
 .container {
     padding: 0 16px;
-    width: 240px;
+    width: 100%;
 }
 
 .title {
@@ -38,46 +40,17 @@ $border-color: #e9ecee;
     background-color: transparent;
     outline: 0px;
     border: 0px;
-    border-top-width: 0px;
-    border-right-width: 0px;
-    border-bottom-width: 0px;
-    border-left-width: 0px;
-    border-top-style: initial;
-    border-right-style: initial;
-    border-bottom-style: initial;
-    border-left-style: initial;
-    border-top-color: initial;
-    border-right-color: initial;
-    border-bottom-color: initial;
-    border-left-color: initial;
-    border-image-source: initial;
-    border-image-slice: initial;
-    border-image-width: initial;
-    border-image-outset: initial;
-    border-image-repeat: initial;
+
     margin: 0px 0px 4px;
     cursor: pointer;
     user-select: none;
-    vertical-align: middle;
-    appearance: none;
     display: flex;
-    -webkit-box-flex: 1;
     flex-grow: 1;
-    -webkit-box-pack: start;
     justify-content: flex-start;
-    -webkit-box-align: center;
     align-items: center;
-    position: relative;
-    text-decoration: none;
-    min-width: 0px;
-    box-sizing: border-box;
     text-align: left;
     transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
     border-radius: 8px;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    border-bottom-right-radius: 8px;
-    border-bottom-left-radius: 8px;
     color: rgb(99, 115, 129);
     padding: 4px 8px 4px 12px;
     min-height: 44px;
@@ -213,3 +186,32 @@ $border-color: #e9ecee;
 //         transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
 //     }
 // }
+
+.btnClose {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    right: -16px;
+    width: 32px;
+    height: 32px;
+    border-radius: 100rem;
+    color: #6b8399;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    svg {
+        width: 22px;
+    }
+}
+
+.close {
+    width: 84px;
+    .container {
+        pointer-events: none;
+    }
+}
+
+.title.close {
+    display: none;
+}
