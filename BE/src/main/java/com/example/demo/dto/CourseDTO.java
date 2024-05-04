@@ -23,7 +23,10 @@ public class CourseDTO {
     private List<SectionDTO> sections;
     @JsonProperty("isEditThumbnail")
     private int isEditedThumbnail;
+    private String video;
     private int isEditedCategories;
     private int isEdited;
+    private String actionVideo = "NONE";
+
     public CourseDTO(String temp) {}
 }

@@ -9,6 +9,8 @@ $border-color: #e9ecee;
     background-color: white;
     width: 240px;
     transition: all 0.3s ease-in-out;
+    position: sticky;
+    top: $h-header;
 }
 
 .container {

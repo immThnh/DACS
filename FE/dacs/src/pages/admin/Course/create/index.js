@@ -66,6 +66,11 @@ function CreateCourse() {
         });
     };
 
+    const handleUpdateVideoCourse = (e) => {
+        const file = e.target.files[0];
+        setFormData({ ...formData, video: file });
+    };
+
     const handleRemoveItemPrevivew = (e, type, index, sectionIndex) => {
         if (type === "video") {
             const updateSection = { ...formData.sections[sectionIndex] };
@@ -162,6 +167,10 @@ function CreateCourse() {
         setFormData({ ...formData, sections: [...newSections] });
     };
 
+    const handleRemoveVideoCourse = (e) => {
+        setFormData({ ...formData, video: null });
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         let errors = [];
@@ -178,6 +187,7 @@ function CreateCourse() {
         // console.log(formData);
 
         const thumbnail = formData.thumbnail;
+        const courseVideo = formData.video;
 
         const videos = [];
         formData.sections.forEach((section) => {
@@ -197,17 +207,20 @@ function CreateCourse() {
                 ...formData,
                 categories: newCategories,
             };
-            toast.promise(DataApi.createCourse(newCourse, thumbnail, videos), {
-                loading: "Loading...",
-                success: () => {
-                    window.location.reload();
-                    return "Create successfully";
-                },
-                error: (error) => {
-                    console.log(error);
-                    return error.mess;
-                },
-            });
+            toast.promise(
+                DataApi.createCourse(newCourse, thumbnail, courseVideo, videos),
+                {
+                    loading: "Loading...",
+                    success: () => {
+                        window.location.reload();
+                        return "Create successfully";
+                    },
+                    error: (error) => {
+                        console.log(error);
+                        return error.mess;
+                    },
+                }
+            );
         };
 
         const debounceApi = debounce(featchApi);
@@ -385,6 +398,66 @@ function CreateCourse() {
                                             )}
                                         >
                                             <img src={btnClose} alt="" />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        <div className="flex">
+                            <div className={clsx(styles.formField, "w-1/2")}>
+                                <span className={clsx(styles.formLabel2)}>
+                                    Video
+                                </span>
+                                <label
+                                    htmlFor={`courseVideo`}
+                                    className={clsx(
+                                        styles.formLabel2,
+                                        styles.labelFile
+                                    )}
+                                >
+                                    <div className={clsx(styles.iconFile)}>
+                                        <img src={fileSelect} alt="" />
+                                    </div>
+                                </label>
+                                <input
+                                    name="video"
+                                    onChange={handleUpdateVideoCourse}
+                                    id={`courseVideo`}
+                                    type="file"
+                                    hidden
+                                    accept=".mp4"
+                                />
+                            </div>
+                            <div
+                                className={clsx(
+                                    styles.formField,
+                                    "w-1/2 mt-8 ml-9"
+                                )}
+                            >
+                                {formData.video && (
+                                    <div className={clsx(styles.videoField)}>
+                                        <video
+                                            id="video"
+                                            controls
+                                            className="rounded-lg"
+                                        >
+                                            <source
+                                                src={URL.createObjectURL(
+                                                    formData.video
+                                                )}
+                                                type="video/mp4"
+                                            />
+                                        </video>
+                                        <button
+                                            className={clsx(
+                                                styles.btnClosePreview
+                                            )}
+                                            onClick={(e) =>
+                                                handleRemoveVideoCourse(e)
+                                            }
+                                        >
+                                            {" "}
+                                            <img src={btnClose} alt="" />{" "}
                                         </button>
                                     </div>
                                 )}

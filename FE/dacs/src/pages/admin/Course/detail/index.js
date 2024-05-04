@@ -54,7 +54,7 @@ const CourseHero = ({ video = "", thumbnail }) => {
 
     return (
         <section className={clsx(styles.courseHero)}>
-            {video.startsWith("https://res.cloudinary.com") && video !== "" && (
+            {video && video.startsWith("https://res.cloudinary.com") && video !== "" && (
                 <video
                     controls
                     className={clsx(
@@ -77,7 +77,6 @@ const CourseHero = ({ video = "", thumbnail }) => {
                     ></iframe>
                 )}
             {video === "" ? <img src={thumbnail} alt="Course thumbnail" /> : ""}
-
         </section>
     );
 };
@@ -121,6 +120,7 @@ function DetailAdminCourse() {
             toast.promise(dataApi.getCourseById(id), {
                 loading: "Loading...",
                 success: (data) => {
+                    setCurrentVideoUrl(data.content.video);
                     setCourse(data.content);
                     return "Get data is successful";
                 },
@@ -143,7 +143,6 @@ function DetailAdminCourse() {
                         <div
                             className={clsx(styles.videoContainer, "col-lg-8")}
                         >
-                            {" "}
                             <CourseHero
                                 video={currentVideoUrl}
                                 thumbnail={course.thumbnail}

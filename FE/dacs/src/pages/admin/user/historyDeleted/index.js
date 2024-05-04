@@ -15,6 +15,7 @@ import {
     ChevronLeftIcon,
     ChevronRightIcon,
 } from "@heroicons/react/20/solid";
+import { render } from "@testing-library/react";
 
 const selectes = [5, 10, 25];
 
@@ -26,13 +27,16 @@ function ListDeletedUser() {
     const [totalData, setTotalData] = useState(0);
     const [deletedModalOpen, setDeletedModalOpen] = useState(false);
     const [deleteId, setDeleteId] = useState(null);
+    const [reRender, setReRender] = useState();
+    let test = 1;
 
     const handleRemoveUser = () => {
         const fetchApi = async () => {
             toast.promise(authApi.hardDeleteUser(deleteId), {
                 loading: "Removing...",
                 success: () => {
-                    window.location.reload();
+                    setReRender(!render);
+                    setDeletedModalOpen(false);
                     return "Remove successfully";
                 },
                 error: (error) => {
@@ -145,7 +149,7 @@ function ListDeletedUser() {
             }
         };
         fetchApi();
-    }, []);
+    }, [reRender]);
 
     useEffect(() => {
         const fetchApi = async () => {
@@ -158,12 +162,12 @@ function ListDeletedUser() {
         };
         fetchApi();
     }, [page]);
-
+    console.log("render");
     const handleRestoreUser = (id) => {
         toast.promise(authApi.restoreUserById(id), {
             loading: "loading...",
             success: (data) => {
-                window.location.reload();
+                setReRender(!reRender);
                 return data.mess;
             },
             error: (error) => {
@@ -261,7 +265,6 @@ function ListDeletedUser() {
                             </div>
                             <div className={clsx(styles.containerData)}>
                                 {users &&
-                                    users.length &&
                                     users.map((element, index) => {
                                         return (
                                             <div
@@ -400,7 +403,7 @@ function ListDeletedUser() {
                                             </div>
                                         );
                                     })}
-                                {!users && (
+                                {!users.length && (
                                     <div
                                         className={clsx(
                                             styles.noData,

@@ -62,7 +62,7 @@ public class CourseService {
         return ResponseObject.builder().status(HttpStatus.OK).mess("Get successfully").content(courses).build();
     }
 
-    public ResponseObject updateCourse(int id, CourseDTO courseDTO, MultipartFile thumbnail, List<MultipartFile> videos) {
+    public ResponseObject updateCourse(int id, CourseDTO courseDTO, MultipartFile thumbnail, MultipartFile courseVideo, List<MultipartFile> videos) {
         var course = courseRepository.findById(id).orElse(null);
         if (course == null) {
             return ResponseObject.builder().mess("Course does not exist!").status(HttpStatus.BAD_REQUEST).build();
@@ -88,6 +88,25 @@ public class CourseService {
                 course.setThumbnail(null);
             }
         }
+
+        course.setVideo(courseDTO.getVideo());
+
+        if(courseVideo != null) {
+            if (Objects.equals(courseDTO.getActionVideo(), "UPDATE")) {
+                fThumbnail = CompletableFuture.runAsync(() -> {
+                    try {
+                        course.setVideo(cloudService.uploadImage(courseVideo.getBytes()));
+                    } catch (IOException e) {
+                        System.out.println("Update thumbnail course:  " + e.getMessage());
+                    }
+                });
+                futures.add(fThumbnail);
+            }
+            if (Objects.equals(courseDTO.getActionVideo(), "REMOVE")) {
+                course.setVideo(null);
+            }
+        }
+
 
         // ! Update field course
         course.setDescription(courseDTO.getDescription());
@@ -157,7 +176,7 @@ public class CourseService {
         return ResponseObject.builder().status(HttpStatus.OK).mess("Update successfully").build();
     }
 
-    public ResponseObject addCourse(CourseDTO request, MultipartFile thumbnail, List<MultipartFile> videos) {
+    public ResponseObject addCourse(CourseDTO request, MultipartFile thumbnail, MultipartFile courseVideo, List<MultipartFile> videos) {
         var course = courseRepository.findByTitle(request.getTitle()).orElse(null);
         if (course != null){
             return ResponseObject.builder().mess("Course is already exist").status(HttpStatus.BAD_REQUEST).build();
@@ -179,6 +198,18 @@ public class CourseService {
                 CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                     try {
                         newCourse.setThumbnail(cloudService.uploadImage(thumbnail.getBytes()));
+
+                    } catch (IOException e) {
+                        System.out.println("Create course:  " + e.getMessage());
+                    }
+                });
+                futures.add(future);
+            }
+
+            if (courseVideo != null) {
+                CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                    try {
+                        newCourse.setVideo(cloudService.uploadImage(courseVideo.getBytes()));
 
                     } catch (IOException e) {
                         System.out.println("Create course:  " + e.getMessage());

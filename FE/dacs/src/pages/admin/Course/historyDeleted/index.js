@@ -23,13 +23,14 @@ function HistoryDeleted() {
     const [totalData, setTotalData] = useState(0);
     const [selected, setSelected] = useState(selectes[0]);
     const [page, setPage] = useState(0);
+    const [render, setRender] = useState();
     const handleRemoveCourse = (id) => {
         console.log(id);
         const fetchApi = async () => {
             toast.promise(dataApi.hardDeleteCourse(id), {
                 loading: "Removing...",
                 success: () => {
-                    window.location.reload();
+                    setRender(!render);
                     return "Remove successfully";
                 },
                 error: (error) => {
@@ -65,7 +66,7 @@ function HistoryDeleted() {
         toast.promise(dataApi.restoreCourseById(id), {
             loading: "loading...",
             success: (data) => {
-                window.location.reload();
+                setRender(!render);
                 return data.mess;
             },
             error: (error) => {
@@ -121,7 +122,7 @@ function HistoryDeleted() {
             }
         };
         fetchApi();
-    }, []);
+    }, [render]);
 
     const handlePageData = async (action) => {
         const currentTotalData = page * selected + selected;

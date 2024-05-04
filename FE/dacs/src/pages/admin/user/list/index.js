@@ -28,31 +28,15 @@ function ListUser() {
     const [totalData, setTotalData] = useState(0);
     const [deletedModalOpen, setDeletedModalOpen] = useState(false);
     const [deleteId, setDeleteId] = useState(null);
+    const [update, setUpdate] = useState();
 
     const handleRemoveUser = () => {
         const fetchApi = async () => {
             toast.promise(authApi.softDeleteUser(deleteId), {
                 loading: "Removing...",
                 success: () => {
-                    window.location.reload();
-                    return "Remove successfully";
-                },
-                error: (error) => {
-                    return error.content;
-                },
-            });
-        };
-
-        fetchApi();
-    };
-
-    const handleRemoveElement = (id) => {
-        console.log(id);
-        const fetchApi = async () => {
-            toast.promise(authApi.softDeleteUser(id), {
-                loading: "Removing...",
-                success: () => {
-                    window.location.reload();
+                    setUpdate(!update);
+                    setDeletedModalOpen(false);
                     return "Remove successfully";
                 },
                 error: (error) => {
@@ -147,7 +131,7 @@ function ListUser() {
             }
         };
         fetchApi();
-    }, []);
+    }, [update]);
 
     useEffect(() => {
         const fetchApi = async () => {

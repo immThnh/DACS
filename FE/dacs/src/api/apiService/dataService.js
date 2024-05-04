@@ -20,7 +20,12 @@ export const getAllCategoryDeleted = async (page, size) => {
     }
 };
 
-export const createCourse = async (course, thumbnail = "", videos = "") => {
+export const createCourse = async (
+    course,
+    thumbnail = "",
+    courseVideo = "",
+    videos = ""
+) => {
     const formData = new FormData();
     const json = JSON.stringify(course);
     const courseBlob = new Blob([json], {
@@ -32,6 +37,7 @@ export const createCourse = async (course, thumbnail = "", videos = "") => {
     }
     formData.append("course", courseBlob);
     formData.append("thumbnail", thumbnail);
+    formData.append("courseVideo", courseVideo);
 
     try {
         const response = await instance.post("/data/course/create", formData, {
@@ -45,7 +51,7 @@ export const createCourse = async (course, thumbnail = "", videos = "") => {
     }
 };
 
-export const updateCourse = async (id, course, thumbnail, videos) => {
+export const updateCourse = async (id, course, thumbnail, video, videos) => {
     const formData = new FormData();
     console.log(course);
     const json = JSON.stringify(course);
@@ -59,6 +65,7 @@ export const updateCourse = async (id, course, thumbnail, videos) => {
 
     formData.append("course", courseBlob);
     formData.append("thumbnail", thumbnail);
+    formData.append("courseVideo", video);
     try {
         const result = await instance.putForm(
             `/data/course/edit/${id}`,

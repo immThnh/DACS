@@ -71,6 +71,11 @@ function EditCourse() {
         e.target.value = "";
     };
 
+    const handleUpdateVideoCourse = (e) => {
+        const file = e.target.files[0];
+        setFormData({ ...formData, video: file, actionVideo: "UPDATE" });
+    };
+
     const handleSelectChange = (e) => {
         setFormData({
             ...formData,
@@ -172,6 +177,10 @@ function EditCourse() {
         setFormData({ ...formData, sections: newSections });
     };
 
+    const handleRemoveVideoCourse = (e) => {
+        setFormData({ ...formData, video: null, actionVideo: "REMOVE" });
+    };
+
     //!NOTE: ========================END HANDLE ====================================
 
     function isURL(str) {
@@ -192,7 +201,8 @@ function EditCourse() {
         e.preventDefault();
 
         const thumbnail = formData.thumbnail;
-
+        const video = formData.video;
+        formData.video = null;
         const videos = [];
         formData.sections.forEach((section) => {
             if (section.lessons)
@@ -226,7 +236,7 @@ function EditCourse() {
                 }
             }
             toast.promise(
-                DataApi.updateCourse(id, newCourse, thumbnail, videos),
+                DataApi.updateCourse(id, newCourse, thumbnail, video, videos),
                 {
                     loading: "Loading...",
                     success: () => {
@@ -405,6 +415,69 @@ function EditCourse() {
                                             handleRemoveItemPrevivew(e)
                                         }
                                         className={clsx(styles.btnClose)}
+                                    >
+                                        {" "}
+                                        <img src={btnClose} alt="" />{" "}
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="flex">
+                        <div className={clsx(styles.formField, "w-1/2")}>
+                            <span className={clsx(styles.formLabel2)}>
+                                Video
+                            </span>
+                            <label
+                                htmlFor={`courseVideo`}
+                                className={clsx(
+                                    styles.formLabel2,
+                                    styles.labelFile
+                                )}
+                            >
+                                <div className={clsx(styles.iconFile)}>
+                                    <img src={fileSelect} alt="" />
+                                </div>
+                            </label>
+                            <input
+                                name="video"
+                                onChange={handleUpdateVideoCourse}
+                                id={`courseVideo`}
+                                type="file"
+                                hidden
+                                accept=".mp4"
+                            />
+                        </div>
+                        <div
+                            className={clsx(
+                                styles.formField,
+                                "w-1/2 mt-8 ml-9"
+                            )}
+                        >
+                            {formData.video && (
+                                <div className={clsx(styles.videoField)}>
+                                    <video
+                                        key={formData.video}
+                                        controls
+                                        className="rounded-lg"
+                                    >
+                                        <source
+                                            src={
+                                                !isURL(formData.video)
+                                                    ? URL.createObjectURL(
+                                                          formData.video
+                                                      )
+                                                    : formData.video
+                                            }
+                                            type="video/mp4"
+                                        />
+                                    </video>
+                                    <button
+                                        className={clsx(styles.btnClosePreview)}
+                                        onClick={(e) =>
+                                            handleRemoveVideoCourse(e)
+                                        }
                                     >
                                         {" "}
                                         <img src={btnClose} alt="" />{" "}

@@ -20,14 +20,9 @@ public class CourseController {
     @PostMapping("/create")
     public ResponseEntity<ResponseObject> create(@RequestPart CourseDTO course
             , @RequestPart(required = false) MultipartFile thumbnail
+            , @RequestPart(required = false) MultipartFile courseVideo
             , @RequestPart(value = "videos", required = false) List<MultipartFile> videos ) {
-        try {
-            System.out.println(courseService.getVideoDuration(videos.get(0)));
-        }
-        catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        var result = courseService.addCourse(course, thumbnail, videos);
+        var result = courseService.addCourse(course, thumbnail, courseVideo, videos);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 
@@ -84,9 +79,10 @@ public class CourseController {
 //    }
 
     @PutMapping("/edit/{id}")
-    public ResponseEntity<ResponseObject> updateCourse(@PathVariable int id, @RequestPart CourseDTO course, @RequestPart(required = false) MultipartFile thumbnail, @RequestPart(value = "videos", required = false) List<MultipartFile> videos)  {
+    public ResponseEntity<ResponseObject> updateCourse(@PathVariable int id, @RequestPart CourseDTO course
+            , @RequestPart(required = false) MultipartFile thumbnail, @RequestPart(required = false) MultipartFile courseVideo, @RequestPart(value = "videos", required = false) List<MultipartFile> videos)  {
 
-           var result = courseService.updateCourse(id, course, thumbnail, videos);
+           var result = courseService.updateCourse(id, course, thumbnail, courseVideo, videos);
            return ResponseEntity.status(result.getStatus()).body(result);
     }
 

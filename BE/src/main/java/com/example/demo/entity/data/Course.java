@@ -22,6 +22,7 @@ public class Course {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String title;
+    private String video;
     private int price;
     private int discount;
     private LocalDateTime date;

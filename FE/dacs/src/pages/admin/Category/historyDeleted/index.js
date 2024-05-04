@@ -20,13 +20,15 @@ function HistoryDeletedCategory() {
     const [totalData, setTotalData] = useState(0);
     const [selected, setSelected] = useState(selectes[0]);
     const [page, setPage] = useState(0);
+    const [render, setRender] = useState();
 
     const handleRemoveCategory = () => {
         const fetchApi = async () => {
             toast.promise(dataApi.hardDeleteCategoryById(deleteId), {
                 loading: "Removing...",
                 success: () => {
-                    window.location.reload();
+                    setRender(!render);
+                    setDeletedModalOpen(false);
                     return "Remove successfully";
                 },
                 error: (error) => {
@@ -53,7 +55,7 @@ function HistoryDeletedCategory() {
             }
         };
         fetchApi();
-    }, []);
+    }, [render]);
 
     const handleSelectPageSizeChange = (size) => {
         setSelected(size);
@@ -112,7 +114,7 @@ function HistoryDeletedCategory() {
         toast.promise(dataApi.restoreCategoryById(id), {
             loading: "loading...",
             success: (data) => {
-                window.location.reload();
+                setRender(!render);
                 return data.mess;
             },
             error: (error) => {

@@ -21,12 +21,14 @@ function ListCategory() {
     const [totalData, setTotalData] = useState(0);
     const [selected, setSelected] = useState(selectes[0]);
     const [page, setPage] = useState(0);
+    const [render, setRender] = useState();
     const handleRemoveCategory = () => {
         const fetchApi = async () => {
             toast.promise(dataApi.softDeleteCategoryById(deleteId), {
                 loading: "Removing...",
                 success: () => {
-                    window.location.reload();
+                    setDeletedModalOpen(false);
+                    setRender(!render);
                     return "Remove successfully";
                 },
                 error: (error) => {
@@ -49,7 +51,7 @@ function ListCategory() {
             }
         };
         fetchApi();
-    }, []);
+    }, [render]);
 
     const handleSelectPageSizeChange = (size) => {
         setSelected(size);

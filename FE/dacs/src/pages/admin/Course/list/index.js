@@ -25,13 +25,14 @@ function ListCourse() {
     const [totalData, setTotalData] = useState(0);
     const [selected, setSelected] = useState(selectes[0]);
     const [page, setPage] = useState(0);
+    const [reRender, setReRender] = useState();
     const handleRemoveCourse = (id) => {
         console.log(id);
         const fetchApi = async () => {
             toast.promise(dataApi.softDeleteCourse(id), {
                 loading: "Removing...",
                 success: () => {
-                    window.location.reload();
+                    setReRender(!reRender);
                     return "Remove successfully";
                 },
                 error: (error) => {
@@ -135,7 +136,7 @@ function ListCourse() {
             }
         };
         fetchApi();
-    }, []);
+    }, [reRender]);
 
     console.log(courses);
     return (
@@ -323,7 +324,9 @@ function ListCourse() {
                                                     >
                                                         {course.price === 0
                                                             ? "Free"
-                                                            : `${course.price} VND`}
+                                                            : `${course.price.toLocaleString(
+                                                                  "vi-VN"
+                                                              )} VND`}
                                                     </div>
                                                 </div>
 
@@ -340,7 +343,7 @@ function ListCourse() {
                                                         )}
                                                     >
                                                         <Link
-                                                            to={`/admin/course/view/${course.id}`}
+                                                            to={`/admin/course/detail/${course.id}`}
                                                         >
                                                             <img
                                                                 src={viewIcon}

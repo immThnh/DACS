@@ -4,6 +4,7 @@ import com.example.demo.dto.ResponseObject;
 import com.example.demo.entity.data.Category;
 import com.example.demo.entity.data.Course;
 import com.example.demo.repository.data.CategoryRepository;
+import com.example.demo.repository.data.CourseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import java.util.List;
 @Transactional
 public class CategoryService {
     private final CategoryRepository categoryRepository;
+    private final CourseRepository courseRepository;
 
     public ResponseObject getAllCategory(int page, int size) {
         var categories = categoryRepository.findAllByIsDeleted(false, PageRequest.of(page, size));
@@ -88,9 +90,14 @@ public class CategoryService {
     public ResponseObject softDelete(int id) {
         var category = categoryRepository.findById(id).orElse(null);
         if (category == null) {
-            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Course is not exist!").build();
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Category does not exist!").build();
         }
         category.setDeleted(true);
+        for (Course course : category.getCourses()) {
+            course.getCategories().remove(category);
+            courseRepository.save(course);
+        }
+        category.setCourses(null);
         categoryRepository.save(category);
         return ResponseObject.builder().mess("Delete course successfully!").status(HttpStatus.OK).build();
     }
