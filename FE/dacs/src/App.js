@@ -1,20 +1,13 @@
-import logo from "./assets/images/logo.png";
-import {
-    BrowserRouter as Router,
-    Routes,
-    Route,
-    Outlet,
-} from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { publicRoutes, adminRoutes } from "./router";
-import SignUp from "./pages/signUp";
-import { Toaster } from "sonner";
-import Header from "./layout/Header";
-import Footer from "./layout/Footer";
-import clsx from "clsx";
 import styles from "./App.module.scss";
-import NavigationTopBar from "./component/dashboard/NavigationTopBar";
+import { Toaster } from "sonner";
+import Header from "./layout/header";
+import Footer from "./layout/footer";
 import LeftNavDash from "./component/dashboard/leftNavDash";
-import HeaderAdmin from "./layout/adminLayout/headerAdmin";
+import HeaderAdmin from "./layout/headerAdmin";
+import clsx from "clsx";
+
 function App() {
     return (
         <Router>
@@ -22,13 +15,15 @@ function App() {
                 <Routes>
                     {publicRoutes.map((route, index) => (
                         <Route
+                            exact
                             key={index}
                             path={route.path}
                             element={
                                 <>
                                     <Header />
-                                    <route.component />
-                                    <Footer />
+                                    <div className={clsx("pt-header")}>
+                                        <route.component />
+                                    </div>
                                 </>
                             }
                         />
@@ -36,17 +31,24 @@ function App() {
                     {adminRoutes.map((route, index) => (
                         <Route
                             key={index}
+                            exact
                             path={route.path}
                             element={
                                 <>
                                     <HeaderAdmin></HeaderAdmin>
                                     <div className="flex bg-white">
                                         <LeftNavDash></LeftNavDash>
-                                        <route.component />
+                                        <div
+                                            className={clsx(
+                                                styles.adminContent
+                                            )}
+                                        >
+                                            <route.component />
+                                        </div>
                                     </div>
                                 </>
                             }
-                        />
+                        ></Route>
                     ))}
                 </Routes>
                 <Toaster position="top-center" richColors />

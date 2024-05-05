@@ -1,17 +1,25 @@
 package com.example.demo.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
+import com.example.demo.entity.data.Exercise;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+// NONE, REMOVE, UPDATE, HAS
+
 @Data
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class LessonDTO {
-    private String video;
+    private int id;
     private String linkVideo;
     private String title;
-    private String desc;
+    private String description;
+    private LocalDateTime date;
+    private String video;
+    private List<Exercise> exercies;
+    private boolean isEdited;
+    private String actionVideo = "NONE";
+    public LessonDTO(String value){}
 }

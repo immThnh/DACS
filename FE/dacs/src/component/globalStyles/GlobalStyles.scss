@@ -9,6 +9,12 @@
 $label-gray: #919eab;
 $bg-hover: rgba(145, 158, 171, 0.08);
 $border-color: #e9ecee;
+$h-header: 89px;
+$w-lefNav: 240px;
+$h-m-header: 144px;
+$b-shadow: rgba(145, 158, 171, 0.2) 0px 0px 2px 0px,
+    rgba(145, 158, 171, 0.12) 0px 1;
+
 body {
     margin: 0;
     line-height: normal;
@@ -108,12 +114,17 @@ body {
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px !important;
 }
 
+.b-shadow-light {
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px,
+        rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
+}
+
 .container {
     width: 1200px;
 }
 
 .wrapMainDash {
-    margin: 0px 70px;
+    margin: 0px 70px 60px 70px;
 }
 
 .titleMainDash {
@@ -145,7 +156,6 @@ a {
 }
 
 .css-b62m3t-container,
-.css-s2gg24-control,
 .css-gymzdq-control {
     height: 100% !important;
     border-radius: 8px !important;
@@ -156,4 +166,80 @@ a {
     padding: 24px;
     box-shadow: rgba(145, 158, 171, 0.2) 0px 0px 2px 0px,
         rgba(145, 158, 171, 0.12) 0px 12px 24px -4px;
+}
+
+.z-header {
+    z-index: 5;
+}
+
+.mt-header {
+    margin-top: $h-header;
+}
+.pt-header {
+    padding-top: $h-m-header;
+}
+
+.boxShadow {
+    box-shadow: rgba(145, 158, 171, 0.2) 0px 0px 2px 0px,
+        rgba(145, 158, 171, 0.12) 0px 12px 24px -4px;
+}
+
+.des-line-3 {
+    -webkit-line-clamp: 3;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+d-none {
+    display: none;
+}
+
+.css-s2gg24-control {
+    height: 58px !important;
+}
+
+.field-disable {
+    user-select: none;
+
+    input {
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+}
+
+.List_contentItem__EdrE8 svg {
+    right: 0px !important;
+}
+
+.btnModal {
+    padding: 6px 10px;
+    border-radius: 8px;
+    margin: 4px 10px;
+    font-size: 14px;
+    font-weight: 700;
+    border: 1px solid #ccc;
+    color: black;
+}
+
+.btnModal.delete {
+    color: white;
+    background-color: #ff5630;
+}
+.css-s2gg24-control {
+    height: 54px !important;
+    border-radius: 8px;
+}
+
+ul {
+    padding-left: 0;
+}
+
+.overlay {
+    background-color: rgba(22, 28, 36, 0.8);
+}
+
+.disabled {
+    display: none !important;
 }

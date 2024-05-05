@@ -18,7 +18,6 @@ public class MailService {
     @Value("${spring.mail.username}")
     private String from;
 
-    @Async
     public Boolean sendCode(String to, String code)  {
         try {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -106,7 +105,6 @@ public class MailService {
         }
     }
 
-    @Async
     public boolean sendMailResetPassword(String email, String code) {
         try {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();

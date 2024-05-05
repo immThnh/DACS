@@ -2,27 +2,156 @@ import styles from "./List.module.scss";
 import clsx from "clsx";
 import { Link } from "react-router-dom";
 import deleteIcon from "../../../../assets/images/delete.svg";
+import noDataIcon from "../../../../assets/images/ic_noData.svg";
 import viewIcon from "../../../../assets/images/view.svg";
 import editIcon from "../../../../assets/images/edit.svg";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import * as dataApi from "../../../../api/apiService/dataService";
+import Select from "react-select";
+import { toast } from "sonner";
+import {
+    CheckIcon,
+    ChevronLeftIcon,
+    ChevronRightIcon,
+    ChevronUpDownIcon,
+} from "@heroicons/react/20/solid";
+import { Listbox, Transition } from "@headlessui/react";
+import Modal from "../../../../component/modal";
+
+const selectes = [5, 10, 25];
+
 function ListCourse() {
+    const [deletedModalOpen, setDeletedModalOpen] = useState(false);
     const [courses, setCourses] = useState([]);
+    const [options, setOptions] = useState([]);
+    const [totalData, setTotalData] = useState(0);
+    const [deleteId, setDeleteId] = useState(null);
+    const [selected, setSelected] = useState(selectes[0]);
+    const [page, setPage] = useState(0);
+    const [reRender, setReRender] = useState();
+
     const handleRemoveCourse = () => {
-        console.log("a");
+        const fetchApi = async () => {
+            toast.promise(dataApi.softDeleteCourse(deleteId), {
+                loading: "Removing...",
+                success: () => {
+                    setReRender(!reRender);
+                    setDeletedModalOpen(false);
+                    return "Remove successfully";
+                },
+                error: (error) => {
+                    return error.content;
+                },
+            });
+        };
+
+        fetchApi();
     };
 
-    useEffect(() => {
+    const handlePageData = async (action) => {
+        const currentTotalData = page * selected + selected;
+        if (action === "next" && currentTotalData < totalData) {
+            console.log("a");
+            setPage((prev) => prev + 1);
+        }
+        if (action === "previous" && page > 0) {
+            setPage((prev) => prev - 1);
+        }
+    };
+
+    const handleCloseModal = () => {
+        setDeletedModalOpen(false);
+    };
+
+    const openDeleteModal = (id) => {
+        setDeleteId(id);
+        setDeletedModalOpen(true);
+    };
+
+    const handleSelectChange = (e) => {
+        const fetchApi = () => {
+            toast.promise(dataApi.getCoursesByCategory(e.id, page, selected), {
+                loading: "loading...",
+                success: (data) => {
+                    setCourses(data.content.content);
+                    setTotalData(data.content.totalElements);
+                    return "Get data successfully";
+                },
+                error: (error) => {
+                    return error;
+                },
+            });
+        };
+
+        const debounceApi = debounce(fetchApi);
+        debounceApi();
+    };
+
+    const handleSelectPageSizeChange = (size) => {
+        setSelected(size);
         const fetchApi = async () => {
             try {
-                const result = await dataApi.getAllCourse();
-                setCourses(result);
+                const result = await dataApi.getAllCourse(page, size);
+                setCourses(result.content.content);
+                setTotalData(result.content.totalElements);
             } catch (error) {
                 console.log(error);
             }
         };
         fetchApi();
-    }, []);
+    };
+
+    const handleSearchInputChange = (e) => {
+        const fetchApi = () => {
+            toast.promise(
+                dataApi.getCourseByName(e.target.value, page, selected),
+                {
+                    loading: "loading...",
+                    success: (data) => {
+                        setCourses(data.content.content);
+                        setTotalData(data.content.totalElements);
+                        return "Get data successfully";
+                    },
+                    error: (error) => {
+                        console.log(error);
+                        return error;
+                    },
+                }
+            );
+        };
+        const debounceApi = debounce(fetchApi, 1000);
+        debounceApi();
+    };
+
+    let timerId;
+
+    const debounce = (func, delay = 600) => {
+        return () => {
+            clearTimeout(timerId);
+            timerId = setTimeout(() => {
+                func();
+            }, delay);
+        };
+    };
+
+    useEffect(() => {
+        const fetchApi = async () => {
+            try {
+                const result = await dataApi.getAllCourse(0, 5);
+                let categories = [];
+                categories = await dataApi.getAllCategories(0, 99999);
+                categories.content.content.push({ id: "-1", name: "All" });
+                setCourses(result.content.content);
+                setTotalData(result.content.totalElements);
+                setOptions(categories.content.content);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchApi();
+    }, [reRender]);
+
+    console.log(courses);
     return (
         <div className="flex justify-center w-full ">
             <div className="container mt-5 mx-14">
@@ -66,52 +195,31 @@ function ListCourse() {
                             )}
                         >
                             <div className={clsx(styles.contentItem)}>
-                                <div className={clsx(styles.cbb)}>
+                                <div className={clsx(styles.formSelect)}>
                                     <label htmlFor="">Category</label>
-                                    <select
-                                        defaultValue={"1"}
-                                        className={clsx(styles.formSelect)}
-                                    >
-                                        <option selected>All</option>
-                                        <option
-                                            className={clsx(styles.option)}
-                                            value="1"
-                                        >
-                                            One
-                                        </option>
-                                        <option value="2">Two</option>
-                                        <option value="3">Three</option>
-                                    </select>
-                                    <svg
-                                        className="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium MuiSelect-icon MuiSelect-iconOutlined css-oi4g4"
-                                        focusable="false"
-                                        aria-hidden="true"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path d="M12,16 C11.7663478,16.0004565 11.5399121,15.9190812 11.36,15.77 L5.36,10.77 C4.93474074,10.4165378 4.87653776,9.78525926 5.23,9.36 C5.58346224,8.93474074 6.21474074,8.87653776 6.64,9.23 L12,13.71 L17.36,9.39 C17.5665934,9.2222295 17.8315409,9.14373108 18.0961825,9.17188444 C18.3608241,9.2000378 18.6033268,9.33252029 18.77,9.54 C18.9551341,9.74785947 19.0452548,10.0234772 19.0186853,10.3005589 C18.9921158,10.5776405 18.8512608,10.8311099 18.63,11 L12.63,15.83 C12.444916,15.955516 12.2231011,16.0153708 12,16 Z"></path>
-                                    </svg>
+                                    <Select
+                                        onChange={handleSelectChange}
+                                        getOptionLabel={(x) => x.name}
+                                        getOptionValue={(x) => x.id}
+                                        options={options}
+                                        styles={{
+                                            control: (baseStyles, state) => ({
+                                                ...baseStyles,
+                                                borderColor: state.isFocused
+                                                    ? "black"
+                                                    : "#e9ecee",
+                                            }),
+                                        }}
+                                    />
                                 </div>
                             </div>
-                            <div className={clsx(styles.contentItem)}>
+                            <div className={clsx(styles.contentItem, "flex-1")}>
                                 <div
                                     id="seachWrap"
                                     className={clsx(styles.search)}
                                 >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        aria-hidden="true"
-                                        role="img"
-                                        className="component-iconify MuiBox-root css-1kj4kj3 iconify iconify--eva"
-                                        width="1em"
-                                        height="1em"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            fill="currentColor"
-                                            d="m20.71 19.29l-3.4-3.39A7.92 7.92 0 0 0 19 11a8 8 0 1 0-8 8a7.92 7.92 0 0 0 4.9-1.69l3.39 3.4a1 1 0 0 0 1.42 0a1 1 0 0 0 0-1.42M5 11a6 6 0 1 1 6 6a6 6 0 0 1-6-6"
-                                        ></path>
-                                    </svg>
                                     <input
+                                        onChange={handleSearchInputChange}
                                         id="searchInput"
                                         type="search"
                                         placeholder="Search.."
@@ -126,26 +234,20 @@ function ListCourse() {
                                     "row rounded-lg"
                                 )}
                             >
+                                <div className="col-lg-1">Id</div>
                                 <div className="col-lg-5">Course</div>
                                 <div className="col-lg-2">Create at</div>
                                 <div className="col-lg-2">Price</div>
-                                <div className="col-lg-1">Discount</div>
                                 <div className="col-lg-2">Action</div>
                             </div>
                             <div className={clsx(styles.containerData)}>
                                 {courses &&
                                     courses.map((course, index) => {
-                                        const datetimeString =
-                                            "2024-04-21T18:23:01.368804";
-                                        const dateTime = new Date(
-                                            datetimeString
-                                        );
-
+                                        const dateTime = new Date(course.date);
                                         const date =
-                                            dateTime.toLocaleDateString(); // Lấy ngày tháng năm
+                                            dateTime.toLocaleDateString();
                                         const time =
                                             dateTime.toLocaleTimeString();
-
                                         return (
                                             <div
                                                 key={index}
@@ -154,6 +256,20 @@ function ListCourse() {
                                                     "row rounded-lg"
                                                 )}
                                             >
+                                                <div
+                                                    className={clsx(
+                                                        styles.field,
+                                                        "col-lg-1"
+                                                    )}
+                                                >
+                                                    <div
+                                                        className={clsx(
+                                                            styles.name
+                                                        )}
+                                                    >
+                                                        {course.id}
+                                                    </div>
+                                                </div>
                                                 <div
                                                     className={clsx(
                                                         styles.field,
@@ -221,23 +337,12 @@ function ListCourse() {
                                                     >
                                                         {course.price === 0
                                                             ? "Free"
-                                                            : `${course.price} VND`}
+                                                            : `${course.price.toLocaleString(
+                                                                  "vi-VN"
+                                                              )} VND`}
                                                     </div>
                                                 </div>
-                                                <div
-                                                    className={clsx(
-                                                        styles.field,
-                                                        "col-lg-1"
-                                                    )}
-                                                >
-                                                    <div
-                                                        className={clsx(
-                                                            styles.name
-                                                        )}
-                                                    >
-                                                        {course.discount}%
-                                                    </div>
-                                                </div>
+
                                                 <div
                                                     className={clsx(
                                                         styles.field,
@@ -251,37 +356,193 @@ function ListCourse() {
                                                         )}
                                                     >
                                                         <Link
-                                                            to={`/admin/course/view/${course.id}`}
+                                                            to={`/admin/course/detail/${course.id}`}
                                                         >
                                                             <img
                                                                 src={viewIcon}
                                                                 alt=""
                                                             />
                                                         </Link>
-                                                        <Link  to={`/admin/course/edit/${course.id}`}>
+                                                        <Link
+                                                            to={`/admin/course/edit/${course.id}`}
+                                                        >
                                                             <img
                                                                 src={editIcon}
                                                                 alt=""
                                                             />
                                                         </Link>
-                                                        <img
-                                                            onClick={
-                                                                handleRemoveCourse
+                                                        <button
+                                                            onClick={() =>
+                                                                openDeleteModal(
+                                                                    course.id
+                                                                )
                                                             }
-                                                            src={deleteIcon}
-                                                            alt=""
-                                                        />
+                                                        >
+                                                            <img
+                                                                src={deleteIcon}
+                                                                alt=""
+                                                                className="cursor-pointer"
+                                                            />
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
                                         );
                                     })}
+                                {!courses ||
+                                    (!courses.length && (
+                                        <div
+                                            className={clsx(
+                                                styles.noData,
+                                                "flex flex-col justify-center text-center"
+                                            )}
+                                        >
+                                            <img
+                                                src={noDataIcon}
+                                                alt=""
+                                                className={clsx(
+                                                    styles.noDataImg,
+                                                    "m-auto w-32"
+                                                )}
+                                            />
+                                            <span>No Data</span>
+                                        </div>
+                                    ))}
                             </div>
-                            <div className={clsx(styles.footer)}></div>
+                            <div className={clsx(styles.footer)}>
+                                <div className={styles.footerItem}>
+                                    Rows per page:
+                                    <div className="b-shadow-light rounded-lg ml-2 w-24">
+                                        <Listbox
+                                            value={selected}
+                                            onChange={
+                                                handleSelectPageSizeChange
+                                            }
+                                        >
+                                            <div className="relative mt-1">
+                                                <Listbox.Button className="relative w-full cursor-default rounded-lg bg-white py-2 pl-3 pr-10 text-left shadow-md focus:outline-none focus-visible:border-indigo-500 focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-orange-300 sm:text-sm">
+                                                    <span className="block truncate">
+                                                        {selected}
+                                                    </span>
+                                                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
+                                                        <ChevronUpDownIcon
+                                                            className="h-5 w-5 text-gray-400"
+                                                            aria-hidden="true"
+                                                        />
+                                                    </span>
+                                                </Listbox.Button>
+                                                <Transition
+                                                    as={Fragment}
+                                                    leave="transition ease-in duration-100"
+                                                    leaveFrom="opacity-100"
+                                                    leaveTo="opacity-0"
+                                                >
+                                                    <Listbox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
+                                                        {selectes.map(
+                                                            (
+                                                                element,
+                                                                index
+                                                            ) => (
+                                                                <Listbox.Option
+                                                                    key={index}
+                                                                    className={({
+                                                                        active,
+                                                                    }) =>
+                                                                        `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                                                                            active
+                                                                                ? "bg-amber-100 text-amber-900"
+                                                                                : "text-gray-900"
+                                                                        }`
+                                                                    }
+                                                                    value={
+                                                                        element
+                                                                    }
+                                                                >
+                                                                    {({
+                                                                        selected,
+                                                                    }) => (
+                                                                        <>
+                                                                            <span
+                                                                                className={`block truncate ${
+                                                                                    selected
+                                                                                        ? "font-medium"
+                                                                                        : "font-normal"
+                                                                                }`}
+                                                                            >
+                                                                                {
+                                                                                    element
+                                                                                }
+                                                                            </span>
+                                                                            {selected ? (
+                                                                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
+                                                                                    <CheckIcon
+                                                                                        className="h-5 w-5"
+                                                                                        aria-hidden="true"
+                                                                                    />
+                                                                                </span>
+                                                                            ) : null}
+                                                                        </>
+                                                                    )}
+                                                                </Listbox.Option>
+                                                            )
+                                                        )}
+                                                    </Listbox.Options>
+                                                </Transition>
+                                            </div>
+                                        </Listbox>
+                                    </div>
+                                </div>
+                                <div className={clsx(styles.footerItem)}>
+                                    <div className="mr-3">
+                                        {" "}
+                                        <span id="currentPage">
+                                            {page * selected + 1}-
+                                            {totalData <
+                                            page * selected + selected
+                                                ? totalData
+                                                : page * selected + selected}
+                                        </span>
+                                        <span> of </span>
+                                        <span id="total">{totalData}</span>
+                                    </div>
+                                    <button
+                                        disabled={page === 0}
+                                        onClick={() =>
+                                            handlePageData("previous")
+                                        }
+                                        className={clsx(styles.controlPage, {
+                                            [styles.disableControl]: page === 0,
+                                        })}
+                                    >
+                                        <ChevronLeftIcon></ChevronLeftIcon>
+                                    </button>
+                                    <button
+                                        disabled={
+                                            page * selected + selected >=
+                                            totalData
+                                        }
+                                        onClick={() => handlePageData("next")}
+                                        className={clsx(styles.controlPage, {
+                                            [styles.disableControl]:
+                                                page * selected + selected >=
+                                                totalData,
+                                        })}
+                                    >
+                                        <ChevronRightIcon></ChevronRightIcon>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <Modal
+                isOpen={deletedModalOpen}
+                closeModal={handleCloseModal}
+                title={"Delete"}
+                description={"Are you sure want to delete?"}
+                handleRemove={handleRemoveCourse}
+            ></Modal>
         </div>
     );
 }

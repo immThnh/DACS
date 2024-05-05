@@ -1,63 +1,83 @@
+import React, { memo } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import "./Slideshow.css";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
+import background from "../../assets/images/Banner_01_2.png";
 const PromoSlideshow = () => {
-    // Sample images and titles
     const slides = [
         {
-            img: "https://images.pexels.com/photos/1525041/pexels-photo-1525041.jpeg?auto=compress&cs=tinysrgb&w=600",
-            title: "Khoa hoc 1 dang giam gia",
-            description: "Loasdaaaaaaaaaaaaaaa",
-            buttonText: "MUA NGAY",
+            img: background,
+            title: "Lorem ipsum dolor",
+            description:
+                "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eos, natus fugiat quod unde aliquid eius facere dignissimos aut quidem. Temporibus sapiente eligendi reiciendis dolorem rerum nobis fugit magnam, dolore corrupti!",
+            buttonText: "Register Now",
         },
         {
-            img: "https://images.pexels.com/photos/842711/pexels-photo-842711.jpeg?auto=compress&cs=tinysrgb&w=600",
-            title: "Khoa hoc 2 dang giam gia",
-            description: "saaddddddddddddddddddddddddddd",
-            buttonText: "MUA NGAY",
+            img: background,
+            title: "Lorem ipsum dolor",
+            description:
+                "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eos, natus fugiat quod unde aliquid eius facere dignissimos aut quidem. Temporibus sapiente eligendi reiciendis dolorem rerum nobis fugit magnam, dolore corrupti!",
+            buttonText: "Register Now",
         },
-
         // More slides...
     ];
 
     return (
-        <Swiper
-            modules={[Pagination, Navigation, Autoplay]}
-            spaceBetween={50}
-            slidesPerView={1}
-            loop={true}
-            autoplay={{
-                delay: 3500,
-                disableOnInteraction: false,
-            }}
-            pagination={{ clickable: true }}
-            navigation={true}
-            className="relative my-4 rounded-xl overflow-hidden"
-        >
-            {slides.map((slide, index) => (
-                <SwiperSlide
-                    key={index}
-                    className="flex justify-between items-center bg-black"
-                >
-                    <div className="z-10 p-10 text-white">
-                        <h2 className="text-4xl font-bold">{slide.title}</h2>
-                        <p className="my-4">{slide.description}</p>
-                        <button className="mt-4 px-6 py-3 bg-pink-500 text-white font-medium rounded-full shadow-lg">
-                            {slide.buttonText}
-                        </button>
-                    </div>
-                    <div className="absolute top-0 right-0 bottom-0 w-1/2">
-                        <img
-                            src={slide.img}
-                            alt={`.`}
-                            className="h-full w-full object-cover"
-                        />
-                    </div>
-                </SwiperSlide>
-            ))}
-        </Swiper>
+        <div className="max-w-[1536px] mx-auto">
+            <Swiper
+                modules={[Pagination, Navigation, Autoplay]}
+                spaceBetween={50}
+                slidesPerView={1}
+                loop={true}
+                autoplay={{
+                    delay: 3500,
+                    disableOnInteraction: false,
+                }}
+                pagination={{
+                    clickable: true,
+                    renderBullet: (index, className) => {
+                        return (
+                            '<span class="' +
+                            className +
+                            ' SwiperBulletcustom"></span>'
+                        );
+                    },
+                }}
+                navigation={true}
+                className="relative rounded-xl"
+                style={{ height: "300px" }}
+            >
+                {slides.map((slide, index) => (
+                    <SwiperSlide
+                        key={index}
+                        className="flex items-center justify-between bg-pink-300"
+                    >
+                        <div className=" flex z-10 p-10 text-left text-white">
+                            <div className="w-1/2 ml-10">
+                                <h2 className="text-4xl font-bold">
+                                    {slide.title}
+                                </h2>
+                                <p className="my-4">{slide.description}</p>
+                                <button className="px-6 py-3 mt-4 text-white bg-purple-500 rounded-full font-medium shadow-lg">
+                                    {slide.buttonText}
+                                </button>
+                            </div>
+                            <div className="w-1/2 ">
+                                <img
+                                    src={slide.img}
+                                    alt="Slide image"
+                                    style={{ width: "400px", height: "200px" }}
+                                    className="object-contain h-full m-auto pb-5"
+                                />
+                            </div>
+                        </div>
+                    </SwiperSlide>
+                ))}
+            </Swiper>
+        </div>
     );
 };
 

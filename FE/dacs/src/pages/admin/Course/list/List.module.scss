@@ -13,6 +13,7 @@
     h4 {
         font-size: 24px;
         font-weight: 700;
+        text-transform: uppercase;
     }
 }
 
@@ -71,6 +72,7 @@
     border: 0px;
     vertical-align: top;
     flex-shrink: 0;
+    height: 54px;
     label {
         padding: 0px;
         line-height: 1.57143;
@@ -86,7 +88,7 @@
         max-width: calc(100% - 24px);
         position: absolute;
         left: -5px;
-        top: -53%;
+        top: -45%;
         background: white;
         transform: translate(14px, 16px) scale(1);
         transition: color 200ms cubic-bezier(0, 0, 0.2, 1) 0ms,
@@ -97,28 +99,17 @@
     }
 
     .formSelect {
-        font-family: "Be Vietnam Pro";
         width: 200px;
-        appearance: none;
-        user-select: none;
-        border-radius: 8px;
+        height: 56px;
+        border-radius: 8px !important;
         cursor: pointer;
-
-        color: currentcolor;
-        border: 1px solid $border-color;
         box-sizing: content-box;
         background: none;
-        height: 1.4375em;
         margin: 0px;
-        -webkit-tap-highlight-color: transparent;
-        display: block;
-        min-width: 0px;
         animation-name: mui-auto-fill-cancel;
-        animation-duration: 10ms;
         line-height: 1.57143;
         font-size: 0.875rem;
         font-weight: 400;
-        padding: 16.5px 14px;
     }
 
     svg {
@@ -142,6 +133,7 @@
 }
 
 .search {
+    margin-left: 16px;
     border: 1px solid $border-color;
     line-height: 1.4375em;
     font-size: 1rem;
@@ -154,7 +146,6 @@
     border-radius: 8px;
     padding-left: 14px;
     padding-right: 14px;
-    width: 300px;
     input {
         width: 200px;
         outline: none;
@@ -169,9 +160,15 @@
         width: 100%;
         animation-duration: 10ms;
         line-height: 16px;
-        font-size: 16px;
+        font-size: 14px;
         font-weight: 400;
         padding: 16.5px 0px;
+    }
+    &:focus-within {
+        border-color: black; // Ví dụ: đổi màu viền của phần tử cha khi có phần tử con đang focus
+    }
+    &:hover {
+        border-color: black;
     }
 }
 
@@ -193,18 +190,21 @@
 .footer {
     min-height: 52px;
     padding-right: 2px;
-    background-color: red;
 }
 
 .item {
     height: 90px;
-    padding: 15px 0;
+    padding: 10px 0;
+    border-bottom: 1px solid #f3f0f0;
     div {
         align-self: center;
     }
 }
 
 .cssImg {
+    width: 60px;
+    height: 60px;
+    border-radius: 100rem;
     position: relative;
     display: flex;
     -webkit-box-align: center;
@@ -216,9 +216,8 @@
     line-height: 1;
     overflow: hidden;
     user-select: none;
-    border-radius: 12px;
-    width: 64px;
-    height: 64px;
+    width: 50px;
+    height: 50px;
     margin-right: 16px;
 }
 
@@ -236,15 +235,12 @@
         cursor: auto;
 
         img {
-
             &:hover {
                 opacity: 0.7;
             }
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
         }
-       
-      
     }
     .categories {
         line-height: 1.57143;
@@ -254,3 +250,73 @@
     }
 }
 
+.containerData {
+    margin-top: 20px;
+    overflow: hidden;
+}
+
+.noData {
+    height: 100%;
+    border-radius: 16px;
+    padding: 80px 24px;
+    background-color: rgba(145, 158, 171, 0.04);
+    border: 1px dashed rgba(145, 158, 171, 0.08);
+    span {
+        margin: 8px 0px 0px;
+        font-weight: 700;
+        line-height: 1.55556;
+        font-size: 1.0625rem;
+        color: rgb(145, 158, 171);
+        text-align: center;
+    }
+}
+
+.footer {
+    padding-top: 24px;
+    display: flex;
+    justify-content: end;
+
+    .footerItem {
+        display: flex;
+        align-items: center;
+        margin-left: 32px;
+        line-height: 14px;
+        font-size: 14px;
+        font-weight: 400;
+
+        svg {
+            width: 24px;
+        }
+    }
+}
+
+.controlPage {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 32px;
+    height: 32px;
+    margin-left: 8px;
+    border-radius: 100rem;
+    &:hover {
+        background-color: #f3f0f0;
+    }
+}
+
+.disableControl {
+    user-select: none;
+    cursor: not-allowed;
+    svg {
+        color: #a7b1bb;
+    }
+}
+
+.titleModal {
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.descModal {
+    font-weight: 400;
+    font-size: 14px;
+}

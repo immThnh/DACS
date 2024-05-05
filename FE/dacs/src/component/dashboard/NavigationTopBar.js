@@ -13,7 +13,6 @@ const NavigationTopBar = () => {
                 <div className={styles.navLeftWrapper}>
                     <div className={styles.navLeft}>
                         <div className={styles.search}>
-                            {/* <div className={styles.bg} /> */}
                             <input
                                 className={styles.search1}
                                 placeholder="Search"

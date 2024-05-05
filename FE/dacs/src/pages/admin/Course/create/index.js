@@ -1,4 +1,3 @@
-import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 import styles from "./CreateCourse.module.scss";
 import clsx from "clsx";
@@ -8,162 +7,143 @@ import Select from "react-select";
 import * as DataApi from "../../../../api/apiService/dataService";
 import { toast } from "sonner";
 import btnClose from "../../../../assets/images/btnClose.svg";
+import axios from "axios";
 
 const initFormData = {
     title: "",
-    desc: "",
+    description: "",
     price: "",
     thumbnail: "",
     date: "",
-    category: [],
+    categories: [],
+    sections: [],
 };
 
 function CreateCourse() {
     const [formData, setFormData] = useState(initFormData);
     const [options, setOptions] = useState([]);
-    const [lessons, setLessons] = useState([]);
+    const [errors, setErrors] = useState({});
     let timerId;
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
+        errors[name] = "";
+        setErrors(errors);
         setFormData({
             ...formData,
             [name]: value,
         });
     };
 
-    const handleFileChange1 = (e) => {
-        const file = e.target.files[0];
-        setFormData({
-            ...formData,
-            thumbnail: file,
-        });
-    };
-
-    const handleFileChange = (e, index) => {
+    const handleFileChange = (e, index, indexSection) => {
         const file = e.target.files[0];
         if (file.type === "video/mp4") {
-            const newLessons = [...lessons];
-            newLessons[index] = {
-                ...newLessons[index],
+            const updateSection = { ...formData.sections[indexSection] };
+            updateSection.lessons[index] = {
+                ...updateSection.lessons[index],
                 video: file,
+                actionVideo: "UPDATE",
             };
-            setLessons([...newLessons]);
+            const updateSections = [...formData.sections];
+            updateSections[indexSection] = updateSection;
+
+            setFormData({ ...formData, sections: [...updateSections] });
         } else {
-            let newData = { ...formData };
-            newData = {
-                ...newData,
+            setFormData({
+                ...formData,
                 thumbnail: file,
-            };
-            setFormData({ ...newData });
+            });
         }
         e.target.value = "";
+        errors[e.target.name] = "";
+        setErrors(errors);
     };
 
     const handleSelectChange = (e) => {
-        let newCate = [];
-        e.forEach(({ name, value }) => {
-            newCate = [...newCate, value];
-        });
         setFormData({
             ...formData,
-            category: [...newCate],
+            categories: [...e],
         });
     };
 
-    const handleRemoveItemPrevivew = (e, type, index) => {
+    const handleUpdateVideoCourse = (e) => {
+        const file = e.target.files[0];
+        setFormData({ ...formData, video: file });
+    };
+
+    const handleRemoveItemPrevivew = (e, type, index, sectionIndex) => {
         if (type === "video") {
-            console.log(index);
-            const newLesson = [...lessons];
-            newLesson[index] = {
-                ...newLesson[index],
-                video: "",
+            const updateSection = { ...formData.sections[sectionIndex] };
+            updateSection.lessons[index] = {
+                ...updateSection.lessons[index],
+                video: null,
+                actionVideo: "NONE",
             };
-            setLessons([...newLesson]);
+            const updateSections = [...formData.sections];
+            updateSections[sectionIndex] = { ...updateSection };
+            setFormData({ ...formData, sections: [...updateSections] });
         } else setFormData({ ...formData, thumbnail: "" });
         e.target.value = "";
     };
 
-    const handleAddLesson = () => {
+    const handleInputLessonChange = (e, index, sectionIndex) => {
+        const { name, value } = e.target;
+        const updateSection = { ...formData.sections[sectionIndex] };
+        const updateSections = [...formData.sections];
+        updateSection.lessons[index] = {
+            ...updateSection.lessons[index],
+            [name]: value,
+        };
+        updateSections[sectionIndex] = { ...updateSection };
+
+        errors[name] = "";
+        setErrors(errors);
+
+        setFormData({
+            ...formData,
+            sections: [...updateSections],
+        });
+    };
+
+    const handleRemoveLesson = (index, sectionId) => {
+        var newSection = { ...formData.sections[sectionId] };
+        newSection.lessons.splice(index, 1);
+        var newSections = [...formData.sections];
+
+        newSections[sectionId] = newSections;
+        setFormData({ ...formData, sections: newSections });
+    };
+
+    const handleAddLesson = (sectionIndex) => {
         let lesson = {
-            stt: "",
             title: "",
-            desc: "",
+            description: "",
             video: "",
             linkVideo: "",
         };
-        const updatedLessons = [...lessons];
-        if (lessons.length === 0) {
-            lesson.stt = "1";
-        } else lesson.stt = lessons.length + 1;
-        updatedLessons.push(lesson);
-        setLessons(updatedLessons);
-    };
+        const updateSection = { ...formData.sections[sectionIndex] };
+        updateSection.lessons.push(lesson);
+        const updateSections = [...formData.sections];
+        updateSections[sectionIndex] = updateSection;
 
-    const handleInputLessonChange = (e, index) => {
-        const { name, value } = e.target;
-        const updateLessons = [...lessons];
-        updateLessons[index] = {
-            ...updateLessons[index],
-            [name]: value,
-        };
-
-        setLessons([...updateLessons]);
-    };
-
-    useEffect(() => {
-        const fetchApi = async () => {
-            try {
-                const result = await DataApi.getAllCategories();
-                var listOption = [];
-                result.forEach((category) => {
-                    const { id, name } = category;
-                    listOption.push({ value: name, label: name });
-                });
-                setOptions(listOption);
-            } catch (error) {
-                console.log("Error while get categories");
-            }
-        };
-        fetchApi();
-    }, []);
-
-    console.log("render");
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        const thumbnail = formData.thumbnail;
-
-        const videos = [];
-        lessons.forEach((less) => {
-            videos.push(less.video);
+        setFormData({
+            ...formData,
+            sections: [...updateSections],
         });
-
-        const featchApi = async () => {
-            toast.promise(
-                DataApi.createCourse(formData, lessons, thumbnail, videos),
-                {
-                    loading: "Loading...",
-                    success: () => {
-                        window.location.reload();
-                        return "Create successfully";
-                    },
-                    error: (error) => {
-                        return error;
-                    },
-                }
-            );
-        };
-
-        const debounceApi = debounce(featchApi);
-        debounceApi();
     };
 
-    const handleRemoveLesson = (index) => {
-        var newLessons = [...lessons];
-        newLessons.splice(index, 1);
-        setLessons([...newLessons]);
+    const handleInputSectionChange = (e, sectionIndex) => {
+        const updateSection = formData.sections[sectionIndex];
+        updateSection.title = e.target.value;
+        const updateSections = [...formData.sections];
+        updateSections[sectionIndex] = updateSection;
+        setFormData({ ...formData, sections: [...updateSections] });
+    };
+
+    const handleRemoveSection = (index) => {
+        const updateSections = [...formData.sections];
+        updateSections.splice(index, 1);
+        setFormData({ ...formData, sections: [...updateSections] });
     };
 
     const debounce = (func, delay = 600) => {
@@ -176,6 +156,90 @@ function CreateCourse() {
         };
     };
 
+    const handleCreateSection = () => {
+        const newSection = {
+            title: "",
+            lessons: [],
+        };
+
+        const newSections = [...formData.sections];
+        newSections.push(newSection);
+        setFormData({ ...formData, sections: [...newSections] });
+    };
+
+    const handleRemoveVideoCourse = (e) => {
+        setFormData({ ...formData, video: null });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        let errors = [];
+        // Object.keys(formData).forEach((key) => {
+        //     if (formData[key] === "") {
+        //         errors[key] = "This field is required.";
+        //     }
+        // });
+
+        // if (Object.keys(errors).length > 0) {
+        //     setErrors(errors);
+        //     return;
+        // }
+        // console.log(formData);
+
+        const thumbnail = formData.thumbnail;
+        const courseVideo = formData.video;
+        formData.video = "";
+
+        const videos = [];
+        formData.sections.forEach((section) => {
+            if (section.lessons)
+                section.lessons.forEach((less) => {
+                    if (less.video instanceof File) {
+                        videos.push(less.video);
+                        less.video = "";
+                    }
+                });
+        });
+
+        const featchApi = async () => {
+            let newCategories = [];
+            formData.categories.forEach((cate) => newCategories.push(cate.id));
+            const newCourse = {
+                ...formData,
+                categories: newCategories,
+            };
+            toast.promise(
+                DataApi.createCourse(newCourse, thumbnail, courseVideo, videos),
+                {
+                    loading: "Loading...",
+                    success: () => {
+                        window.location.reload();
+                        return "Create successfully";
+                    },
+                    error: (error) => {
+                        console.log(error);
+                        return error.mess;
+                    },
+                }
+            );
+        };
+
+        const debounceApi = debounce(featchApi);
+        debounceApi();
+    };
+    useEffect(() => {
+        const fetchApi = async () => {
+            try {
+                const result = await DataApi.getAllCategories(0, 99999999);
+                setOptions(result.content.content);
+            } catch (error) {
+                console.log(error.mess);
+            }
+        };
+        fetchApi();
+    }, []);
+
+    console.log("render");
     return (
         <>
             <div className="container flex flex-col">
@@ -189,20 +253,27 @@ function CreateCourse() {
                     >
                         <div className={clsx(styles.formField)}>
                             <input
+                                required
                                 onChange={handleInputChange}
                                 value={formData.title}
                                 name="title"
+                                data-validate
                                 className={clsx(styles.formInput)}
                                 type="text"
                             />
                             <label className={clsx(styles.formLabel)}>
                                 Course Name
                             </label>
+                            {errors.title && (
+                                <div className="text-red-500 mt-1 text-sm ml-1">
+                                    {errors.title}
+                                </div>
+                            )}
                         </div>
                         <div className={clsx(styles.formField)}>
                             <textarea
-                                name="desc"
-                                value={formData.desc}
+                                name="description"
+                                value={formData.description}
                                 onChange={handleInputChange}
                                 className={clsx(styles.formInput, "h-22")}
                                 type="text"
@@ -215,6 +286,11 @@ function CreateCourse() {
                             >
                                 Description
                             </label>
+                            {errors.description && (
+                                <div className="text-red-500 mt-1 text-sm ml-1">
+                                    {errors.description}
+                                </div>
+                            )}
                         </div>
                         <div className={clsx("flex")}>
                             <div
@@ -223,8 +299,11 @@ function CreateCourse() {
                                 <Select
                                     isMulti
                                     onChange={handleSelectChange}
-                                    // defaultValue={selectedOption}
+                                    value={formData.categories}
+                                    getOptionLabel={(x) => x.name}
+                                    getOptionValue={(x) => x.id}
                                     options={options}
+                                    name="categories"
                                     styles={{
                                         control: (baseStyles, state) => ({
                                             ...baseStyles,
@@ -237,11 +316,11 @@ function CreateCourse() {
                                 <label className={clsx(styles.formLabel)}>
                                     Category
                                 </label>
-                                {/* <Combobox
-                                    fValueChange={handleInputChange}
-                                    title="Category"
-                                    list={["C#", "Java"]}
-                                ></Combobox> */}
+                                {errors.categories && (
+                                    <div className="text-red-500 mt-1 text-sm ml-1">
+                                        {errors.categories}
+                                    </div>
+                                )}
                             </div>
                             <div className={clsx(styles.formField, "w-1/2")}>
                                 <input
@@ -255,36 +334,56 @@ function CreateCourse() {
                                 <label className={clsx(styles.formLabel)}>
                                     Price
                                 </label>
+                                {errors.price && (
+                                    <div className="text-red-500 mt-1 text-sm ml-1">
+                                        {errors.price}
+                                    </div>
+                                )}
                             </div>
                         </div>
-                        <div className={clsx(styles.formField)}>
-                            <span className={clsx(styles.formLabel2)}>
-                                Thumbnail
-                            </span>
-                            <label
-                                htmlFor="thumbnail"
+                        <div className="flex">
+                            <div className={clsx(styles.formField, "w-1/2")}>
+                                <span className={clsx(styles.formLabel2)}>
+                                    Thumbnail
+                                </span>
+                                <label
+                                    htmlFor="thumbnail"
+                                    className={clsx(
+                                        styles.formLabel2,
+                                        styles.labelFile
+                                    )}
+                                >
+                                    <div className={clsx(styles.iconFile)}>
+                                        <img src={fileSelect} alt="" />
+                                    </div>
+                                </label>
+                                {errors.thumbnail && (
+                                    <div className="text-red-500 mt-1 text-sm ml-1">
+                                        {errors.thumbnail}
+                                    </div>
+                                )}
+
+                                <input
+                                    name="thumbnail"
+                                    onChange={handleFileChange}
+                                    id="thumbnail"
+                                    type="file"
+                                    hidden
+                                    accept=".jpg, .jpeg, .png"
+                                />
+                            </div>
+                            <div
                                 className={clsx(
-                                    styles.formLabel2,
-                                    styles.labelFile
+                                    styles.formField,
+                                    "w-1/2 mt-8 ml-9"
                                 )}
                             >
-                                <div className={clsx(styles.iconFile)}>
-                                    <img src={fileSelect} alt="" />
-                                </div>
-                            </label>
-
-                            <input
-                                name="thumbnail"
-                                onChange={handleFileChange1}
-                                id="thumbnail"
-                                type="file"
-                                hidden
-                            />
-
-                            <div className={clsx(styles.imgList)}>
                                 {formData.thumbnail && (
                                     <div className={clsx(styles.imgField)}>
                                         <img
+                                            className={clsx(
+                                                styles.thumbnailImg
+                                            )}
                                             src={URL.createObjectURL(
                                                 formData.thumbnail
                                             )}
@@ -294,7 +393,68 @@ function CreateCourse() {
                                             onClick={(e) =>
                                                 handleRemoveItemPrevivew(e)
                                             }
-                                            className={clsx(styles.btnClose)}
+                                            className={clsx(
+                                                styles.btnClosePreview
+                                            )}
+                                        >
+                                            <img src={btnClose} alt="" />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        <div className="flex">
+                            <div className={clsx(styles.formField, "w-1/2")}>
+                                <span className={clsx(styles.formLabel2)}>
+                                    Video
+                                </span>
+                                <label
+                                    htmlFor={`courseVideo`}
+                                    className={clsx(
+                                        styles.formLabel2,
+                                        styles.labelFile
+                                    )}
+                                >
+                                    <div className={clsx(styles.iconFile)}>
+                                        <img src={fileSelect} alt="" />
+                                    </div>
+                                </label>
+                                <input
+                                    name="video"
+                                    onChange={handleUpdateVideoCourse}
+                                    id={`courseVideo`}
+                                    type="file"
+                                    hidden
+                                    accept=".mp4"
+                                />
+                            </div>
+                            <div
+                                className={clsx(
+                                    styles.formField,
+                                    "w-1/2 mt-8 ml-9"
+                                )}
+                            >
+                                {formData.video && (
+                                    <div className={clsx(styles.videoField)}>
+                                        <video
+                                            id="video"
+                                            controls
+                                            className="rounded-lg"
+                                        >
+                                            <source
+                                                src={URL.createObjectURL(
+                                                    formData.video
+                                                )}
+                                                type="video/mp4"
+                                            />
+                                        </video>
+                                        <button
+                                            className={clsx(
+                                                styles.btnClosePreview
+                                            )}
+                                            onClick={(e) =>
+                                                handleRemoveVideoCourse(e)
+                                            }
                                         >
                                             {" "}
                                             <img src={btnClose} alt="" />{" "}
@@ -303,230 +463,372 @@ function CreateCourse() {
                                 )}
                             </div>
                         </div>
-
                         {/*NOTE Lesson */}
-
-                        <h5 className="text-center">Lesson</h5>
+                        <h5 className="text-center font-semibold text-3xl">
+                            Curriculum
+                        </h5>
 
                         <div className={clsx(styles.lessonArea)}>
-                            {lessons &&
-                                lessons.map((lesson, index) => {
-                                    return (
-                                        <div
-                                            key={index}
-                                            className={clsx(
-                                                styles.lessonField,
-                                                "gap-6 flex flex-col mt-4"
-                                            )}
-                                        >
+                            {formData.sections &&
+                                formData.sections.map(
+                                    (section, sectionIndex) => {
+                                        const lessons = section.lessons;
+                                        return (
                                             <div
                                                 className={clsx(
-                                                    styles.formField,
-                                                    "flex justify-between"
+                                                    "mt-1 flex flex-col"
                                                 )}
+                                                key={sectionIndex}
                                             >
-                                                <div className="self-center  font-semibold">
-                                                    Lesson {index + 1}
-                                                </div>
-
                                                 <div
-                                                    className="justify-center px-3 py-1.5 text-sm cursor-pointer font-medium text-center text-white bg-black rounded-lg max-md:max-w-1/5 w-1/5 self-center"
+                                                    className={clsx(
+                                                        styles.sectionName,
+                                                        "text-center  font-semibold"
+                                                    )}
+                                                >
+                                                    Section {sectionIndex + 1}
+                                                </div>
+                                                <div
+                                                    className="justify-end px-3 py-1.5 text-sm cursor-pointer font-medium text-center text-white bg-black rounded-lg max-md:max-w-1/5 w-1/5 self-end"
                                                     onClick={() => {
-                                                        handleRemoveLesson(
-                                                            index
+                                                        handleRemoveSection(
+                                                            sectionIndex
                                                         );
                                                     }}
                                                 >
                                                     {" "}
-                                                    Remove
+                                                    Remove section
                                                 </div>
-                                            </div>
-                                            <div
-                                                className={clsx(
-                                                    styles.formField
-                                                )}
-                                            >
-                                                <input
-                                                    name={`title`}
-                                                    onChange={(e) => {
-                                                        handleInputLessonChange(
-                                                            e,
-                                                            index
-                                                        );
-                                                    }}
-                                                    value={lesson.title}
-                                                    className={clsx(
-                                                        styles.formInput
-                                                    )}
-                                                    type="text"
-                                                />
-                                                <label
-                                                    className={clsx(
-                                                        styles.formLabel
-                                                    )}
-                                                >
-                                                    Lesson Name
-                                                </label>
-                                            </div>
-                                            <div
-                                                className={clsx(
-                                                    styles.formField
-                                                )}
-                                            >
-                                                <textarea
-                                                    name="desc"
-                                                    value={lesson.desc}
-                                                    onChange={(e) => {
-                                                        handleInputLessonChange(
-                                                            e,
-                                                            index
-                                                        );
-                                                    }}
-                                                    className={clsx(
-                                                        styles.formInput,
-                                                        "h-22"
-                                                    )}
-                                                    type="text"
-                                                />
-                                                <label
-                                                    className={clsx(
-                                                        styles.formLabel,
-                                                        styles.descInput
-                                                    )}
-                                                >
-                                                    Description
-                                                </label>
-                                            </div>
-                                            <div className="flex">
                                                 <div
                                                     className={clsx(
                                                         styles.formField,
-                                                        "w-1/2"
+                                                        "mt-4"
                                                     )}
                                                 >
-                                                    <span
-                                                        className={clsx(
-                                                            styles.formLabel2
-                                                        )}
-                                                    >
-                                                        Video
-                                                    </span>
-                                                    <label
-                                                        htmlFor={`video${index}`}
-                                                        className={clsx(
-                                                            styles.formLabel2,
-                                                            styles.labelFile
-                                                        )}
-                                                    >
-                                                        <div
-                                                            className={clsx(
-                                                                styles.iconFile
-                                                            )}
-                                                        >
-                                                            <img
-                                                                src={fileSelect}
-                                                                alt=""
-                                                            />
-                                                        </div>
-                                                    </label>
                                                     <input
-                                                        name="video"
+                                                        data-section="1"
+                                                        name={`title`}
                                                         onChange={(e) => {
-                                                            handleFileChange(
+                                                            handleInputSectionChange(
                                                                 e,
-                                                                index
+                                                                sectionIndex
                                                             );
                                                         }}
-                                                        id={`video${index}`}
-                                                        type="file"
-                                                        hidden
+                                                        value={section.title}
+                                                        className={clsx(
+                                                            styles.formInput
+                                                        )}
+                                                        type="text"
                                                     />
+                                                    <label
+                                                        className={clsx(
+                                                            styles.formLabel
+                                                        )}
+                                                    >
+                                                        Section Name
+                                                    </label>
                                                 </div>
-                                                <div
-                                                    className={clsx(
-                                                        styles.formField,
-                                                        "w-1/2 mt-8 ml-9"
-                                                    )}
-                                                >
-                                                    {lesson.video && (
-                                                        <div
-                                                            className={clsx(
-                                                                styles.videoField
-                                                            )}
-                                                        >
-                                                            <video
-                                                                controls
-                                                                className="rounded-lg"
-                                                            >
-                                                                <source
-                                                                    src={URL.createObjectURL(
-                                                                        lesson.video
+                                                {lessons &&
+                                                    lessons.map(
+                                                        (lesson, index) => {
+                                                            return (
+                                                                <div
+                                                                    key={index}
+                                                                    className={clsx(
+                                                                        styles.lessonField,
+                                                                        "gap-6 flex flex-col mt-4"
                                                                     )}
-                                                                    type="video/mp4"
-                                                                />
-                                                            </video>
-                                                            <button
-                                                                className={clsx(
-                                                                    styles.btnClosePreview
-                                                                )}
-                                                                onClick={(e) =>
-                                                                    handleRemoveItemPrevivew(
-                                                                        e,
-                                                                        "video",
-                                                                        index
-                                                                    )
-                                                                }
-                                                            >
-                                                                {" "}
-                                                                <img
-                                                                    src={
-                                                                        btnClose
-                                                                    }
-                                                                    alt=""
-                                                                />{" "}
-                                                            </button>
-                                                        </div>
+                                                                >
+                                                                    <div
+                                                                        className={clsx(
+                                                                            styles.formField,
+                                                                            "flex justify-between"
+                                                                        )}
+                                                                    >
+                                                                        <div className="self-center  font-semibold">
+                                                                            Lesson{" "}
+                                                                            {index +
+                                                                                1}
+                                                                        </div>
+
+                                                                        <div
+                                                                            className="justify-center px-3 py-1.5 text-sm cursor-pointer font-medium text-center text-white bg-black rounded-lg max-md:max-w-1/5 w-1/5 self-center"
+                                                                            onClick={() => {
+                                                                                handleRemoveLesson(
+                                                                                    index,
+                                                                                    sectionIndex
+                                                                                );
+                                                                            }}
+                                                                        >
+                                                                            {" "}
+                                                                            Remove
+                                                                            lesson
+                                                                        </div>
+                                                                    </div>
+                                                                    <div
+                                                                        className={clsx(
+                                                                            styles.formField
+                                                                        )}
+                                                                    >
+                                                                        <input
+                                                                            data-section="1"
+                                                                            name={`title`}
+                                                                            onChange={(
+                                                                                e
+                                                                            ) => {
+                                                                                handleInputLessonChange(
+                                                                                    e,
+                                                                                    index,
+                                                                                    sectionIndex
+                                                                                );
+                                                                            }}
+                                                                            value={
+                                                                                lesson.title
+                                                                            }
+                                                                            className={clsx(
+                                                                                styles.formInput
+                                                                            )}
+                                                                            type="text"
+                                                                        />
+                                                                        <label
+                                                                            className={clsx(
+                                                                                styles.formLabel
+                                                                            )}
+                                                                        >
+                                                                            Lesson
+                                                                            Name
+                                                                        </label>
+                                                                    </div>
+                                                                    <div
+                                                                        className={clsx(
+                                                                            styles.formField
+                                                                        )}
+                                                                    >
+                                                                        <textarea
+                                                                            name="description"
+                                                                            value={
+                                                                                lesson.description
+                                                                            }
+                                                                            onChange={(
+                                                                                e
+                                                                            ) => {
+                                                                                handleInputLessonChange(
+                                                                                    e,
+                                                                                    index,
+                                                                                    sectionIndex
+                                                                                );
+                                                                            }}
+                                                                            className={clsx(
+                                                                                styles.formInput,
+                                                                                "h-22"
+                                                                            )}
+                                                                            type="text"
+                                                                        />
+                                                                        <label
+                                                                            className={clsx(
+                                                                                styles.formLabel,
+                                                                                styles.descInput
+                                                                            )}
+                                                                        >
+                                                                            Description
+                                                                        </label>
+                                                                    </div>
+                                                                    <div className="flex">
+                                                                        <div
+                                                                            className={clsx(
+                                                                                styles.formField,
+                                                                                "w-1/2"
+                                                                            )}
+                                                                        >
+                                                                            <span
+                                                                                className={clsx(
+                                                                                    styles.formLabel2
+                                                                                )}
+                                                                            >
+                                                                                Video
+                                                                            </span>
+                                                                            <label
+                                                                                htmlFor={`video${section.title}${index}`}
+                                                                                className={clsx(
+                                                                                    styles.formLabel2,
+                                                                                    styles.labelFile
+                                                                                )}
+                                                                            >
+                                                                                <div
+                                                                                    className={clsx(
+                                                                                        styles.iconFile
+                                                                                    )}
+                                                                                >
+                                                                                    <img
+                                                                                        src={
+                                                                                            fileSelect
+                                                                                        }
+                                                                                        alt=""
+                                                                                    />
+                                                                                </div>
+                                                                            </label>
+                                                                            <input
+                                                                                name="video"
+                                                                                onChange={(
+                                                                                    e
+                                                                                ) => {
+                                                                                    handleFileChange(
+                                                                                        e,
+                                                                                        index,
+                                                                                        sectionIndex
+                                                                                    );
+                                                                                }}
+                                                                                id={`video${section.title}${index}`}
+                                                                                type="file"
+                                                                                hidden
+                                                                                accept=".mp4"
+                                                                            />
+                                                                        </div>
+                                                                        <div
+                                                                            className={clsx(
+                                                                                styles.formField,
+                                                                                "w-1/2 mt-8 ml-9"
+                                                                            )}
+                                                                        >
+                                                                            {lesson.video && (
+                                                                                <div
+                                                                                    className={clsx(
+                                                                                        styles.videoField
+                                                                                    )}
+                                                                                >
+                                                                                    <video
+                                                                                        id="video"
+                                                                                        controls
+                                                                                        className="rounded-lg"
+                                                                                    >
+                                                                                        <source
+                                                                                            src={URL.createObjectURL(
+                                                                                                lesson.video
+                                                                                            )}
+                                                                                            type="video/mp4"
+                                                                                        />
+                                                                                    </video>
+                                                                                    <button
+                                                                                        className={clsx(
+                                                                                            styles.btnClosePreview
+                                                                                        )}
+                                                                                        onClick={(
+                                                                                            e
+                                                                                        ) =>
+                                                                                            handleRemoveItemPrevivew(
+                                                                                                e,
+                                                                                                "video",
+                                                                                                index,
+                                                                                                sectionIndex
+                                                                                            )
+                                                                                        }
+                                                                                    >
+                                                                                        {" "}
+                                                                                        <img
+                                                                                            src={
+                                                                                                btnClose
+                                                                                            }
+                                                                                            alt=""
+                                                                                        />{" "}
+                                                                                    </button>
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div
+                                                                        className={clsx(
+                                                                            styles.formField
+                                                                        )}
+                                                                    >
+                                                                        <input
+                                                                            name="linkVideo"
+                                                                            value={
+                                                                                lesson.linkVideo
+                                                                            }
+                                                                            onChange={(
+                                                                                e
+                                                                            ) => {
+                                                                                handleInputLessonChange(
+                                                                                    e,
+                                                                                    index,
+                                                                                    sectionIndex
+                                                                                );
+                                                                            }}
+                                                                            className={clsx(
+                                                                                styles.formInput
+                                                                            )}
+                                                                            type="text"
+                                                                        />
+                                                                        <label
+                                                                            className={clsx(
+                                                                                styles.formLabel
+                                                                            )}
+                                                                        >
+                                                                            Link
+                                                                            Video
+                                                                        </label>
+                                                                    </div>
+
+                                                                    {/* <div
+                                                                        className={clsx(
+                                                                            styles.formField
+                                                                        )}
+                                                                    >
+                                                                        <input
+                                                                            name="duration"
+                                                                            value={
+                                                                                lesson.duration
+                                                                            }
+                                                                            onChange={(
+                                                                                e
+                                                                            ) => {
+                                                                                handleInputLessonChange(
+                                                                                    e,
+                                                                                    index,
+                                                                                    sectionIndex
+                                                                                );
+                                                                            }}
+                                                                            className={clsx(
+                                                                                styles.formInput
+                                                                            )}
+                                                                            type="time"
+                                                                        />
+                                                                        <label
+                                                                            className={clsx(
+                                                                                styles.formLabel
+                                                                            )}
+                                                                        >
+                                                                            Duration
+                                                                        </label>
+                                                                    </div> */}
+                                                                </div>
+                                                            );
+                                                        }
                                                     )}
-                                                </div>
-                                            </div>
-                                            <div
-                                                className={clsx(
-                                                    styles.formField
-                                                )}
-                                            >
-                                                <input
-                                                    name="linkVideo"
-                                                    value={lesson.linkVideo}
-                                                    onChange={(e) => {
-                                                        handleInputLessonChange(
-                                                            e,
-                                                            index
-                                                        );
-                                                    }}
-                                                    className={clsx(
-                                                        styles.formInput
-                                                    )}
-                                                    type="text"
-                                                />
-                                                <label
-                                                    className={clsx(
-                                                        styles.formLabel
-                                                    )}
+                                                <button
+                                                    type="submit"
+                                                    className="justify-start px-1 py-2 mt-4 text-sm font-medium text-center text-white bg-black rounded-lg max-md:max-w-1/5 w-1/5 self-start"
+                                                    onClick={() =>
+                                                        handleAddLesson(
+                                                            sectionIndex
+                                                        )
+                                                    }
                                                 >
-                                                    Link Video
-                                                </label>
+                                                    Add Lesson
+                                                </button>
                                             </div>
-                                        </div>
-                                    );
-                                })}
+                                        );
+                                    }
+                                )}
                         </div>
                         <button
                             type="submit"
-                            className="justify-center px-5 py-3.5 mt-5 text-sm font-medium text-center text-white bg-black rounded-lg max-md:max-w-1/2 w-1/2 self-center"
-                            onClick={handleAddLesson}
+                            className="justify-center px-5 py-2.5 mt-5 text-sm font-medium text-center text-white bg-black rounded-lg max-md:max-w-1/3 w-1/3 self-center"
+                            onClick={handleCreateSection}
                         >
-                            Add Lesson
+                            Create Section
                         </button>
+
                         <button
                             type="submit"
                             className="justify-center px-5 py-3.5 mt-5 text-sm font-medium text-center text-white bg-black rounded-lg max-md:max-w-full w-full"
