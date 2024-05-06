@@ -16,6 +16,7 @@ import HistoryDeleted from "../pages/admin/Course/historyDeleted";
 import HistoryDeletedCategory from "../pages/admin/Category/historyDeleted";
 import ListUser from "../pages/admin/user/list";
 import ListDeletedUser from "../pages/admin/user/historyDeleted";
+import UserProfile from "../pages/user/userprofile"
 
 const publicRoutes = [
     { path: "/", component: LandingPage },
@@ -24,6 +25,8 @@ const publicRoutes = [
     { path: "*", component: NotFoundPage },
     { path: "/course/:id", component: Course },
     { path: "/course/detail/:id", component: DetailCourse },
+    {path:"user/profile",component:UserProfile}
+
 ];
 
 const adminRoutes = [
