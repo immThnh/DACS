@@ -1,10 +1,7 @@
 .w-1400 {
     width: 1400px !important;
 }
-@import url("https://fonts.googleapis.com/css2?family=LineAwesome:wght@500&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800;900&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
 $label-gray: #919eab;
 $bg-hover: rgba(145, 158, 171, 0.08);
@@ -12,8 +9,7 @@ $border-color: #e9ecee;
 $h-header: 89px;
 $w-lefNav: 240px;
 $h-m-header: 144px;
-$b-shadow: rgba(145, 158, 171, 0.2) 0px 0px 2px 0px,
-    rgba(145, 158, 171, 0.12) 0px 1;
+$b-shadow: rgba(17, 17, 26, 0.1) 0px 0px 16px;
 
 body {
     margin: 0;
@@ -22,10 +18,10 @@ body {
 }
 :root {
     /* fonts */
-    --font-nunito-sans: "Nunito Sans";
-    --font-lineawesome: LineAwesome;
-    --font-inter: Inter;
-    --font-dm-sans: "DM Sans";
+    // --font-nunito-sans: "Nunito Sans";
+    // --font-lineawesome: LineAwesome;
+    // --font-inter: Inter;
+    // --font-dm-sans: "DM Sans";
 
     /* font sizes */
     --font-size-xl: 20px;
@@ -243,3 +239,63 @@ ul {
 .disabled {
     display: none !important;
 }
+
+.active {
+    svg {
+        transform: rotate(-180deg) !important;
+    }
+}
+
+.transform {
+    transition: all 0.2s ease-in-out;
+}
+
+.checkbox-wrapper *,
+.checkbox-wrapper *::before,
+.checkbox-wrapper *::after {
+    box-sizing: border-box;
+}
+
+.checkbox-wrapper label {
+    display: block;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.checkbox-wrapper input {
+    visibility: hidden;
+    display: none;
+}
+
+.checkbox-wrapper input:checked ~ .checkbox {
+    transform: rotate(45deg) translateX(-7px);
+    width: 14px;
+    margin-left: 12px;
+    border-color: #24c78e;
+    border-top-color: transparent;
+    border-left-color: transparent;
+    border-radius: 0;
+}
+
+.checkbox-wrapper .checkbox {
+    display: block;
+    width: inherit;
+    height: inherit;
+    border: 2px solid #434343;
+    border-radius: 4px;
+    transition: all 0.375s;
+}
+
+.App {
+    height: 100vh;
+}
+
+.hideScroll {
+    overflow-y: hidden !important;
+}
+
+// input {
+//     outline: none !important;
+//     border: none !important;
+// }

@@ -1,16 +1,18 @@
 import axios from "axios";
 
-let token;
-
-export const setToken = (jwt) => {
-    token = jwt;
+const getToken = () => {
+    return sessionStorage.getItem("token");
 };
 
-const instance = axios.create({
-    baseURL: "http://localhost:8080/api/v1",
+const publicInstance = axios.create({
+    baseURL: "http://localhost:8080/api/v1/public",
+    headers: { Authorization: `Bearer ${getToken()}` },
+});
+export const privateInstance = axios.create({
+    baseURL: "http://localhost:8080/api/v1/private",
 });
 
-instance.interceptors.response.use(
+publicInstance.interceptors.response.use(
     function (res) {
         return res.data;
     },
@@ -19,9 +21,30 @@ instance.interceptors.response.use(
     }
 );
 
-instance.interceptors.request.use(function (config) {
+publicInstance.interceptors.request.use(function (config) {
+    const token = sessionStorage.getItem("token");
+    console.log(token);
     if (token != null) config.headers.Authorization = `Bearer ${token}`;
     return config;
 });
 
-export default instance;
+privateInstance.interceptors.response.use(
+    function (res) {
+        return res.data;
+    },
+    function (error) {
+        console.log(error);
+        return Promise.reject(error);
+    }
+);
+
+privateInstance.interceptors.request.use(function (config) {
+    let token = sessionStorage.getItem("token");
+    console.log(token);
+    token =
+        "eyJhbGciOiJIUzI1NiJ9.eyJleHAiOjE3MTQ5NDE4NTIsInN1YiI6ImFkbWluQGV4YW1wbGUuY29tIiwiaWF0IjoxNzE0OTM4MjUyfQ.z-VPHYtdOUBUc0eiwrM1SE5W0UfBkAJeEj6XF8QVuf4";
+    if (token != null) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+});
+
+export default publicInstance;

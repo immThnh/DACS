@@ -5,9 +5,10 @@ import { toast } from "sonner";
 import * as dataApi from "../../api/apiService/dataService";
 import { Link, useParams } from "react-router-dom";
 const CurriculumItem = ({ item, index, isHighlighted }) => {
-    const handleOpenSubLesson = () => {
+    const handleOpenSubLesson = (e) => {
         const sub = document.getElementById(index);
         sub.classList.toggle("disabled");
+        e.currentTarget.classList.toggle("active");
     };
     return (
         <div
@@ -23,7 +24,7 @@ const CurriculumItem = ({ item, index, isHighlighted }) => {
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 16 16"
                     fill="currentColor"
-                    class="w-6 h-6 mt-1.5"
+                    className={clsx("w-6 h-6 mt-1.5 transform")}
                 >
                     <path
                         fill-rule="evenodd"
@@ -81,26 +82,6 @@ const CurriculumItem = ({ item, index, isHighlighted }) => {
     );
 };
 
-const CourseDetails = ({ course, expanded }) => (
-    <div
-        className={clsx(styles.courseDetailsWrapper, "b-shadow", {
-            [styles.expanded]: expanded,
-        })}
-    >
-        <h3 className={styles.courseDetailsTitle}>Curriculum</h3>
-        <div className={styles.courseCurriculum}>
-            {course.sections.map((item, index) => (
-                <>
-                    <CurriculumItem
-                        key={index}
-                        item={item}
-                        isHighlighted={index % 2 === 0}
-                    />
-                </>
-            ))}
-        </div>
-    </div>
-);
 
 const initCourse = {
     title: "Web Design Fundamentals",

@@ -105,8 +105,6 @@ public class CourseService {
                 course.setVideo(null);
             }
         }
-       
-
 
         // ! Update field course
         course.setDescription(courseDTO.getDescription());
@@ -229,31 +227,34 @@ public class CourseService {
             }
 
             int indexVideo = 0;
-            for(var section : request.getSections()) {
-                if(!section.getLessons().isEmpty()) {
-                    Section tSection = Section.builder()
-                            .title(section.getTitle())
-                            .course(newCourse)
-                            .lessons(new ArrayList<>())
-                            .build();
-                newCourse.getSections().add(tSection);
+            if(request.getSections() != null) {
+                for(var section : request.getSections()) {
+                    if(!section.getLessons().isEmpty()) {
+                        Section tSection = Section.builder()
+                                .title(section.getTitle())
+                                .course(newCourse)
+                                .lessons(new ArrayList<>())
+                                .build();
+                        newCourse.getSections().add(tSection);
 
-                    if(section.getLessons().size() > 0) {
-                        for (var lesson : section.getLessons()
-                        ) {
-                            Lesson tLesson = Lesson.builder()
-                                    .section(tSection)
-                                    .date(LocalDateTime.now())
-                                    .title(lesson.getTitle())
-                                    .description(lesson.getDescription())
-                                    .linkVideo(lesson.getLinkVideo())
-                                    .build();
-                            tSection.getLessons().add(tLesson);
-                            indexVideo = lessonService.updateVideo(lesson, tLesson, urlVideos, indexVideo);
+                        if(section.getLessons().size() > 0) {
+                            for (var lesson : section.getLessons()
+                            ) {
+                                Lesson tLesson = Lesson.builder()
+                                        .section(tSection)
+                                        .date(LocalDateTime.now())
+                                        .title(lesson.getTitle())
+                                        .description(lesson.getDescription())
+                                        .linkVideo(lesson.getLinkVideo())
+                                        .build();
+                                tSection.getLessons().add(tLesson);
+                                indexVideo = lessonService.updateVideo(lesson, tLesson, urlVideos, indexVideo);
                             }
                         }
                     }
                 }
+            }
+
             courseRepository.save(newCourse);
             CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
             allOf.join();

@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @Entity
 @RequiredArgsConstructor
@@ -17,6 +19,6 @@ public class Token {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private final String token;
-
-
+    private LocalDateTime createAt;
+    private LocalDateTime inspirationAt;
 }

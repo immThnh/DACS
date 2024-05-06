@@ -7,7 +7,6 @@ import Select from "react-select";
 import * as DataApi from "../../../../api/apiService/dataService";
 import { toast } from "sonner";
 import btnClose from "../../../../assets/images/btnClose.svg";
-import axios from "axios";
 
 const initFormData = {
     title: "",
@@ -242,7 +241,7 @@ function CreateCourse() {
     console.log("render");
     return (
         <>
-            <div className="container flex flex-col">
+            <div className="container flex flex-col justify-center">
                 <div className="wrapMainDash mr-auto w-3/4 ">
                     <h3 className="titleMainDash">Create a new course</h3>
                     <div
@@ -464,7 +463,7 @@ function CreateCourse() {
                             </div>
                         </div>
                         {/*NOTE Lesson */}
-                        <h5 className="text-center font-semibold text-3xl">
+                        <h5 className="text-center font-semibold text-3xl mt-12">
                             Curriculum
                         </h5>
 

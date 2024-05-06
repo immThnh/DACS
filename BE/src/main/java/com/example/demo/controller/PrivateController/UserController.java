@@ -1,4 +1,4 @@
-package com.example.demo.controller.user;
+package com.example.demo.controller.PrivateController;
 
 import com.example.demo.auth.*;
 import com.example.demo.dto.ResponseObject;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/user")
+@RequestMapping("/api/v1/private/user")
 public class UserController {
     private final AuthService authService;
     private final MailService mailService;
@@ -40,13 +40,13 @@ public class UserController {
 
     @GetMapping("/filter")
     public ResponseEntity<ResponseObject> getUserByRole(@RequestParam(value = "role") String role,
-         @RequestParam(defaultValue = "0") int page , @RequestParam(defaultValue = "5") int size){
+                                                        @RequestParam(defaultValue = "0") int page , @RequestParam(defaultValue = "5") int size){
         var result = userService.getUserByRole(role, page, size);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
     @GetMapping("/search")
     public ResponseEntity<ResponseObject> getUserByName(@RequestParam(value = "name") String name,
-         @RequestParam(defaultValue = "0") int page , @RequestParam(defaultValue = "5") int size){
+                                                        @RequestParam(defaultValue = "0") int page , @RequestParam(defaultValue = "5") int size){
         var result = userService.getUserByName(name, page, size);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
@@ -127,6 +127,7 @@ public class UserController {
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 
-}
 
+
+}
 

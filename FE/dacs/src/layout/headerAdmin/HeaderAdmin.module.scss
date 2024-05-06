@@ -1,3 +1,10 @@
+@import url("https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+div,
+input {
+    font-family: "Be Vietnam Pro" !important;
+}
+
 .mainBg {
     align-self: stretch;
     flex: 1;
@@ -25,7 +32,6 @@
     font-size: inherit;
     letter-spacing: -0.11px;
     font-weight: 700;
-    font-family: inherit;
     display: inline-block;
     white-space: nowrap;
     z-index: 1;
@@ -129,7 +135,6 @@
     font-size: 37px;
     line-height: 48px;
     font-weight: 900;
-    font-family: inherit;
 }
 .designerDresses {
     line-height: 30px;
@@ -164,7 +169,6 @@
     font-size: var(--font-size-sm);
     letter-spacing: 1px;
     line-height: 28px;
-    font-family: var(--font-nunito-sans);
     color: var(--theme-colors-white);
     text-align: left;
     z-index: 1;
@@ -370,7 +374,6 @@
     position: relative;
     font-size: var(--font-size-sm);
     line-height: 28px;
-    font-family: var(--font-nunito-sans);
     color: var(--color-gray-100);
     text-align: left;
     white-space: nowrap;
@@ -497,7 +500,6 @@
     text-align: left;
     font-size: 32px;
     color: var(--color-gray-100);
-    font-family: var(--font-nunito-sans);
 }
 .homePage {
     align-self: stretch;
@@ -521,7 +523,6 @@
     position: relative;
     font-size: inherit;
     font-weight: 800;
-    font-family: inherit;
     display: inline-block;
     white-space: nowrap;
 }
@@ -607,7 +608,6 @@
     width: 22px;
     font-size: inherit;
     font-weight: 500;
-    font-family: inherit;
     display: inline-block;
 }
 .products2 {
@@ -626,7 +626,6 @@
     padding: var(--padding-10xs) 0 0;
     text-align: left;
     font-size: var(--font-size-sm);
-    font-family: var(--font-nunito-sans);
 }
 .navigationSidebarItemLi,
 .products1 {
@@ -661,7 +660,6 @@
     width: 22px;
     font-size: inherit;
     font-weight: 500;
-    font-family: inherit;
     display: inline-block;
 }
 .products4 {
@@ -680,7 +678,6 @@
     padding: var(--padding-10xs) 0 0;
     text-align: left;
     font-size: var(--font-size-sm);
-    font-family: var(--font-nunito-sans);
 }
 .navigationSidebarItemLi1,
 .products3 {
@@ -715,7 +712,6 @@
     text-align: center;
     font-size: var(--font-size-3xl);
     color: var(--color-gray-100);
-    font-family: var(--font-lineawesome);
 }
 .navigationSidebarMenuLi {
     width: 260px;
@@ -757,7 +753,6 @@
     left: 16.67%;
     font-size: var(--font-size-3xl);
     font-weight: 500;
-    font-family: var(--font-lineawesome);
     text-align: center;
 }
 .hideBg3,
@@ -790,7 +785,6 @@
     left: 16.67%;
     font-size: var(--font-size-3xl);
     font-weight: 500;
-    font-family: var(--font-lineawesome);
     text-align: center;
 }
 .products7 {
@@ -835,7 +829,6 @@
     left: 16.67%;
     font-size: var(--font-size-3xl);
     font-weight: 500;
-    font-family: var(--font-lineawesome);
     text-align: center;
 }
 .hideBg5,
@@ -868,7 +861,6 @@
     left: 16.67%;
     font-size: var(--font-size-3xl);
     font-weight: 500;
-    font-family: var(--font-lineawesome);
     text-align: center;
 }
 .hideBg6,
@@ -901,7 +893,6 @@
     left: 16.67%;
     font-size: var(--font-size-3xl);
     font-weight: 500;
-    font-family: var(--font-lineawesome);
     text-align: center;
 }
 .hideBg7,
@@ -934,7 +925,6 @@
     left: 16.67%;
     font-size: var(--font-size-3xl);
     font-weight: 500;
-    font-family: var(--font-lineawesome);
     text-align: center;
 }
 .hideBg8,
@@ -967,7 +957,6 @@
     left: 16.67%;
     font-size: var(--font-size-3xl);
     font-weight: 500;
-    font-family: var(--font-lineawesome);
     text-align: center;
 }
 .hideBg9,
@@ -1000,7 +989,6 @@
     left: 16.67%;
     font-size: var(--font-size-3xl);
     font-weight: 500;
-    font-family: var(--font-lineawesome);
     text-align: center;
 }
 .hideBg10,
@@ -1033,7 +1021,6 @@
     left: 16.67%;
     font-size: var(--font-size-3xl);
     font-weight: 500;
-    font-family: var(--font-lineawesome);
     text-align: center;
 }
 .hideBg11,
@@ -1066,7 +1053,6 @@
     left: 16.67%;
     font-size: var(--font-size-3xl);
     font-weight: 500;
-    font-family: var(--font-lineawesome);
     text-align: center;
 }
 .hideBg12,
@@ -1099,7 +1085,6 @@
     left: 16.67%;
     font-size: var(--font-size-3xl);
     font-weight: 500;
-    font-family: var(--font-lineawesome);
     text-align: center;
 }
 .products25 {
@@ -1156,7 +1141,6 @@
     left: 16.67%;
     font-size: var(--font-size-3xl);
     font-weight: 500;
-    font-family: var(--font-lineawesome);
     text-align: center;
 }
 .hideBg14,
@@ -1189,7 +1173,6 @@
     left: 16.67%;
     font-size: var(--font-size-3xl);
     font-weight: 500;
-    font-family: var(--font-lineawesome);
     text-align: center;
 }
 .hideBg15,
@@ -1222,7 +1205,7 @@
     left: 16.67%;
     font-size: var(--font-size-3xl);
     font-weight: 500;
-    font-family: var(--font-lineawesome);
+    font-family: var(--font-linewesome);
     text-align: center;
 }
 .hideBg16,
@@ -1255,7 +1238,6 @@
     left: 16.67%;
     font-size: var(--font-size-3xl);
     font-weight: 500;
-    font-family: var(--font-lineawesome);
     text-align: center;
 }
 .mask1,
@@ -1314,7 +1296,6 @@
     left: 16.67%;
     font-size: var(--font-size-3xl);
     font-weight: 500;
-    font-family: var(--font-lineawesome);
     text-align: center;
 }
 .hideBg18,
@@ -1354,7 +1335,6 @@
     left: 16.67%;
     font-size: var(--font-size-3xl);
     font-weight: 500;
-    font-family: var(--font-lineawesome);
     text-align: center;
 }
 .bg,
@@ -1420,7 +1400,6 @@
     text-align: left;
     font-size: var(--font-size-xl);
     color: var(--color-royalblue-100);
-    font-family: var(--font-nunito-sans);
 }
 @media screen and (max-width: 900px) {
     .products {
@@ -1506,6 +1485,7 @@
     background-color: #fff;
     width: 100%;
     flex-direction: row-reverse;
+    font-family: "Be Vietnam Pro" !important;
     justify-content: space-between;
 }
 

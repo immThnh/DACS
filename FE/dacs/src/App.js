@@ -7,11 +7,26 @@ import Footer from "./layout/footer";
 import LeftNavDash from "./component/dashboard/leftNavDash";
 import HeaderAdmin from "./layout/headerAdmin";
 import clsx from "clsx";
+import { useEffect, useState } from "react";
 
 function App() {
+    const [hideScrollBar, setHideScrollBar] = useState(false);
+
+    useEffect(() => {
+        if (window.location.pathname.includes("/course/detail/")) {
+            console.log("ok");
+            setHideScrollBar(true);
+        } else {
+            setHideScrollBar(false);
+        }
+    });
     return (
         <Router>
-            <div className="App bg-neutral-100">
+            <div
+                className={clsx("App ", {
+                    // hideScroll: hideScrollBar,
+                })}
+            >
                 <Routes>
                     {publicRoutes.map((route, index) => (
                         <Route
@@ -22,7 +37,9 @@ function App() {
                                 <>
                                     <Header />
                                     <div className={clsx("pt-header")}>
-                                        <route.component />
+                                        <route.component
+                                            setHideScrollBar={setHideScrollBar}
+                                        />
                                     </div>
                                 </>
                             }

@@ -1,56 +1,11 @@
 import React, { useEffect, useState } from "react"; // This imports the useState hook
 import styles from "./DetailCourse.module.scss";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import clsx from "clsx";
 import * as dataApi from "../../../api/apiService/dataService.js";
-
-const PlayIcon = () => (
-    <div className={styles.playIcon}>
-        <img
-            src="https://cdn.builder.io/api/v1/image/assets/TEMP/91b4c2d063585c32b868da3584ddb0514cbf2955902271549e68b7c3ffeb1802?apiKey=9349475655ee4a448868f824f5feb11d&"
-            alt="Play icon"
-        />
-    </div>
-);
-
-const TimeInfo = ({ icon, time }) => (
-    <div className={styles.timeInfo}>
-        <img src={icon} alt="Clock icon" className={styles.clockIcon} />
-        <div className={styles.time}>{time} Minutes</div>
-    </div>
-);
-const LessonItem = ({
-    id,
-    title,
-    lesson,
-    time,
-    isHighlighted,
-    videoUrl,
-    onVideoSelect,
-}) => (
-    <div
-        className={`${styles.lessonItem} ${
-            isHighlighted ? styles.highlighted : ""
-        }`}
-        onClick={() => onVideoSelect(id, videoUrl)}
-    >
-        <div className={styles.lessonInfo}>
-            <div className={styles.lessonTitle}>{title}</div>
-            <div className={styles.lessonNumber}>{lesson}</div>
-        </div>
-        <div className={styles.timeInfo}>
-            <TimeInfo
-                icon={
-                    isHighlighted
-                        ? "https://cdn.builder.io/api/v1/image/assets/TEMP/23214151b02736ebba19b562aabfd0bc3fc955a52ce1a15c8b59fd722461241d?apiKey=9349475655ee4a448868f824f5feb11d&"
-                        : "https://cdn.builder.io/api/v1/image/assets/TEMP/23214151b02736ebba19b562aabfd0bc3fc955a52ce1a15c8b59fd722461241d?apiKey=9349475655ee4a448868f824f5feb11d&"
-                }
-                time={time}
-            />
-        </div>
-    </div>
-);
+import logoPage from "../../../assets/images/logo.png";
+import Comment from "../../../component/comment/index.js";
 
 const CourseHero = ({ video = "", thumbnail }) => {
     if (!video.startsWith("https://res.cloudinary.com")) {
@@ -67,7 +22,7 @@ const CourseHero = ({ video = "", thumbnail }) => {
                     controls
                     className={clsx(
                         styles.videoPlayer,
-                        "rounded-lg cursor-pointer h-full w-full object-contain bg-black"
+                        "cursor-pointer h-full w-full object-contain bg-black"
                     )}
                 >
                     <source src={video} type="video/mp4" />
@@ -97,23 +52,37 @@ const initFormData = {
     date: "",
     categories: [],
 };
-const CurriculumItem = ({ item, index, isHighlighted, handleVideoSelect }) => {
-    const handleOpenSubLesson = () => {
+const CurriculumItem = ({
+    item,
+    index,
+    isHighlighted,
+    handleVideoSelect,
+    setCurrentProgress,
+}) => {
+    const handleOpenSubLesson = (e) => {
         const sub = document.getElementById(index);
         sub.classList.toggle("disabled");
+        e.currentTarget.classList.toggle(styles.active);
+    };
+    const handleChecked = (e) => {
+        if (e.target.checked) {
+            setCurrentProgress((prev) => (prev += 1));
+        } else {
+            setCurrentProgress((prev) => (prev -= 1));
+        }
     };
 
     return (
         <div className={clsx(styles.curriculumItem, {})}>
             <div
                 className={clsx(styles.title, "flex cursor-pointer p-2 w-full")}
-                onClick={handleOpenSubLesson}
+                onClick={(e) => handleOpenSubLesson(e)}
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 16 16"
                     fill="currentColor"
-                    className="w-6 h-6 mt-1.5"
+                    className={clsx(styles.transfrom, "w-6 h-6 mt-1.5")}
                 >
                     <path
                         fillRule="evenodd"
@@ -144,7 +113,7 @@ const CurriculumItem = ({ item, index, isHighlighted, handleVideoSelect }) => {
                                 key={ind}
                                 onClick={() =>
                                     handleVideoSelect(
-                                        ind,
+                                        lesson.title,
                                         lesson.video,
                                         lesson.linkVideo
                                     )
@@ -152,27 +121,23 @@ const CurriculumItem = ({ item, index, isHighlighted, handleVideoSelect }) => {
                                 className={clsx(
                                     styles.lessonItem,
 
-                                    "flex ml-6 gap-6",
+                                    "flex items-center ml-6 gap-3.5",
                                     {
                                         [styles.highlighted]:
-                                            ind === isHighlighted,
+                                            lesson.title === isHighlighted,
                                     }
                                 )}
                             >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    strokeWidth="1.5"
-                                    stroke="currentColor"
-                                    className="w-5 h-6"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h1.5C5.496 19.5 6 18.996 6 18.375m-3.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-1.5A1.125 1.125 0 0 1 18 18.375M20.625 4.5H3.375m17.25 0c.621 0 1.125.504 1.125 1.125M20.625 4.5h-1.5C18.504 4.5 18 5.004 18 5.625m3.75 0v1.5c0 .621-.504 1.125-1.125 1.125M3.375 4.5c-.621 0-1.125.504-1.125 1.125M3.375 4.5h1.5C5.496 4.5 6 5.004 6 5.625m-3.75 0v1.5c0 .621.504 1.125 1.125 1.125m0 0h1.5m-1.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m1.5-3.75C5.496 8.25 6 7.746 6 7.125v-1.5M4.875 8.25C5.496 8.25 6 8.754 6 9.375v1.5m0-5.25v5.25m0-5.25C6 5.004 6.504 4.5 7.125 4.5h9.75c.621 0 1.125.504 1.125 1.125m1.125 2.625h1.5m-1.5 0A1.125 1.125 0 0 1 18 7.125v-1.5m1.125 2.625c-.621 0-1.125.504-1.125 1.125v1.5m2.625-2.625c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125M18 5.625v5.25M7.125 12h9.75m-9.75 0A1.125 1.125 0 0 1 6 10.875M7.125 12C6.504 12 6 12.504 6 13.125m0-2.25C6 11.496 5.496 12 4.875 12M18 10.875c0 .621-.504 1.125-1.125 1.125M18 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m-12 5.25v-5.25m0 5.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125m-12 0v-1.5c0-.621-.504-1.125-1.125-1.125M18 18.375v-5.25m0 5.25v-1.5c0-.621.504-1.125 1.125-1.125M18 13.125v1.5c0 .621.504 1.125 1.125 1.125M18 13.125c0-.621.504-1.125 1.125-1.125M6 13.125v1.5c0 .621-.504 1.125-1.125 1.125M6 13.125C6 12.504 5.496 12 4.875 12m-1.5 0h1.5m-1.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M19.125 12h1.5m0 0c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h1.5m14.25 0h1.5"
-                                    />
-                                </svg>
+                                <div className="checkbox-wrapper ml-3">
+                                    <label>
+                                        <input
+                                            type="checkbox"
+                                            onChange={handleChecked}
+                                        />
+                                        <span className="checkbox"></span>
+                                    </label>
+                                </div>
+
                                 <span>{lesson.title}</span>
                             </div>
                         );
@@ -181,19 +146,36 @@ const CurriculumItem = ({ item, index, isHighlighted, handleVideoSelect }) => {
         </div>
     );
 };
-function DetailCourse() {
+function DetailCourse({ setHideScrollBar }) {
     const [currentVideoUrl, setCurrentVideoUrl] = useState("");
-    const [highlightedId, setHighlightedId] = useState(null);
+    const [lessonSelected, setLessonSelected] = useState(null);
     const [course, setCourse] = useState(initFormData);
+    const [totalLesson, setTotalLesson] = useState(0);
+    const [currentProgress, setCurrentProgress] = useState(0);
+    const [openModal, setOpenModal] = useState(false);
+    setHideScrollBar(true);
+
     const { id } = useParams();
 
-    const handleVideoSelect = (id, video, linkVideo) => {
+    const handleCloseComment = () => {
+        setOpenModal(false);
+    };
+
+    const handleOpenComment = () => {
+        setOpenModal(true);
+    };
+
+    const handleVideoSelect = (title, video, linkVideo) => {
         if (video !== "" && linkVideo === "") {
             setCurrentVideoUrl(video);
         } else {
             setCurrentVideoUrl(linkVideo);
         }
-        setHighlightedId(id);
+        setLessonSelected(title);
+    };
+
+    const handleShowComment = () => {
+        console.log("showComment");
     };
 
     useEffect(() => {
@@ -201,8 +183,13 @@ function DetailCourse() {
             toast.promise(dataApi.getCourseById(id), {
                 loading: "Loading...",
                 success: (data) => {
+                    let total = 0;
+                    data.content.sections.map(
+                        (section) => (total += section.lessons.length)
+                    );
                     setCurrentVideoUrl(data.content.video);
                     setCourse(data.content);
+                    setTotalLesson(total);
                     return "Get data is successful";
                 },
                 error: (error) => {
@@ -215,9 +202,23 @@ function DetailCourse() {
     }, []);
 
     return (
-        <>
+        <div className={clsx(styles.wrapperPage)}>
+            <div
+                className={clsx(
+                    styles.headerPage,
+                    "flex items-center justify-between b-shadow"
+                )}
+            >
+                <Link to={"/"} className={clsx(styles.logoPage)}>
+                    <img src={logoPage} alt="" />
+                </Link>
+                <h5 className="mb-0 text-center">{course.title}</h5>
+                <div className={clsx(styles.progress)}>
+                    Progress: {currentProgress}/{totalLesson}
+                </div>
+            </div>
             <main className={clsx(styles.uiUxCourse)}>
-                <div className={clsx("w-full")}>
+                <div className={clsx(styles.sectionVideo, "w-full")}>
                     <div className={clsx("row")}>
                         <div
                             className={clsx(styles.videoContainer, "col-lg-9")}
@@ -226,6 +227,28 @@ function DetailCourse() {
                                 video={currentVideoUrl}
                                 thumbnail={course.thumbnail}
                             />
+                            <div
+                                className={clsx(styles.sectionComment)}
+                                onClick={handleOpenComment}
+                            >
+                                <div className="flex gap-2">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke-width="1.5"
+                                        stroke="currentColor"
+                                        class="w-6 h-6"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"
+                                        />
+                                    </svg>
+                                    Q&A
+                                </div>
+                            </div>
                         </div>
                         <div
                             className={clsx(
@@ -234,7 +257,7 @@ function DetailCourse() {
                             )}
                         >
                             <section className={styles.courseSection}>
-                                <div className={styles.sectionHeader}>
+                                <div className={clsx(styles.sectionHeader)}>
                                     <div className={styles.sectionNumber}>
                                         Curriculum
                                     </div>
@@ -243,7 +266,10 @@ function DetailCourse() {
                                     {course.sections &&
                                         course.sections.map((item, index) => (
                                             <CurriculumItem
-                                                isHighlighted={highlightedId}
+                                                setCurrentProgress={
+                                                    setCurrentProgress
+                                                }
+                                                isHighlighted={lessonSelected}
                                                 handleVideoSelect={
                                                     handleVideoSelect
                                                 }
@@ -257,8 +283,12 @@ function DetailCourse() {
                         </div>
                     </div>
                 </div>
+                <Comment
+                    openModal={openModal}
+                    funcCloseModal={handleCloseComment}
+                ></Comment>
             </main>
-        </>
+        </div>
     );
 }
 

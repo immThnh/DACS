@@ -1,5 +1,4 @@
-package com.example.demo.controller.lesson;
-
+package com.example.demo.controller.PublicController;
 
 import com.example.demo.dto.ResponseObject;
 import com.example.demo.repository.data.LessonRepository;
@@ -12,10 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/data/lesson")
+@RequestMapping("/api/v1/public/lesson")
 @RequiredArgsConstructor
-public class LessonController {
-
+public class PLessonController {
     private final LessonRepository lessonRepository;
     private final LessonService lessonService;
 

@@ -1,0 +1,18 @@
+.cmt {
+    img {
+        width: 40px;
+        height: 40px;
+        border-radius: 100rem;
+        margin-right: 10px;
+    }
+}
+
+.input {
+    font-size: 14px;
+    border-bottom: 1px solid #ccc;
+}
+
+.input:focus {
+    border-bottom: 1px solid black;
+    outline: none;
+}

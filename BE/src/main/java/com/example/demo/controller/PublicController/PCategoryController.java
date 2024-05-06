@@ -1,4 +1,5 @@
-package com.example.demo.controller.category;
+package com.example.demo.controller.PublicController;
+
 
 import com.example.demo.dto.ResponseObject;
 import com.example.demo.entity.data.Category;
@@ -9,9 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/data/category")
+@RequestMapping("/api/v1/public/category")
 @RequiredArgsConstructor
-public class CategoryController {
+public class PCategoryController {
 
     private final CategoryService categoryService;
 

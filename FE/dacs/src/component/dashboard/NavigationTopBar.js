@@ -1,4 +1,4 @@
-import styles from "./NavigationTopBar.module.css";
+import styles from "./NavigationTopBar.module.scss";
 import SearchImg from "../../assets/images/search.png";
 import Avatar from "../../assets/images/avatar_25.jpg";
 const NavigationTopBar = () => {
@@ -11,7 +11,7 @@ const NavigationTopBar = () => {
                 <div className={styles.topBarBg} />
                 <div className={styles.div}></div>
                 <div className={styles.navLeftWrapper}>
-                    <div className={styles.navLeft}>
+                    {/* <div className={styles.navLeft}>
                         <div className={styles.search}>
                             <input
                                 className={styles.search1}
@@ -29,7 +29,7 @@ const NavigationTopBar = () => {
                                 />
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
                 <div className={styles.navRight}>
                     <div className={styles.profile}>

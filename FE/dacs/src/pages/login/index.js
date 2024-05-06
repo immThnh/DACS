@@ -96,7 +96,9 @@ export default function Login() {
             toast.promise(authService.login({ ...formData }), {
                 loading: "Loading...",
                 success: (data) => {
-                    setCode(data.content.token);
+                    // setCode(data.content.token);
+                    console.log(data.content.token);
+                    sessionStorage.setItem("token", data.content.token);
                     dispatch(loginSlice.actions.setLogin(true));
                     navigate("/");
                     return "Welcome to Dream Chasers";
@@ -138,7 +140,6 @@ export default function Login() {
         };
 
         fetchApi();
-        // setLastClickTime();
         setCountdown(60);
     };
 
@@ -261,8 +262,14 @@ export default function Login() {
                         >
                             Email
                         </label>
-                        <div className="flex p-2.5 mt-2.5 bg-gray-50 rounded-lg border border-gray-100 border-solid text-stone-500 max-md:flex-wrap">
+                        <div
+                            className={clsx(
+                                styles.input,
+                                "flex p-2.5 mt-2.5 bg-gray-50 rounded-lg  text-stone-500 max-md:flex-wrap"
+                            )}
+                        >
                             <input
+                                autoComplete="true"
                                 type="email"
                                 id="email"
                                 name="email"
@@ -285,8 +292,14 @@ export default function Login() {
                         >
                             Password
                         </label>
-                        <div className=" flex p-2.5 mt-2.5 bg-gray-50 rounded-lg border border-gray-100 border-solid text-stone-500 max-md:flex-wrap">
+                        <div
+                            className={clsx(
+                                styles.input,
+                                "flex p-2.5 mt-2.5 bg-gray-50 rounded-lg  text-stone-500 max-md:flex-wrap"
+                            )}
+                        >
                             <input
+                                autoComplete="true"
                                 type="password"
                                 id="password"
                                 name="password"

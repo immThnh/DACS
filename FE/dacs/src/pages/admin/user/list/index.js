@@ -255,7 +255,6 @@ function ListUser() {
                             </div>
                             <div className={clsx(styles.containerData)}>
                                 {users &&
-                                    users.length &&
                                     users.map((element, index) => {
                                         return (
                                             <div
@@ -403,7 +402,7 @@ function ListUser() {
                                             </div>
                                         );
                                     })}
-                                {!users && (
+                                {users.length === 0 && (
                                     <div
                                         className={clsx(
                                             styles.noData,

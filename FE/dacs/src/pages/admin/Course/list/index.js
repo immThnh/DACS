@@ -137,7 +137,7 @@ function ListCourse() {
     useEffect(() => {
         const fetchApi = async () => {
             try {
-                const result = await dataApi.getAllCourse(0, 5);
+                const result = await dataApi.getAllCourseAdmin(0, 5);
                 let categories = [];
                 categories = await dataApi.getAllCategories(0, 99999);
                 categories.content.content.push({ id: "-1", name: "All" });

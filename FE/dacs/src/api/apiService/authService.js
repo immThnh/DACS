@@ -155,7 +155,6 @@ export const getUserByPage = async (page, size) => {
     }
 };
 
-
 export const softDeleteUser = async (id) => {
     try {
         const result = await instance.put(`/user/delete/soft/${id}`);

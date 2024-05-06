@@ -1,8 +1,8 @@
-import instance, { setToken } from "../instance";
+import instance, { setToken, privateInstance } from "../instance";
 export const getAllCategories = async (page = 0, size = 9999999) => {
     try {
         const res = await instance.get(
-            `/data/category/getAll?page=${page}&size=${size}`
+            `/category/getAll?page=${page}&size=${size}`
         );
         return res;
     } catch (error) {
@@ -12,7 +12,7 @@ export const getAllCategories = async (page = 0, size = 9999999) => {
 export const getAllCategoryDeleted = async (page, size) => {
     try {
         const res = await instance.get(
-            `/data/category/getAllDeleted?page=${page}&size=${size}`
+            `/category/getAllDeleted?page=${page}&size=${size}`
         );
         return res;
     } catch (error) {
@@ -40,11 +40,15 @@ export const createCourse = async (
     formData.append("courseVideo", courseVideo);
 
     try {
-        const response = await instance.post("/data/course/create", formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        });
+        const response = await privateInstance.post(
+            "/course/create",
+            formData,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            }
+        );
         console.log("Response:", response);
     } catch (error) {
         return Promise.reject(error.response.data);
@@ -67,8 +71,8 @@ export const updateCourse = async (id, course, thumbnail, video, videos) => {
     formData.append("thumbnail", thumbnail);
     formData.append("courseVideo", video);
     try {
-        const result = await instance.putForm(
-            `/data/course/edit/${id}`,
+        const result = await privateInstance.putForm(
+            `/course/edit/${id}`,
             formData
         );
         return result;
@@ -80,7 +84,18 @@ export const updateCourse = async (id, course, thumbnail, video, videos) => {
 export const getAllCourse = async (page = 0, size = 5) => {
     try {
         const result = await instance.get(
-            `/data/course/getAll?page=${page}&size=${size}`
+            `/course/getAll?page=${page}&size=${size}`
+        );
+        return result;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getAllCourseAdmin = async (page = 0, size = 5) => {
+    try {
+        const result = await privateInstance.get(
+            `/course/getAll?page=${page}&size=${size}`
         );
         return result;
     } catch (error) {
@@ -90,7 +105,7 @@ export const getAllCourse = async (page = 0, size = 5) => {
 export const getAllCourseDeleted = async (page, size) => {
     try {
         const result = await instance.get(
-            `/data/course/getAllDeleted?page=${page}&size=${size}`
+            `/course/getAllDeleted?page=${page}&size=${size}`
         );
         return result;
     } catch (error) {
@@ -101,7 +116,7 @@ export const getAllCourseDeleted = async (page, size) => {
 
 export const getCourseById = async (id) => {
     try {
-        return await instance.get(`/data/course/${id}`);
+        return await instance.get(`/course/${id}`);
     } catch (error) {
         return Promise.reject(error.response.data);
     }
@@ -109,7 +124,7 @@ export const getCourseById = async (id) => {
 
 export const softDeleteCourse = async (id) => {
     try {
-        const result = await instance.put(`/data/course/delete/soft/${id}`);
+        const result = await privateInstance.put(`/course/delete/soft/${id}`);
         return result;
     } catch (error) {
         return Promise.reject(error);
@@ -117,7 +132,9 @@ export const softDeleteCourse = async (id) => {
 };
 export const hardDeleteCourse = async (id) => {
     try {
-        const result = await instance.delete(`/data/course/delete/hard/${id}`);
+        const result = await privateInstance.delete(
+            `/course/delete/hard/${id}`
+        );
         return result;
     } catch (error) {
         return Promise.reject(error);
@@ -127,7 +144,7 @@ export const hardDeleteCourse = async (id) => {
 export const getCoursesDeletedByCategory = (id, page, size) => {
     try {
         return instance.get(
-            `/data/course/deleted/category?id=${id}&page=${page}&size=${size}`
+            `/course/deleted/category?id=${id}&page=${page}&size=${size}`
         );
     } catch (error) {
         console.log(error.mess);
@@ -137,7 +154,7 @@ export const getCoursesDeletedByCategory = (id, page, size) => {
 export const getCoursesByCategory = (id, page, size) => {
     try {
         return instance.get(
-            `/data/course/category?id=${id}&page=${page}&size=${size}`
+            `/course/category?id=${id}&page=${page}&size=${size}`
         );
     } catch (error) {
         console.log(error.mess);
@@ -148,7 +165,7 @@ export const getCoursesByCategory = (id, page, size) => {
 export const getCourseByName = (title, page, selected) => {
     try {
         return instance.get(
-            `/data/course?title=${title}&page=${page}&selected=${selected}`
+            `/course?title=${title}&page=${page}&selected=${selected}`
         );
     } catch (error) {
         Promise.reject(error.mess);
@@ -157,7 +174,7 @@ export const getCourseByName = (title, page, selected) => {
 
 export const softDeleteCategoryById = (id) => {
     try {
-        return instance.put(`/data/category/delete/soft/${id}`);
+        return privateInstance.put(`/category/delete/soft/${id}`);
     } catch (error) {
         Promise.reject(error);
     }
@@ -165,14 +182,14 @@ export const softDeleteCategoryById = (id) => {
 
 export const hardDeleteCategoryById = (id) => {
     try {
-        return instance.delete(`/data/category/delete/hard/${id}`);
+        return privateInstance.delete(`/category/delete/hard/${id}`);
     } catch (error) {
         Promise.reject(error);
     }
 };
 export const restoreCategoryById = (id) => {
     try {
-        return instance.put(`/data/category/restore/${id}`);
+        return privateInstance.put(`/category/restore/${id}`);
     } catch (error) {
         Promise.reject(error);
     }
@@ -181,9 +198,7 @@ export const restoreCategoryById = (id) => {
 export const getCategoryByTitle = (name, page, selected) => {
     console.log(name);
     try {
-        return instance.get(
-            `/data/category?name=${name}&page=${page}&selected`
-        );
+        return instance.get(`/category?name=${name}&page=${page}&selected`);
     } catch (error) {
         Promise.reject(error);
     }
@@ -191,7 +206,7 @@ export const getCategoryByTitle = (name, page, selected) => {
 
 export const editCategory = (id, category) => {
     try {
-        return instance.put(`/data/category/${id}`, category);
+        return privateInstance.put(`/category/${id}`, category);
     } catch (error) {
         Promise.reject(error);
     }
@@ -199,7 +214,7 @@ export const editCategory = (id, category) => {
 
 export const getCategoryById = (id) => {
     try {
-        return instance.get(`/data/category/${id}`);
+        return instance.get(`/category/${id}`);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -207,7 +222,7 @@ export const getCategoryById = (id) => {
 
 export const createCategory = (category) => {
     try {
-        return instance.post(`/data/category/create`, category);
+        return privateInstance.post(`/category/create`, category);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -215,7 +230,7 @@ export const createCategory = (category) => {
 
 export const restoreCourseById = (id) => {
     try {
-        return instance.put(`data/course/restore/${id}`);
+        return privateInstance.put(`/course/restore/${id}`);
     } catch (error) {
         Promise.reject(error);
     }
