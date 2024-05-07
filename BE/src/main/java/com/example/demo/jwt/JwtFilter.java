@@ -1,15 +1,22 @@
 package com.example.demo.jwt;
 
+import com.example.demo.dto.ResponseObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -26,13 +33,12 @@ public class JwtFilter extends OncePerRequestFilter {
     private final UserDetailsService userDetailsService;
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+        if(request.getServletPath().contains("/api/v1/public")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
        try {
-           System.out.println("jwtFilter");
-           if(request.getServletPath().contains("/api/v1/public")) {
-               filterChain.doFilter(request, response);
-               return;
-           }
            String authHeader = request.getHeader("Authorization");
            String jwt;
            String email;
@@ -40,13 +46,14 @@ public class JwtFilter extends OncePerRequestFilter {
                filterChain.doFilter(request, response);
                return;
            }
+
            jwt = authHeader.substring(7);
            email = jwtService.extractUserName(jwt);
-           if(email != null || SecurityContextHolder.getContext().getAuthentication() == null) {
-               UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+           if(email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+               UserDetails    userDetails = userDetailsService.loadUserByUsername(email);
                if(jwtService.isValidToken(jwt, userDetails)) {
                    UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                   System.out.println("Role: " + userDetails.getAuthorities());
+                   System.out.println("Authorization success - Role: " + userDetails.getAuthorities());
                    usernamePasswordAuthenticationToken.setDetails(
                            new WebAuthenticationDetailsSource().buildDetails(request)
                    );
@@ -55,11 +62,19 @@ public class JwtFilter extends OncePerRequestFilter {
            }
            filterChain.doFilter(request, response);
        }
-       catch (Exception e) {
-           logger.error("Exception occurred during JWT filter processing: " + e.getMessage(), e);
+       catch (MalformedJwtException | SignatureException e) {
+           logger.error("Exception occurred during JWT filter processing: " + e.getMessage());
            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-           response.getWriter().write("Session is expired");
-           response.sendRedirect("http://localhost:3000/login");
+           ResponseObject res = ResponseObject.builder().status(HttpStatus.UNAUTHORIZED).mess("Token is not valid").build();
+           ObjectMapper mapper = new ObjectMapper();
+           response.getWriter().write(mapper.writeValueAsString(res));
+       }
+       catch (ExpiredJwtException e) {
+           logger.error("Exception occurred during JWT filter processing: " + e.getMessage());
+           response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+           ResponseObject res = ResponseObject.builder().status(HttpStatus.UNAUTHORIZED).mess("Token is expiration").build();
+           ObjectMapper mapper = new ObjectMapper();
+           response.getWriter().write(mapper.writeValueAsString(res));
        }
     }
 }

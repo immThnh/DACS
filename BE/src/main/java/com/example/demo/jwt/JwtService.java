@@ -43,10 +43,10 @@ public class JwtService {
 
     private <T> T extractClaims(String token, Function<Claims, T> claimsResolver) {
         Claims claims = extractClaimsFromToken(token);
-        if (claims != null) {
+//        if (claims != null) {
             return claimsResolver.apply(claims);
-        }
-        return null;
+//        }
+//        return null;
     }
 
 
@@ -77,15 +77,15 @@ public class JwtService {
 
 
     private Claims extractClaimsFromToken(String token) {
-       try {
+//       try {
            return Jwts.parser()
                    .verifyWith((SecretKey) getKey())
                    .build().parseSignedClaims(token).getPayload();
-       }
-       catch (Exception e) {
-           System.out.println("extractClaimsFromToken: " + e.getMessage());
-           return null;
-       }
+//       }
+//       catch (Exception e) {
+//           System.out.println("extractClaimsFromToken: " + e.getMessage());
+//           return null;
+//       }
     }
 
 

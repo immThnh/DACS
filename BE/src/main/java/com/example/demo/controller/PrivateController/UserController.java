@@ -19,6 +19,11 @@ public class UserController {
     private final MailService mailService;
     private final UserService userService;
 
+    @GetMapping("")
+    public ResponseEntity<ResponseObject> greeting() {
+        var res = ResponseObject.builder().status(HttpStatus.OK).mess("Welcome to admin dashboard").build();
+        return ResponseEntity.status(res.getStatus()).body(res);
+    }
 
     @GetMapping("/getAll")
     public ResponseEntity<ResponseObject> getAllUsersByPage(@RequestParam(defaultValue = "0") int page , @RequestParam(defaultValue = "5") int size) {
@@ -102,12 +107,12 @@ public class UserController {
         return ResponseEntity.ok("Thay đổi mật khẩu thành công!");
     }
 
-    @PostMapping("/send-verify-otp")
-    public ResponseEntity<String> sendOtp(@RequestBody OtpVerifyRequest request) {
-        if(!authService.isValidPhoneNumber(request.getPhoneNumber())) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Số điện thoại chưa được đăng kí!");
-        if(!authService.sendOtpVerification(request)) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Gửi OTP thất bại!");
-        return ResponseEntity.ok("Gửi mã xác nhận thành công!");
-    }
+//    @PostMapping("/send-verify-otp")
+//    public ResponseEntity<String> sendOtp(@RequestBody OtpVerifyRequest request) {
+//        if(!authService.isValidPhoneNumber(request.getPhoneNumber())) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Số điện thoại chưa được đăng kí!");
+//        if(!authService.sendOtpVerification(request)) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Gửi OTP thất bại!");
+//        return ResponseEntity.ok("Gửi mã xác nhận thành công!");
+//    }
 
     @PutMapping("/delete/soft/{id}")
     public ResponseEntity<ResponseObject> softDelete(@PathVariable int id) {

@@ -1,6 +1,7 @@
 package com.example.demo.auth;
 
 import com.example.demo.dto.ResponseObject;
+import com.example.demo.dto.UserDTO;
 import com.example.demo.entity.user.Role;
 import com.example.demo.entity.user.User;
 import com.example.demo.jwt.JwtService;
@@ -8,13 +9,13 @@ import com.example.demo.jwt.Token;
 import com.example.demo.mail.MailRequest;
 import com.example.demo.repository.TokenRepository;
 import com.example.demo.repository.UserRepository;
-import com.example.demo.twilio.TwilioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,9 +32,9 @@ public class AuthService {
     private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
     public final AuthenticationManager authenticationManager;
+
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
-    private final TwilioService twilioService;
 
     public boolean register(RegisterRequest request) {
         if(isUsedEmail(request.getEmail())) return  false;
@@ -50,13 +51,25 @@ public class AuthService {
             }
             Token token = new Token(jwtService.generateToken(user));
             user.setToken(token);
-            return ResponseObject.builder().status(HttpStatus.OK).content(token).build();
+            var userDTO = getUserDTOFromUser(user);
+            userDTO.setToken(token.getToken());
+            return ResponseObject.builder().status(HttpStatus.OK).content(userDTO).build();
         }
         catch (AuthenticationException ex) {
             System.out.println(ex.getMessage() + "Xác thực người dùng thất bại!");
             return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("error while authentication user with error " + ex.getMessage()).build();
 
         }
+    }
+
+    public UserDTO getUserDTOFromUser(User user) {
+        return UserDTO.builder()
+                .avatar(user.getAvatar())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .build();
     }
 
     public ResponseObject getAllByPage(int page, int size) {
@@ -79,10 +92,6 @@ public class AuthService {
         return ResponseObject.builder().status(HttpStatus.OK).content(userRepository.findByRole(role, PageRequest.of(page, size))).build();
     }
 
-    public boolean sendOtpVerification(OtpVerifyRequest request) {
-
-        return twilioService.senOTPVerify(request,getVerifyCode());
-    }
     private User saveUser(RegisterRequest request) {
         User user = User.builder()
                 .email(request.getEmail())
@@ -152,4 +161,21 @@ public class AuthService {
         userRepository.save(user);
         return true;
     }
+
+    public ResponseObject getUserByToken(String token) {
+        String userName;
+        try {
+            userName = jwtService.extractUserName(token);
+        }
+        catch (Exception e) {
+            System.out.println("getUserByToken: " + e.getMessage());
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Username not found").build();
+        }
+        var user = userRepository.findByEmail(userName).orElse(null);
+        if(user == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Username not found").build();
+        }
+        return ResponseObject.builder().status(HttpStatus.OK).mess("Get user data successfully").build();
+    }
+
 }

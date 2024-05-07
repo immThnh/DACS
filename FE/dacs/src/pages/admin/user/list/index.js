@@ -68,24 +68,16 @@ function ListUser() {
     };
 
     const handleSearchInputChange = (e) => {
-        const fetchApi = () => {
-            toast.promise(
-                authApi.getUserByName(e.target.value, page, selected),
-                {
-                    loading: "loading...",
-                    success: (data) => {
-                        setUsers(data.content.content);
-                        setTotalData(data.content.totalElements);
-                        return "Get data successfully";
-                    },
-                    error: (error) => {
-                        console.log(error);
-                        return error;
-                    },
-                }
+        const fetchApi = async () => {
+            const data = await authApi.getUserByName(
+                e.target.value,
+                page,
+                selected
             );
+            setUsers(data.content.content);
+            setTotalData(data.content.totalElements);
         };
-        const debounceApi = debounce(fetchApi, 1000);
+        const debounceApi = debounce(fetchApi, 300);
         debounceApi();
     };
 
@@ -117,6 +109,7 @@ function ListUser() {
         const fetchApi = async () => {
             try {
                 const result = await authApi.getAllUser();
+                console.log(result);
                 let array = [];
                 const roles = await authApi.getAllRole();
                 roles.content.map((value, index) =>
@@ -165,6 +158,7 @@ function ListUser() {
         setDeletedModalOpen(true);
     };
 
+    console.log("Render user/list");
     return (
         <div className="flex justify-center w-full ">
             <div className="container mt-5 mx-14">

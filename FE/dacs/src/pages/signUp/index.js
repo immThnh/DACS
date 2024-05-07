@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import eyeSlash from "../../assets/images/eye-slash.png";
 import { useDispatch, useSelector } from "react-redux";
-import loginSlice from "../../redux/reducers/loginReducer.js";
+import loginSlice from "../../redux/reducers/loginSlice.js";
 import styles from "../login/Login.module.scss";
 import clsx from "clsx";
 export default function SignUp() {

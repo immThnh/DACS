@@ -61,5 +61,11 @@ public class CourseController {
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 
+    @GetMapping("/getAll")
+    public ResponseEntity<ResponseObject> getAll(@RequestParam(defaultValue = "0") int page,
+                                                        @RequestParam(defaultValue = "5") int size) {
+        var result = courseService.getAllCourse(page, size);
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
 
 }

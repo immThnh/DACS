@@ -3,7 +3,7 @@ import OAuth2Form from "../../component/auth/OAuth2Form.js";
 import * as authService from "../../api/apiService/authService.js";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import loginSlice from "../../redux/reducers/loginReducer.js";
+import loginSlice from "../../redux/reducers/loginSlice.js";
 import { useDispatch } from "react-redux";
 import { Dialog, Transition } from "@headlessui/react";
 import ShowPassword from "../../component/auth/ShowPassword.js";
@@ -96,9 +96,10 @@ export default function Login() {
             toast.promise(authService.login({ ...formData }), {
                 loading: "Loading...",
                 success: (data) => {
-                    // setCode(data.content.token);
-                    console.log(data.content.token);
-                    sessionStorage.setItem("token", data.content.token);
+                    console.log(data.content);
+                    const { token, ...user } = data.content;
+                    sessionStorage.setItem("token", token);
+                    sessionStorage.setItem("user", JSON.stringify(user));
                     dispatch(loginSlice.actions.setLogin(true));
                     navigate("/");
                     return "Welcome to Dream Chasers";

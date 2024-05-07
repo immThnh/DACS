@@ -23,11 +23,13 @@ public class LogoutHandler implements org.springframework.security.web.authentic
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         String jwt= request.getHeader("Authorization");
-        if(jwt != null || jwt.startsWith("Bearer ")) {
+        if(jwt != null && jwt.startsWith("Bearer ")) {
             jwt = jwt.substring(7);
             Token token = tokenRepository.findByToken(jwt).orElse(null);
+            System.out.println("token: " + token);
             if(token != null) {
                 String email = jwtService.extractUserName(token.getToken());
+                System.out.println("email: " + email);
                 var user = userRepository.findByEmail(email).orElse(null);
                 if(user != null) {
                     user.setToken(null);

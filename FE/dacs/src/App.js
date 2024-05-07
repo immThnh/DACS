@@ -1,25 +1,27 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+    BrowserRouter as Router,
+    Routes,
+    Route,
+    useNavigate,
+    Navigate,
+} from "react-router-dom";
 import { publicRoutes, adminRoutes } from "./router";
 import styles from "./App.module.scss";
 import { Toaster } from "sonner";
 import Header from "./layout/header";
-import Footer from "./layout/footer";
 import LeftNavDash from "./component/dashboard/leftNavDash";
 import HeaderAdmin from "./layout/headerAdmin";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
 
 function App() {
-    const [hideScrollBar, setHideScrollBar] = useState(false);
-
-    useEffect(() => {
-        if (window.location.pathname.includes("/course/detail/")) {
-            console.log("ok");
-            setHideScrollBar(true);
-        } else {
-            setHideScrollBar(false);
+    const getLogin = () => {
+        if (sessionStorage.getItem("token") !== null) {
+            return true;
         }
-    });
+        return false;
+    };
+
+    console.log("Render app");
     return (
         <Router>
             <div
@@ -37,9 +39,7 @@ function App() {
                                 <>
                                     <Header />
                                     <div className={clsx("pt-header")}>
-                                        <route.component
-                                            setHideScrollBar={setHideScrollBar}
-                                        />
+                                        <route.component />
                                     </div>
                                 </>
                             }
@@ -51,19 +51,23 @@ function App() {
                             exact
                             path={route.path}
                             element={
-                                <>
-                                    <HeaderAdmin></HeaderAdmin>
-                                    <div className="flex bg-white">
-                                        <LeftNavDash></LeftNavDash>
-                                        <div
-                                            className={clsx(
-                                                styles.adminContent
-                                            )}
-                                        >
-                                            <route.component />
+                                !getLogin() ? (
+                                    <Navigate to={"/login"} replace={true} />
+                                ) : (
+                                    <>
+                                        <HeaderAdmin></HeaderAdmin>
+                                        <div className="flex bg-white">
+                                            <LeftNavDash></LeftNavDash>
+                                            <div
+                                                className={clsx(
+                                                    styles.adminContent
+                                                )}
+                                            >
+                                                <route.component />
+                                            </div>
                                         </div>
-                                    </div>
-                                </>
+                                    </>
+                                )
                             }
                         ></Route>
                     ))}

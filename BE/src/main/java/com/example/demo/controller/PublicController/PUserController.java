@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 public class PUserController {
     private final AuthService authService;
     private final MailService mailService;
-    private final UserService userService;
     @PostMapping("/login")
     public ResponseEntity<ResponseObject> authenticate(@RequestBody AuthenticationRequest request) {
         var res = authService.authenticate(request);
@@ -69,12 +68,12 @@ public class PUserController {
         return ResponseEntity.ok("Thay đổi mật khẩu thành công!");
     }
 
-    @PostMapping("/send-verify-otp")
-    public ResponseEntity<String> sendOtp(@RequestBody OtpVerifyRequest request) {
-        if(!authService.isValidPhoneNumber(request.getPhoneNumber())) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Số điện thoại chưa được đăng kí!");
-        if(!authService.sendOtpVerification(request)) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Gửi OTP thất bại!");
-        return ResponseEntity.ok("Gửi mã xác nhận thành công!");
-    }
+//    @PostMapping("/send-verify-otp")
+//    public ResponseEntity<String> sendOtp(@RequestBody OtpVerifyRequest request) {
+//        if(!authService.isValidPhoneNumber(request.getPhoneNumber())) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Số điện thoại chưa được đăng kí!");
+//        if(!authService.sendOtpVerification(request)) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Gửi OTP thất bại!");
+//        return ResponseEntity.ok("Gửi mã xác nhận thành công!");
+//    }
 
 
 

@@ -385,19 +385,7 @@ function ListDeletedUser() {
                                                                 alt=""
                                                             />
                                                         </button>
-                                                        <button
-                                                            onClick={() =>
-                                                                openDeleteModal(
-                                                                    element.id
-                                                                )
-                                                            }
-                                                        >
-                                                            <img
-                                                                src={deleteIcon}
-                                                                alt=""
-                                                                className="cursor-pointer"
-                                                            />
-                                                        </button>
+                                                     
                                                     </div>
                                                 </div>
                                             </div>

@@ -11,7 +11,7 @@ export const getAllCategories = async (page = 0, size = 9999999) => {
 };
 export const getAllCategoryDeleted = async (page, size) => {
     try {
-        const res = await instance.get(
+        const res = await privateInstance.get(
             `/category/getAllDeleted?page=${page}&size=${size}`
         );
         return res;

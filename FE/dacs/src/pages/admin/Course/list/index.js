@@ -1,6 +1,6 @@
 import styles from "./List.module.scss";
 import clsx from "clsx";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import deleteIcon from "../../../../assets/images/delete.svg";
 import noDataIcon from "../../../../assets/images/ic_noData.svg";
 import viewIcon from "../../../../assets/images/view.svg";
@@ -29,6 +29,7 @@ function ListCourse() {
     const [selected, setSelected] = useState(selectes[0]);
     const [page, setPage] = useState(0);
     const [reRender, setReRender] = useState();
+    const navigator = useNavigate();
 
     const handleRemoveCourse = () => {
         const fetchApi = async () => {
@@ -136,17 +137,23 @@ function ListCourse() {
 
     useEffect(() => {
         const fetchApi = async () => {
-            try {
-                const result = await dataApi.getAllCourseAdmin(0, 5);
-                let categories = [];
-                categories = await dataApi.getAllCategories(0, 99999);
-                categories.content.content.push({ id: "-1", name: "All" });
-                setCourses(result.content.content);
-                setTotalData(result.content.totalElements);
-                setOptions(categories.content.content);
-            } catch (error) {
-                console.log(error);
-            }
+            let categories = [];
+            categories = await dataApi.getAllCategories(0, 99999);
+            toast.promise(dataApi.getAllCourseAdmin(0, 5), {
+                loadin: "loading...",
+                success: (result) => {
+                    categories.content.content.push({ id: "-1", name: "All" });
+                    setCourses(result.content.content);
+                    setTotalData(result.content.totalElements);
+                    setOptions(categories.content.content);
+                },
+                error: (error) => {
+                    if (error.status === "UNAUTHORIZED") {
+                        navigator("/404");
+                    }
+                    return error.mess;
+                },
+            });
         };
         fetchApi();
     }, [reRender]);

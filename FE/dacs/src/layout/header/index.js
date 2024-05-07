@@ -1,37 +1,42 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import logo from "../../assets/images/logo.png"
+import logo from "../../assets/images/logo.png";
 import avatar from "../../assets/images/avatar_25.jpg";
-
-import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Styles from "./Header.module.scss";
 import clsx from "clsx";
-// import SearchBar from "../../component/search";
+import Dropdown from "../../component/dropDown";
+import * as authApi from "../../api/apiService/authService";
+import { useDispatch, useSelector } from "react-redux";
+
 export default function Header() {
     const navigate = useNavigate();
-    const logged = useSelector((state) => state.login.isLogin);
+    const dispatch = useDispatch();
     const [page, setPage] = React.useState("login");
-    const [isDropdownOpen, setIsDropdownOpen] = useState(false);    
     const [isAdmin, setIsAdmin] = React.useState(false);
-    React.useEffect(() => {
+    const isLoggedIn = useSelector((state) => state.login.isLogin);
+    const [isLogged, setIsLogged] = React.useState(false);
 
+    React.useEffect(() => {
         if (window.location.pathname === "/admin") {
             setIsAdmin(true);
         }
-    });
-    const handleToggleDropdown = () => { 
-        console.log(isDropdownOpen)
-        setIsDropdownOpen(!isDropdownOpen);
-          };
-    const handleClickoutside=()=>{
-        
-    };
+    }, []);
+
+    useEffect(() => {
+        if (sessionStorage.getItem("token") !== null) {
+            setIsLogged(true);
+        } else {
+            setIsLogged(false);
+        }
+    }, [isLoggedIn]);
+
     const handleGoToSignUp = () => {
         if (window.location.pathname === "/sign-up") return;
         setPage("sign-up");
         navigate("/sign-up");
     };
+
     const handleGoToLogin = () => {
         if (window.location.pathname === "/login") return;
         setPage("login");
@@ -45,13 +50,13 @@ export default function Header() {
     return (
         !isAdmin && (
             <div className="z-9999 relative w-full flex justify-center">
-                <div className="w-1400 fixed shrink-0 max-w-full h-10 bg-black rounded-t-md w-full z-50">
-                </div>
-                
+                <div className="w-1400 fixed shrink-0 max-w-full h-10 bg-black rounded-t-md w-full z-50"></div>
+
                 <header
-                    className={clsx(` ${Styles.boxShadow} rounded-b-xl z-header w-1400  bg-white mt-10 fixed flex gap-5 justify-between px-16 pt-3 pb-3 text-sm leading-5 border-b border-gray-100 border-solid  max-md:flex-wrap max-md:px-5 max-md:max-w-full`)}
+                    className={clsx(
+                        ` ${Styles.boxShadow} rounded-b-xl z-header w-1400  bg-white mt-10 fixed flex gap-5 justify-between px-16 pt-3 pb-3 text-sm leading-5 border-b border-gray-100 border-solid  max-md:flex-wrap max-md:px-5 max-md:max-w-full`
+                    )}
                 >
-                    
                     <div className="flex gap-5 justify-between self-start text-neutral-800">
                         <Link to="/">
                             <img
@@ -94,11 +99,9 @@ export default function Header() {
                             </Link>
                         </nav>
                     </div>
-                    {/* <SearchBar/> */}
-
 
                     <div className="flex gap-3 justify-between">
-                        {!logged ? (
+                        {!isLogged ? (
                             <>
                                 <button
                                     type="button"
@@ -126,23 +129,15 @@ export default function Header() {
                                 </button>
                             </>
                         ) : (
-                            <>
-                            <img
-                                className="cursor-pointer h-10 rounded-full"
-                                src={avatar}
-                                alt=""
-                                onClick={handleToggleDropdown}
-                            />
-                        {isDropdownOpen && (
-                                <div className={clsx( { [Styles.open]: isDropdownOpen })}> 
-                                <ul className={clsx(Styles.dropdownList, { [Styles.open]: isDropdownOpen })}>
-                                            <a href='user/profile'><li className={Styles.dropdownListItem}>My Profile</li></a>
-                                            <li className={Styles.dropdownListItem}>Settings</li>
-                                            <li className={Styles.dropdownListItem}>Logout</li>
-                                            </ul>
-                            </div>
-                        )}
-                            </>
+                            <Dropdown
+                                elementClick={
+                                    <img
+                                        className="cursor-pointer h-10 rounded-full"
+                                        src={avatar}
+                                        alt=""
+                                    />
+                                }
+                            ></Dropdown>
                         )}
                     </div>
                 </header>

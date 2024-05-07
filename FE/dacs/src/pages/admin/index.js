@@ -1,9 +1,24 @@
-import NavigationTopBar from "../../component/dashboard/NavigationTopBar";
-import styles from "./Dashboard.module.scss";
-import logo from "../../assets/images/logo.png";
-import LeftNavDash from "../../component/dashboard/leftNavDash";
-import clsx from "clsx";
+import { useEffect } from "react";
+import { toast } from "sonner";
+import { getAdminDashBoard } from "../../api/apiService/authService";
+import { useNavigate } from "react-router-dom";
 const Dashboard = () => {
+    const navigator = useNavigate();
+    useEffect(() => {
+        toast.promise(getAdminDashBoard(), {
+            loading: "Loading...",
+            success: (result) => {
+                return result.mess;
+            },
+            error: (error) => {
+                console.log(error);
+                // if (error.status === "FORBIDDEN") {
+                    navigator("/404");
+                // }
+                return error.mess;
+            },
+        });
+    });
     return (
         <></>
         // <div

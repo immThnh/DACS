@@ -359,7 +359,7 @@ function HistoryDeleted() {
                                                                     alt=""
                                                                 />
                                                             </button>
-                                                            <button
+                                                            {/* <button
                                                                 onClick={() =>
                                                                     openDeleteModal(
                                                                         course.id
@@ -373,7 +373,7 @@ function HistoryDeleted() {
                                                                     alt=""
                                                                     className="cursor-pointer"
                                                                 />
-                                                            </button>
+                                                            </button> */}
                                                         </div>
                                                     </div>
                                                 </div>
