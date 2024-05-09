@@ -67,8 +67,7 @@ userInstance.interceptors.response.use(
             sessionStorage.removeItem("token");
             sessionStorage.removeItem("user");
             sessionStorage.setItem("prevPath", window.location.pathname);
-            console.log(window.location.pathname);
-            // dispatch(loginSlice.actions.setLogin());
+            toast.error("Session is expired, Please try logging in again");
             redirectPage("/login");
             return Promise.reject(error.response.data);
         }

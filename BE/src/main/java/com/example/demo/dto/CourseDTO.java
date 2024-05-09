@@ -1,5 +1,6 @@
 package com.example.demo.dto;
 
+import com.example.demo.entity.data.Progress;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +28,7 @@ public class CourseDTO {
     private int isEditedCategories;
     private int isEdited;
     private String actionVideo = "NONE";
+    private Progress progress;
 
     public CourseDTO(String temp) {}
 }

@@ -104,7 +104,6 @@ export default function Login() {
                     };
                     dispatch(loginSlice.actions.setLogin(payload));
                     const prePath = sessionStorage.getItem("prevPath");
-                    console.log(prePath);
                     prePath ? navigate(prePath) : navigate("/");
                     sessionStorage.removeItem("prevPath");
                     return "Welcome to Dream Chasers";

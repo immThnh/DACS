@@ -1,11 +1,21 @@
 import React, { useEffect, useState } from "react"; // This imports the useState hook
 import styles from "./DetailCourse.module.scss";
 import { Link, useParams } from "react-router-dom";
-import { toast } from "sonner";
 import clsx from "clsx";
-import * as dataApi from "../../../api/apiService/dataService.js";
+import * as userApi from "../../../api/apiService/authService.js";
 import logoPage from "../../../assets/images/logo.png";
 import Comment from "../../../component/comment/index.js";
+import { useSelector } from "react-redux";
+
+let timerId = null;
+const debounce = (func, delay = 1000) => {
+    return () => {
+        clearTimeout(timerId);
+        timerId = setTimeout(() => {
+            func();
+        }, delay);
+    };
+};
 
 const CourseHero = ({ video = "", thumbnail }) => {
     if (!video.startsWith("https://res.cloudinary.com")) {
@@ -45,31 +55,55 @@ const CourseHero = ({ video = "", thumbnail }) => {
 };
 
 const initFormData = {
-    title: "",
-    desc: "",
-    price: "",
-    thumbnail: "",
-    date: "",
-    categories: [],
+    course: {
+        title: "",
+        desc: "",
+        price: "",
+        thumbnail: "",
+        date: "",
+        categories: [],
+    },
 };
 const CurriculumItem = ({
     item,
-    index,
+    aliasEmail,
+    sectionId,
+    courseId,
     isHighlighted,
+    currentProgress,
     handleVideoSelect,
     setCurrentProgress,
 }) => {
+    // const [lessionIds, setLessionIds] = useState(currentProgress);
     const handleOpenSubLesson = (e) => {
-        const sub = document.getElementById(index);
+        const sub = document.getElementById(`section${sectionId}`);
         sub.classList.toggle("disabled");
         e.currentTarget.classList.toggle(styles.active);
     };
+    let newUpdate = currentProgress;
+
     const handleChecked = (e) => {
-        if (e.target.checked) {
-            setCurrentProgress((prev) => (prev += 1));
+        const id = parseInt(e.target.id, 10);
+        if (e.target.checked && !currentProgress.includes(id)) {
+            newUpdate = [...newUpdate, id];
         } else {
-            setCurrentProgress((prev) => (prev -= 1));
+            newUpdate = [...newUpdate.filter((item) => item !== id)];
         }
+        setCurrentProgress((prev) => newUpdate);
+        const fetchUpdateLessonIds = async () => {
+            try {
+                console.log("deeeeeee");
+                const result = await userApi.updateLessonIds(
+                    aliasEmail,
+                    courseId,
+                    newUpdate
+                );
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        const debounceAPi = debounce(fetchUpdateLessonIds, 500);
+        debounceAPi();
     };
 
     return (
@@ -103,7 +137,7 @@ const CurriculumItem = ({
             </div>
 
             <div
-                id={index}
+                id={`section${sectionId}`}
                 className={clsx(styles.wrapLesson, "w-full disabled")}
             >
                 {item.lessons &&
@@ -131,6 +165,10 @@ const CurriculumItem = ({
                                 <div className="checkbox-wrapper ml-3">
                                     <label>
                                         <input
+                                            checked={currentProgress.includes(
+                                                lesson.id
+                                            )}
+                                            id={lesson.id}
                                             type="checkbox"
                                             onChange={handleChecked}
                                         />
@@ -148,13 +186,14 @@ const CurriculumItem = ({
 };
 function DetailCourse() {
     const [currentVideoUrl, setCurrentVideoUrl] = useState("");
+    const userInfo = useSelector((state) => state.login.user);
     const [lessonSelected, setLessonSelected] = useState(null);
-    const [course, setCourse] = useState(initFormData);
     const [totalLesson, setTotalLesson] = useState(0);
-    const [currentProgress, setCurrentProgress] = useState(0);
+    const [currentProgress, setCurrentProgress] = useState([]);
     const [openModal, setOpenModal] = useState(false);
-
+    const [progressObject, setProgressObject] = useState(initFormData);
     const { id } = useParams();
+    const alias = userInfo.email.split("@")[0];
 
     const handleCloseComment = () => {
         setOpenModal(false);
@@ -180,13 +219,16 @@ function DetailCourse() {
     useEffect(() => {
         const fetchApi = async () => {
             try {
-                const data = await dataApi.getCourseById(id);
+                const data = await userApi.getProgress(alias, id);
                 let total = 0;
-                data.content.sections.map(
+                data.content.course.sections.map(
                     (section) => (total += section.lessons.length)
                 );
-                setCurrentVideoUrl(data.content.video);
-                setCourse(data.content);
+                if (data.content.lessonIds !== null) {
+                    setCurrentProgress(data.content.lessonIds);
+                }
+                setCurrentVideoUrl(data.content.course.video);
+                setProgressObject(data.content);
                 setTotalLesson(total);
             } catch (error) {
                 console.log(error);
@@ -194,8 +236,7 @@ function DetailCourse() {
         };
 
         fetchApi();
-    }, []);
-
+    }, [id]);
     return (
         <div className={clsx(styles.wrapperPage)}>
             <div
@@ -207,9 +248,11 @@ function DetailCourse() {
                 <Link to={"/"} className={clsx(styles.logoPage)}>
                     <img src={logoPage} alt="" />
                 </Link>
-                <h5 className="mb-0 text-center">{course.title}</h5>
+                <h5 className="mb-0 text-center">
+                    {progressObject.course.title}
+                </h5>
                 <div className={clsx(styles.progress)}>
-                    Progress: {currentProgress}/{totalLesson}
+                    Progress: {currentProgress.length}/{totalLesson}
                 </div>
             </div>
             <main className={clsx(styles.uiUxCourse)}>
@@ -220,7 +263,7 @@ function DetailCourse() {
                         >
                             <CourseHero
                                 video={currentVideoUrl}
-                                thumbnail={course.thumbnail}
+                                thumbnail={progressObject.course.thumbnail}
                             />
                             <div
                                 className={clsx(styles.sectionComment)}
@@ -231,13 +274,13 @@ function DetailCourse() {
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
                                         viewBox="0 0 24 24"
-                                        stroke-width="1.5"
+                                        strokeWidth="1.5"
                                         stroke="currentColor"
-                                        class="w-6 h-6"
+                                        className="w-6 h-6"
                                     >
                                         <path
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
                                             d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"
                                         />
                                     </svg>
@@ -258,21 +301,30 @@ function DetailCourse() {
                                     </div>
                                 </div>
                                 <div className={styles.courseCurriculum}>
-                                    {course.sections &&
-                                        course.sections.map((item, index) => (
-                                            <CurriculumItem
-                                                setCurrentProgress={
-                                                    setCurrentProgress
-                                                }
-                                                isHighlighted={lessonSelected}
-                                                handleVideoSelect={
-                                                    handleVideoSelect
-                                                }
-                                                key={index}
-                                                index={index}
-                                                item={item}
-                                            />
-                                        ))}
+                                    {progressObject.course.sections &&
+                                        progressObject.course.sections.map(
+                                            (item, index) => (
+                                                <CurriculumItem
+                                                    setCurrentProgress={
+                                                        setCurrentProgress
+                                                    }
+                                                    courseId={id}
+                                                    currentProgress={
+                                                        currentProgress
+                                                    }
+                                                    aliasEmail={alias}
+                                                    isHighlighted={
+                                                        lessonSelected
+                                                    }
+                                                    handleVideoSelect={
+                                                        handleVideoSelect
+                                                    }
+                                                    sectionId={index}
+                                                    key={index}
+                                                    item={item}
+                                                />
+                                            )
+                                        )}
                                 </div>
                             </section>
                         </div>

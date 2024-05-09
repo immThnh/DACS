@@ -1,4 +1,4 @@
-import instance, { setToken, privateInstance } from "../instance";
+import instance, { setToken, privateInstance, userInstance } from "../instance";
 export const getAllCategories = async (page = 0, size = 9999999) => {
     try {
         const res = await instance.get(
@@ -19,6 +19,8 @@ export const getAllCategoryDeleted = async (page, size) => {
         return Promise.reject(error);
     }
 };
+
+
 
 export const createCourse = async (
     course,
@@ -235,3 +237,4 @@ export const restoreCourseById = (id) => {
         Promise.reject(error);
     }
 };
+

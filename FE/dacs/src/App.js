@@ -7,20 +7,24 @@ import {
 } from "react-router-dom";
 import { publicRoutes, adminRoutes, userRoutes } from "./router";
 import styles from "./App.module.scss";
-import { Toaster } from "sonner";
+import { Toaster, toast } from "sonner";
 import Header from "./layout/header";
 import LeftNavDash from "./component/dashboard/leftNavDash";
 import HeaderAdmin from "./layout/headerAdmin";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Interceptors from "./Interceptor";
+import loginSlice from "./redux/reducers/loginSlice";
 const PrivateWrapper = ({ isAuthenticated }) => {
+    const dispatch = useDispatch();
     if (isAuthenticated) {
         return <Outlet></Outlet>;
+    } else {
+        dispatch(loginSlice.actions.setLogout());
+        sessionStorage.setItem("prevPath", window.location.pathname);
+        return <Navigate to="/login" />;
     }
-    sessionStorage.setItem("prevPath", window.location.pathname);
-    return <Navigate to="/login" />;
 };
 
 function App() {
@@ -33,6 +37,7 @@ function App() {
             setIsLogged(false);
         }
     }, [isLoggedIn]);
+
     console.log("Render app");
     return (
         <div className={clsx("App ", {})}>
@@ -111,7 +116,6 @@ function App() {
                     </Route>
                 ))}
             </Routes>
-            <Toaster position="top-center" richColors />
         </div>
     );
 }

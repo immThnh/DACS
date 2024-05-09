@@ -1,6 +1,14 @@
-import publicInstance, { userInstance } from "../instance";
+import { userInstance } from "../instance";
 import axios from "axios";
-import instance, { privateInstance, setToken } from "../instance";
+import instance, { privateInstance } from "../instance";
+
+export const enrollCourse = async (enrollDTO) => {
+    try {
+        return await userInstance.post("/enroll/course", enrollDTO);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 export const register = async ({
     firstName,
     lastName,
@@ -225,7 +233,7 @@ export const getUserByEmail = async (email) => {
     }
 };
 
-export const updateProfile = (user, avatar) => {
+export const updateProfile = async (user, avatar) => {
     const formData = new FormData();
     const json = JSON.stringify(user);
     const userBlob = new Blob([json], {
@@ -234,14 +242,33 @@ export const updateProfile = (user, avatar) => {
     formData.append("user", userBlob);
     formData.append("avatar", avatar);
     try {
-        return userInstance.putForm("/update", formData);
+        return await userInstance.putForm("/update", formData);
     } catch (error) {}
 };
 
-export const updatePassword = (passwords) => {
+export const updatePassword = async (passwords) => {
     try {
-        return userInstance.put("/update/password", passwords);
+        return await userInstance.put("/update/password", passwords);
     } catch (error) {
         return Promise.reject(error);
+    }
+};
+
+export const getProgress = async (alias, courseId) => {
+    try {
+        return await userInstance.get(`/${alias}/progress/${courseId}`);
+    } catch (error) {
+        return Promise.reject(error.response.data);
+    }
+};
+
+export const updateLessonIds = async (alias, courseId, lessonIds) => {
+    try {
+        return await userInstance.put(
+            `/${alias}/progress/${courseId}/updateLessonIds`,
+            lessonIds
+        );
+    } catch (error) {
+        return Promise.reject(error.response.data);
     }
 };
