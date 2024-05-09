@@ -1,5 +1,29 @@
 import { useMemo } from "react";
+import * as authApi from "../../api/apiService/authService";
 
+import axios from "axios";
+import { authorizationCode } from "axios-oauth-client";
+const getAuthorizationCode = authorizationCode(
+    axios.create(),
+    "https://oauth.com/2.0/token", // OAuth 2.0 token endpoint
+    "244170825538-gfjr0s4hfes2euh8qjt5mseq2v0o8js5.apps.googleusercontent.com",
+    "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",
+    "http://localhost:3000" // Redirect URL for your app
+);
+
+const auth2 = await getAuthorizationCode(
+    "AUTHORIZATION_CODE",
+    "OPTIONAL_SCOPES"
+);
+
+// const getOwnerCredentials = ownerCredentials(
+//     axios.create(),
+//     'https://oauth.com/2.0/token', // OAuth 2.0 token endpoint
+//     'CLIENT_ID',
+//     'CLIENT_SECRET'
+//   )
+  
+//   const auth = await getOwnerCredentials('USERNAME', 'PASSWORD', 'OPTIONAL_SCOPES')
 const Button = ({
     heroiconsOutlinedevicePho,
     inputFieldPassword,
@@ -14,9 +38,21 @@ const Button = ({
         };
     }, [propAlignSelf, propFlex]);
 
+    const handleOauth2Login = () => {
+        const fetchApi = async () => {
+            try {
+                const result = authApi.oauth2Login(link);
+                console.log(result);
+            } catch (error) {
+                console.log("handleOath2Login: " + error);
+            }
+        };
+        fetchApi();
+    };
+
     return (
-        <a
-            href={link}
+        <div
+            onClick={handleOauth2Login}
             // onClick={functionClick}
             className="rounded-lg cursor-pointer py-3 px-5 bg-white-97 self-stretch rounded-3xs flex flex-row items-start justify-center gap-[14px] border-[1px] border-solid border-white-95"
             style={buttonStyle}
@@ -31,7 +67,7 @@ const Button = ({
             <div className="w-[230px] relative text-lg leading-[150%] font-medium font-be-vietnam-pro text-grey-15 text-left inline-block shrink-0">
                 {inputFieldPassword}
             </div>
-        </a>
+        </div>
     );
 };
 export default Button;

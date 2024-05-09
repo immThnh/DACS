@@ -1,4 +1,5 @@
 import publicInstance, { userInstance } from "../instance";
+import axios from "axios";
 import instance, { privateInstance, setToken } from "../instance";
 export const register = async ({
     firstName,
@@ -200,6 +201,46 @@ export const getUserInfo = async () => {
 export const logout = async () => {
     try {
         return userInstance.post("/logout");
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const oauth2Login = async (link) => {
+    try {
+        const result = await axios.get(
+            "http://localhost:8080/oauth2/authorization/google"
+        );
+        console.log(result);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getUserByEmail = async (email) => {
+    try {
+        return userInstance.get(`${email}`);
+    } catch (error) {
+        Promise.reject(error);
+    }
+};
+
+export const updateProfile = (user, avatar) => {
+    const formData = new FormData();
+    const json = JSON.stringify(user);
+    const userBlob = new Blob([json], {
+        type: "application/json",
+    });
+    formData.append("user", userBlob);
+    formData.append("avatar", avatar);
+    try {
+        return userInstance.putForm("/update", formData);
+    } catch (error) {}
+};
+
+export const updatePassword = (passwords) => {
+    try {
+        return userInstance.put("/update/password", passwords);
     } catch (error) {
         return Promise.reject(error);
     }

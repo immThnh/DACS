@@ -12,9 +12,11 @@ const Dashboard = () => {
             },
             error: (error) => {
                 console.log(error);
-                // if (error.status === "FORBIDDEN") {
-                    navigator("/404");
-                // }
+                if (error.status === "UNAUTHORIZED") {
+                    navigator("/login");
+                    sessionStorage.removeItem("token");
+                    return error.mess;
+                }
                 return error.mess;
             },
         });

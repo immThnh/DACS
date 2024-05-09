@@ -1,21 +1,23 @@
 import { Menu, Transition } from "@headlessui/react";
 import clsx from "clsx";
 import styles from "./Menu.module.scss";
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import avatarDefault from "../../assets/images/avatar_25.jpg";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { Link } from "react-router-dom";
 import * as authApi from "../../api/apiService/authService";
+import { useDispatch, useSelector } from "react-redux";
+import loginSlice from "../../redux/reducers/loginSlice";
 
 function Dropdown({ elementClick, ...props }) {
+    const isLogged = useSelector((state) => state.login.isLogin);
+    const dispatch = useDispatch();
     const [user, setUser] = useState();
     const handleLogout = () => {
         const fetchApi = async () => {
             try {
                 await authApi.logout();
-                sessionStorage.removeItem("token");
-                sessionStorage.removeItem("user");
-                window.location.reload();
+                dispatch(loginSlice.actions.setLogout());
             } catch (error) {
                 console.log(error);
             }
@@ -25,10 +27,10 @@ function Dropdown({ elementClick, ...props }) {
     };
 
     useEffect(() => {
-        console.log("dropdown render");
         var temp = sessionStorage.getItem("user");
         setUser(JSON.parse(temp));
-    }, []);
+    }, [isLogged]);
+
     return (
         <div className="text-right">
             <Menu as="div" className="relative inline-block text-left">
@@ -60,14 +62,18 @@ function Dropdown({ elementClick, ...props }) {
                             "absolute right-0 mt-2origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
                         )}
                     >
-                        <div className="px-1 py-1 ">
+                        <div className="px-4 py-1 ">
                             <div
-                                className={`${"text-gray-900"} group flex w-full items-center rounded-md px-2 py-2.5 text-sm`}
+                                className={`${"text-gray-900"} group flex w-full items-center rounded-md py-2.5 text-sm`}
                             >
                                 <div>
                                     <img
                                         className={clsx(styles.avatar)}
-                                        src={user && user.avatar ? user.avatar : avatarDefault}
+                                        src={
+                                            user && user.avatar
+                                                ? user.avatar
+                                                : avatarDefault
+                                        }
                                         alt=""
                                     />
                                 </div>
@@ -75,15 +81,30 @@ function Dropdown({ elementClick, ...props }) {
                                     className={clsx(styles.userName, "flex-1")}
                                 >
                                     <span>
-                                        {user && user.firstName}{" "}
+                                        {user && user.firstName}
                                         {user && user.lastName}
                                     </span>
-                                    <div>{user && "@" + user.email}</div>
+                                    <div>
+                                        {user &&
+                                            "@" +
+                                                user.email.substring(
+                                                    0,
+                                                    user.email.indexOf("@")
+                                                )}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div className="px-1 py-1 ">
-                            <Link to={"/me/profile"}>
+                            <Link
+                                to={`/me/profile/${
+                                    user &&
+                                    user.email.substring(
+                                        0,
+                                        user.email.indexOf("@")
+                                    )
+                                }`}
+                            >
                                 <Menu.Item>
                                     {({ active }) => (
                                         <button

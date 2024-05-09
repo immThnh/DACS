@@ -4,6 +4,12 @@
 
 .input {
     border: 1px solid #e0dddd;
+    align-items: center !important;
+
+    svg {
+        height: 20px;
+        color: black;
+    }
 
     &:focus-within {
         border: 1px solid black !important;

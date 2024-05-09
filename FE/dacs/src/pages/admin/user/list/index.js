@@ -335,7 +335,10 @@ function ListUser() {
                                                 >
                                                     <div
                                                         className={clsx(
-                                                            styles.name
+                                                            styles.name,
+                                                            {
+                                                                [styles.admin]: true,
+                                                            }
                                                         )}
                                                     >
                                                         {/* {element.role &&
@@ -346,6 +349,7 @@ function ListUser() {
                                                                     ) => r
                                                                 )
                                                                 } */}
+
                                                         {element.role}
                                                     </div>
                                                 </div>

@@ -1,5 +1,7 @@
 package com.example.demo.auth;
 
+import com.example.demo.cloudinary.CloudService;
+import com.example.demo.dto.PasswordDTO;
 import com.example.demo.dto.ResponseObject;
 import com.example.demo.dto.UserDTO;
 import com.example.demo.entity.user.Role;
@@ -15,10 +17,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -34,6 +37,7 @@ public class AuthService {
     public final AuthenticationManager authenticationManager;
 
     private final JwtService jwtService;
+    private final CloudService cloudService;
     private final PasswordEncoder passwordEncoder;
 
     public boolean register(RegisterRequest request) {
@@ -92,7 +96,19 @@ public class AuthService {
         return ResponseObject.builder().status(HttpStatus.OK).content(userRepository.findByRole(role, PageRequest.of(page, size))).build();
     }
 
-    private User saveUser(RegisterRequest request) {
+    public ResponseObject getUserByEmail(String email) {
+        if(!email.contains("@")) {
+            email+="@gmail.com";
+        }
+        var user = userRepository.findByEmail(email).orElse(null);
+        var userDTO = getUserDTOFromUser(user);
+        if(user == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Username not found").build();
+        }
+        return ResponseObject.builder().status(HttpStatus.OK).content(userDTO).mess("Successfully").build();
+    }
+
+    private void saveUser(RegisterRequest request) {
         User user = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -100,7 +116,7 @@ public class AuthService {
                 .lastName(request.getLastName())
                 .role(Role.USER)
                 .build();
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
 
@@ -176,6 +192,41 @@ public class AuthService {
             return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Username not found").build();
         }
         return ResponseObject.builder().status(HttpStatus.OK).mess("Get user data successfully").build();
+    }
+
+    public ResponseObject updateProfile(UserDTO userDTO, MultipartFile avatar)  {
+        var user = userRepository.findByEmail(userDTO.getEmail()).orElse(null);
+        if(user == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Username not found").build();
+        }
+        if(avatar != null) {
+            try {
+                user.setAvatar(cloudService.uploadImage(avatar.getBytes()));
+            }
+            catch (IOException ex) {
+                System.out.println("updateProfile:  " + ex.getMessage());
+                return ResponseObject.builder().status(HttpStatus.OK).mess("Error occurred when updating profile").content(userDTO).build();
+            }
+        }
+        userDTO.setAvatar(user.getAvatar());
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setPhoneNumber(userDTO.getPhoneNumber());
+        userRepository.save(user);
+        return ResponseObject.builder().status(HttpStatus.OK).mess("Update successfully").content(userDTO).build();
+    }
+
+    public ResponseObject updatePassword(PasswordDTO passwordDTO) {
+        var user = userRepository.findByEmail(passwordDTO.getEmail()).orElse(null);
+        if(user == null) {
+            return ResponseObject.builder().mess("User not found").status(HttpStatus.BAD_REQUEST).build();
+        }
+        if(!passwordEncoder.matches( passwordDTO.getOldPassword(), user.getPassword())) {
+            return ResponseObject.builder().mess("Old password not correct").status(HttpStatus.BAD_REQUEST).build();
+        }
+        user.setPassword(passwordEncoder.encode(passwordDTO.getNewPassword()));
+        userRepository.save(user);
+        return ResponseObject.builder().status(HttpStatus.OK).mess("Update password successfully").build();
     }
 
 }

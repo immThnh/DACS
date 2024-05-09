@@ -7,15 +7,16 @@ import Styles from "./Header.module.scss";
 import clsx from "clsx";
 import Dropdown from "../../component/dropDown";
 import * as authApi from "../../api/apiService/authService";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 export default function Header() {
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const [user, setUser] = useState({
+        avatar,
+    });
     const [page, setPage] = React.useState("login");
     const [isAdmin, setIsAdmin] = React.useState(false);
     const isLoggedIn = useSelector((state) => state.login.isLogin);
-    const [isLogged, setIsLogged] = React.useState(false);
 
     React.useEffect(() => {
         if (window.location.pathname === "/admin") {
@@ -25,9 +26,9 @@ export default function Header() {
 
     useEffect(() => {
         if (sessionStorage.getItem("token") !== null) {
-            setIsLogged(true);
+            setUser(JSON.parse(sessionStorage.getItem("user")));
         } else {
-            setIsLogged(false);
+            setUser({ avatar });
         }
     }, [isLoggedIn]);
 
@@ -41,10 +42,6 @@ export default function Header() {
         if (window.location.pathname === "/login") return;
         setPage("login");
         navigate("/login");
-    };
-
-    const handleGotoProfile = () => {
-        console.log("go to profile");
     };
 
     return (
@@ -101,7 +98,7 @@ export default function Header() {
                     </div>
 
                     <div className="flex gap-3 justify-between">
-                        {!isLogged ? (
+                        {!user.email ? (
                             <>
                                 <button
                                     type="button"
@@ -132,8 +129,12 @@ export default function Header() {
                             <Dropdown
                                 elementClick={
                                     <img
-                                        className="cursor-pointer h-10 rounded-full"
-                                        src={avatar}
+                                        className="border circle object-cover w-11 h-11 border-gray-200 cursor-pointer"
+                                        src={
+                                            user.avatar != ""
+                                                ? avatar
+                                                : user.avatar
+                                        }
                                         alt=""
                                     />
                                 }

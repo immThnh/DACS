@@ -49,7 +49,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/v1/public/**"
                         ).permitAll()
-                        .requestMatchers("/api/v1/user/**").hasRole(Role.USER.name())
+                        .requestMatchers("/api/v1/user/**").hasAnyRole(Role.USER.name(), Role.ADMIN.name(), Role.MANAGER.name())
                         .requestMatchers(HttpMethod.GET, "/api/v1/private/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name())
                         .requestMatchers(HttpMethod.POST, "/api/v1/private/**").hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name())
                         .requestMatchers(HttpMethod.PUT, "/api/v1/private/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name())
@@ -60,7 +60,7 @@ public class SecurityConfig {
                     .oauth2Login(o -> o
                             .successHandler(oauth2SuccessHandler)
                            )
-                .logout(logout -> logout.logoutUrl("/api/v1/user/logout")
+                .logout(logout -> logout.logoutUrl("/api/v1/me/logout")
                         .addLogoutHandler(logoutHandler)
                         .logoutSuccessHandler(((request, response, authentication) -> {
                             SecurityContextHolder.clearContext();

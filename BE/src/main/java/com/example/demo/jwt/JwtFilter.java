@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -63,16 +64,16 @@ public class JwtFilter extends OncePerRequestFilter {
            filterChain.doFilter(request, response);
        }
        catch (MalformedJwtException | SignatureException e) {
-           logger.error("Exception occurred during JWT filter processing: " + e.getMessage());
+           logger.error("Token is not valid: " + e.getMessage());
            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-           ResponseObject res = ResponseObject.builder().status(HttpStatus.UNAUTHORIZED).mess("Token is not valid").build();
+           ResponseObject res = ResponseObject.builder().status(HttpStatus.UNAUTHORIZED).mess("Token is not valid, Log in again").build();
            ObjectMapper mapper = new ObjectMapper();
            response.getWriter().write(mapper.writeValueAsString(res));
        }
        catch (ExpiredJwtException e) {
-           logger.error("Exception occurred during JWT filter processing: " + e.getMessage());
+           logger.error("Token is expiration: " + e.getMessage());
            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-           ResponseObject res = ResponseObject.builder().status(HttpStatus.UNAUTHORIZED).mess("Token is expiration").build();
+           ResponseObject res = ResponseObject.builder().status(HttpStatus.UNAUTHORIZED).mess("Token is expiration, Log in again").build();
            ObjectMapper mapper = new ObjectMapper();
            response.getWriter().write(mapper.writeValueAsString(res));
        }

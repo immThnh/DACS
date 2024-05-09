@@ -51,7 +51,7 @@ export const createCourse = async (
         );
         console.log("Response:", response);
     } catch (error) {
-        return Promise.reject(error.response.data);
+        return Promise.reject(error);
     }
 };
 
@@ -104,7 +104,7 @@ export const getAllCourseAdmin = async (page = 0, size = 5) => {
 };
 export const getAllCourseDeleted = async (page, size) => {
     try {
-        const result = await instance.get(
+        const result = await privateInstance.get(
             `/course/getAllDeleted?page=${page}&size=${size}`
         );
         return result;

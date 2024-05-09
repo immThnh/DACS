@@ -2,79 +2,117 @@ import {
     BrowserRouter as Router,
     Routes,
     Route,
-    useNavigate,
     Navigate,
+    Outlet,
 } from "react-router-dom";
-import { publicRoutes, adminRoutes } from "./router";
+import { publicRoutes, adminRoutes, userRoutes } from "./router";
 import styles from "./App.module.scss";
 import { Toaster } from "sonner";
 import Header from "./layout/header";
 import LeftNavDash from "./component/dashboard/leftNavDash";
 import HeaderAdmin from "./layout/headerAdmin";
 import clsx from "clsx";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import Interceptors from "./Interceptor";
+const PrivateWrapper = ({ isAuthenticated }) => {
+    if (isAuthenticated) {
+        return <Outlet></Outlet>;
+    }
+    sessionStorage.setItem("prevPath", window.location.pathname);
+    return <Navigate to="/login" />;
+};
 
 function App() {
-    const getLogin = () => {
+    const isLoggedIn = useSelector((state) => state.login.isLogin);
+    const [isLogged, setIsLogged] = useState(isLoggedIn);
+    useEffect(() => {
         if (sessionStorage.getItem("token") !== null) {
-            return true;
+            setIsLogged(true);
+        } else {
+            setIsLogged(false);
         }
-        return false;
-    };
-
+    }, [isLoggedIn]);
     console.log("Render app");
     return (
-        <Router>
-            <div
-                className={clsx("App ", {
-                    // hideScroll: hideScrollBar,
-                })}
-            >
-                <Routes>
-                    {publicRoutes.map((route, index) => (
+        <div className={clsx("App ", {})}>
+            <Interceptors></Interceptors>
+            <Routes>
+                {publicRoutes.map((route, index) => (
+                    <Route
+                        exact
+                        key={index}
+                        path={route.path}
+                        element={
+                            <>
+                                <Header />
+                                <div className={clsx("pt-header")}>
+                                    <route.component />
+                                </div>
+                            </>
+                        }
+                    />
+                ))}
+                {userRoutes.map((route, index) => (
+                    <Route
+                        key={index}
+                        element={
+                            <PrivateWrapper
+                                isAuthenticated={isLogged}
+                            ></PrivateWrapper>
+                        }
+                    >
                         <Route
+                            path={route.path}
                             exact
                             key={index}
-                            path={route.path}
                             element={
                                 <>
-                                    <Header />
+                                    {!route.path.includes("/course/detail") && (
+                                        <Header />
+                                    )}
                                     <div className={clsx("pt-header")}>
                                         <route.component />
                                     </div>
                                 </>
                             }
                         />
-                    ))}
-                    {adminRoutes.map((route, index) => (
+                    </Route>
+                ))}
+                {adminRoutes.map((route, index) => (
+                    <Route
+                        key={index}
+                        element={
+                            <PrivateWrapper
+                                isAuthenticated={isLogged}
+                            ></PrivateWrapper>
+                        }
+                    >
                         <Route
-                            key={index}
-                            exact
                             path={route.path}
+                            exact
+                            key={index}
                             element={
-                                !getLogin() ? (
-                                    <Navigate to={"/login"} replace={true} />
-                                ) : (
-                                    <>
-                                        <HeaderAdmin></HeaderAdmin>
-                                        <div className="flex bg-white">
-                                            <LeftNavDash></LeftNavDash>
-                                            <div
-                                                className={clsx(
-                                                    styles.adminContent
-                                                )}
-                                            >
-                                                <route.component />
-                                            </div>
+                                <>
+                                    <HeaderAdmin></HeaderAdmin>
+                                    <div className="flex bg-white">
+                                        <LeftNavDash></LeftNavDash>
+                                        <div
+                                            className={clsx(
+                                                styles.adminContent
+                                            )}
+                                        >
+                                            <route.component />
                                         </div>
-                                    </>
-                                )
+                                    </div>
+                                </>
                             }
-                        ></Route>
-                    ))}
-                </Routes>
-                <Toaster position="top-center" richColors />
-            </div>
-        </Router>
+                        />
+                    </Route>
+                ))}
+            </Routes>
+            <Toaster position="top-center" richColors />
+        </div>
     );
 }
 

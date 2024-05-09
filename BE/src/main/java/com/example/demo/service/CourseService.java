@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -70,6 +71,8 @@ public class CourseService {
 
         // ! Update thumbnail
         CompletableFuture<Void> fThumbnail;
+        CompletableFuture<Void> fVideo;
+
         List<CompletableFuture<Void>> futures = new ArrayList<>();
 
         if (thumbnail != null) {
@@ -92,14 +95,14 @@ public class CourseService {
 
         if(courseVideo != null) {
             if (Objects.equals(courseDTO.getActionVideo(), "UPDATE")) {
-                fThumbnail = CompletableFuture.runAsync(() -> {
+                fVideo = CompletableFuture.runAsync(() -> {
                     try {
                         course.setVideo(cloudService.uploadImage(courseVideo.getBytes()));
                     } catch (IOException e) {
                         System.out.println("Update thumbnail course:  " + e.getMessage());
                     }
                 });
-                futures.add(fThumbnail);
+                futures.add(fVideo);
             }
             if (Objects.equals(courseDTO.getActionVideo(), "REMOVE")) {
                 course.setVideo(null);
@@ -135,14 +138,13 @@ public class CourseService {
                 });
                 futures.add(future);
                 urlVideos = atmVideos.get();
-                System.out.println(urlVideos);
+                System.out.println("list video: " + urlVideos);
             }
             int indexVideo = 0;
             List<Section> updateSections = new ArrayList<>();
             for(var section : courseDTO.getSections()) {
                 var currentSection = sectionService.findById(section.getId());
                 if(currentSection != null) {
-                    System.out.println("Update section");
                     currentSection.setTitle(section.getTitle());
                     indexVideo = lessonService.updateLessonsOfSection(section.getLessons(), currentSection.getLessons(), currentSection, urlVideos, indexVideo);
                     updateSections.add(currentSection);
@@ -195,6 +197,7 @@ public class CourseService {
             if (thumbnail != null) {
                 CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                     try {
+                        System.out.println("upload thumbnail");
                         newCourse.setThumbnail(cloudService.uploadImage(thumbnail.getBytes()));
 
                     } catch (IOException e) {
@@ -207,6 +210,7 @@ public class CourseService {
             if (courseVideo != null) {
                 CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                     try {
+                        System.out.println("upload course video");
                         newCourse.setVideo(cloudService.uploadImage(courseVideo.getBytes()));
 
                     } catch (IOException e) {
@@ -220,9 +224,21 @@ public class CourseService {
 
             if(videos != null) {
                 AtomicReference<List<String>> atmVideos = new AtomicReference<List<String>>();
+                for(var video : videos) {
+                    CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+                        try {
+                            atmVideos.set(Collections.singletonList(cloudService.uploadVideo(video.getBytes())));
+                            System.out.println("upload one in list video");
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                    futures.add(future);
+
+                }
                 CompletableFuture<Void> future = CompletableFuture.runAsync(() -> atmVideos.set(cloudService.uploadVideos(videos)));
                 future.join();
-                System.out.println(atmVideos.get());
+//                System.out.println(atmVideos.get());
                 urlVideos = atmVideos.get();
             }
 
@@ -268,11 +284,11 @@ public class CourseService {
     public ResponseObject softDelete(int id) {
         var course = courseRepository.findById(id).orElse(null);
         if (course == null) {
-            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Course is not exist!").build();
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).content(courseRepository.findAll(PageRequest.of(0, 5))).mess("Course is not exist!").build();
         }
         course.setDeleted(true);
         courseRepository.save(course);
-        return ResponseObject.builder().mess("Delete course successfully!").status(HttpStatus.OK).build();
+        return ResponseObject.builder().mess("Delete course successfully!").content(courseRepository.findAll(PageRequest.of(0, 5))).status(HttpStatus.OK).build();
     }
 
     public ResponseObject hardDelete(int id) {
@@ -314,7 +330,7 @@ public class CourseService {
         if(course == null) return ResponseObject.builder().mess("Course does not exist").status(HttpStatus.BAD_REQUEST).build();
         course.setDeleted(false);
         courseRepository.save(course);
-        return ResponseObject.builder().mess("Restore successfully").status(HttpStatus.OK).build();
+        return ResponseObject.builder().content(courseRepository.findAllByIsDeleted(true, PageRequest.of(0, 5))).mess("Restore successfully").status(HttpStatus.OK).build();
     }
 
     public ResponseObject getAllByPageable (int page, int size) {

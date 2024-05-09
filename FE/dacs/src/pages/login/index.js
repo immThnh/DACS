@@ -96,12 +96,17 @@ export default function Login() {
             toast.promise(authService.login({ ...formData }), {
                 loading: "Loading...",
                 success: (data) => {
-                    console.log(data.content);
                     const { token, ...user } = data.content;
-                    sessionStorage.setItem("token", token);
-                    sessionStorage.setItem("user", JSON.stringify(user));
-                    dispatch(loginSlice.actions.setLogin(true));
-                    navigate("/");
+                    const payload = {
+                        isLogin: true,
+                        token,
+                        user,
+                    };
+                    dispatch(loginSlice.actions.setLogin(payload));
+                    const prePath = sessionStorage.getItem("prevPath");
+                    console.log(prePath);
+                    prePath ? navigate(prePath) : navigate("/");
+                    sessionStorage.removeItem("prevPath");
                     return "Welcome to Dream Chasers";
                 },
                 error: () => {
@@ -246,6 +251,9 @@ export default function Login() {
         fetchApi();
     };
 
+    useEffect(() => {
+        dispatch(loginSlice.actions.setLogout());
+    }, []);
     console.log("re-render");
 
     return (

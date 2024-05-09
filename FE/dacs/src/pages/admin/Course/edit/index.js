@@ -43,7 +43,6 @@ function EditCourse() {
     };
 
     const handleFileChange = (e, index, indexSection) => {
-        console.log(e.target.dataset.sectionindex);
         console.log("indexSection: " + indexSection);
         const file = e.target.files[0];
         if (file.type === "video/mp4") {

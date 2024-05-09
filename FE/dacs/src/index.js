@@ -1,3 +1,4 @@
+import { BrowserRouter as Router } from "react-router-dom";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
@@ -11,7 +12,9 @@ root.render(
     // <React.StrictMode>
     <Provider store={store}>
         <GlobalStyles>
-            <App />
+            <Router>
+                <App />
+            </Router>
         </GlobalStyles>
     </Provider>
 

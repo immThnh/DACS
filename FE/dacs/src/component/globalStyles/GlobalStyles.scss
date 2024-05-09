@@ -10,6 +10,7 @@ $h-header: 89px;
 $w-lefNav: 240px;
 $h-m-header: 144px;
 $b-shadow: rgba(17, 17, 26, 0.1) 0px 0px 16px;
+$c-black: rgb(33, 43, 54);
 
 body {
     margin: 0;
@@ -120,7 +121,7 @@ body {
 }
 
 .wrapMainDash {
-    margin: 0px 70px 60px 70px;
+    margin: 0px 70px 160px 70px;
 }
 
 .titleMainDash {
@@ -299,3 +300,16 @@ ul {
 //     outline: none !important;
 //     border: none !important;
 // }
+
+.b-shadow-sm {
+    box-shadow: rgba(17, 17, 26, 0.05) 0px 0px 4px,
+        rgba(17, 17, 26, 0.05) 0px 0px 26px !important;
+}
+
+body {
+    color: rgb(33, 43, 54);
+}
+
+.circle {
+    border-radius: 100rem;
+}

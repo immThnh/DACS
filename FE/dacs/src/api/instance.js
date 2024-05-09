@@ -1,4 +1,11 @@
 import axios from "axios";
+import loginSlice from "../redux/reducers/loginSlice";
+import { useDispatch } from "react-redux";
+import { toast } from "sonner";
+let redirectPage = null;
+export const injectNavigate = (navigate) => {
+    redirectPage = navigate;
+};
 
 const getToken = () => {
     return sessionStorage.getItem("token");
@@ -35,6 +42,7 @@ privateInstance.interceptors.response.use(
         return res.data;
     },
     function (error) {
+        console.log("error: " + error);
         return Promise.reject(error.response.data);
     }
 );
@@ -46,7 +54,7 @@ privateInstance.interceptors.request.use(function (config) {
 });
 
 export const userInstance = axios.create({
-    baseURL: "http://localhost:8080/api/v1/user",
+    baseURL: "http://localhost:8080/api/v1/me",
 });
 
 userInstance.interceptors.response.use(
@@ -54,6 +62,16 @@ userInstance.interceptors.response.use(
         return res.data;
     },
     function (error) {
+        // const dispatch = useDispatch;
+        if (error.response.status === 401) {
+            sessionStorage.removeItem("token");
+            sessionStorage.removeItem("user");
+            sessionStorage.setItem("prevPath", window.location.pathname);
+            console.log(window.location.pathname);
+            // dispatch(loginSlice.actions.setLogin());
+            redirectPage("/login");
+            return Promise.reject(error.response.data);
+        }
         return Promise.reject(error.response.data);
     }
 );
@@ -65,3 +83,7 @@ userInstance.interceptors.request.use(function (config) {
 });
 
 export default publicInstance;
+
+export function test({ children }) {
+    return <>{children}</>;
+}

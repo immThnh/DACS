@@ -146,14 +146,13 @@ const CurriculumItem = ({
         </div>
     );
 };
-function DetailCourse({ setHideScrollBar }) {
+function DetailCourse() {
     const [currentVideoUrl, setCurrentVideoUrl] = useState("");
     const [lessonSelected, setLessonSelected] = useState(null);
     const [course, setCourse] = useState(initFormData);
     const [totalLesson, setTotalLesson] = useState(0);
     const [currentProgress, setCurrentProgress] = useState(0);
     const [openModal, setOpenModal] = useState(false);
-    setHideScrollBar(true);
 
     const { id } = useParams();
 
@@ -179,23 +178,19 @@ function DetailCourse({ setHideScrollBar }) {
     };
 
     useEffect(() => {
-        const fetchApi = () => {
-            toast.promise(dataApi.getCourseById(id), {
-                loading: "Loading...",
-                success: (data) => {
-                    let total = 0;
-                    data.content.sections.map(
-                        (section) => (total += section.lessons.length)
-                    );
-                    setCurrentVideoUrl(data.content.video);
-                    setCourse(data.content);
-                    setTotalLesson(total);
-                    return "Get data is successful";
-                },
-                error: (error) => {
-                    return error.content;
-                },
-            });
+        const fetchApi = async () => {
+            try {
+                const data = await dataApi.getCourseById(id);
+                let total = 0;
+                data.content.sections.map(
+                    (section) => (total += section.lessons.length)
+                );
+                setCurrentVideoUrl(data.content.video);
+                setCourse(data.content);
+                setTotalLesson(total);
+            } catch (error) {
+                console.log(error);
+            }
         };
 
         fetchApi();

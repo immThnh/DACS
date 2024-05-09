@@ -36,7 +36,7 @@ public class DemoApplication {
 //			User user = User.builder()
 //					.firstName("nguyen")
 //					.lastName("user")
-//					.email("user@example.com")
+//					.email("user@gmail.com")
 //					.password(passwordEncoder.encode("1234Thanh@"))
 //					.role(Role.USER)
 //					.build();
@@ -44,7 +44,7 @@ public class DemoApplication {
 //			User admin = User.builder()
 //					.firstName("nguyen")
 //					.lastName("admin")
-//					.email("admin@example.com")
+//					.email("admin@gmail.com")
 //					.password(passwordEncoder.encode("1234Thanh@"))
 //					.role(Role.ADMIN)
 //					.build();
@@ -53,7 +53,7 @@ public class DemoApplication {
 //			User manager = User.builder()
 //					.firstName("nguyen")
 //					.lastName("manager")
-//					.email("managern@example.com")
+//					.email("managern@gmail.com")
 //					.password(passwordEncoder.encode("1234Thanh@"))
 //					.role(Role.MANAGER)
 //					.build();
