@@ -313,3 +313,12 @@ body {
 .circle {
     border-radius: 100rem;
 }
+
+.disabled-field {
+    color: #9c9696;
+    cursor: not-allowed;
+    user-select: none;
+    input {
+        cursor: not-allowed;
+    }
+}

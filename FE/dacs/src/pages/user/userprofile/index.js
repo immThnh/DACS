@@ -225,17 +225,13 @@ function UserProfile() {
 
     useEffect(() => {
         const fetchApi = async () => {
-            toast.promise(userApi.getUserByEmail(dataSearch.email), {
-                loading: "loading...",
-                success: (data) => {
-                    setUser(data.content);
-                    setPasswords({ ...passwords, email: data.content.email });
-                    return "Your profile page";
-                },
-                error: (err) => {
-                    return err.mess;
-                },
-            });
+            try {
+                const result = await userApi.getUserByEmail(dataSearch.email);
+                setUser(result.content);
+                setPasswords({ ...passwords, email: result.content.email });
+            } catch (error) {
+                console.log(error.mess);
+            }
         };
         fetchApi();
     }, [dataSearch.email]);
@@ -405,20 +401,21 @@ function UserProfile() {
                                         <div
                                             className={clsx(
                                                 styles.formField,
-                                                "w-full "
+                                                "w-full disabled-field"
                                             )}
                                         >
                                             <div className="relative">
                                                 <input
                                                     required
-                                                    onChange={handleInputChange}
-                                                    value={user.email || ""}
+                                                    // onChange={handleInputChange}
+                                                    value={user.email || " "}
                                                     name="email"
                                                     data-validate
                                                     className={clsx(
                                                         styles.formInput
                                                     )}
                                                     type="text"
+                                                    disabled
                                                 />
                                                 <label
                                                     className={clsx(
@@ -439,7 +436,9 @@ function UserProfile() {
                                                 <input
                                                     required
                                                     onChange={handleInputChange}
-                                                    value={user.phoneNumber}
+                                                    value={
+                                                        user.phoneNumber || " "
+                                                    }
                                                     name="phoneNumber"
                                                     data-validate
                                                     className={clsx(
@@ -494,7 +493,8 @@ function UserProfile() {
                                                     }
                                                     name="oldPassword"
                                                     value={
-                                                        passwords.oldPassword
+                                                        passwords.oldPassword ||
+                                                        ""
                                                     }
                                                     data-validate
                                                     className={clsx(
