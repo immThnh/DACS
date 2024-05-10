@@ -1,6 +1,7 @@
+import clsx from "clsx";
 import { useMemo } from "react";
 import * as authApi from "../../api/apiService/authService";
-
+import styles from "./Oauth2.module.scss";
 import axios from "axios";
 import { authorizationCode } from "axios-oauth-client";
 const getAuthorizationCode = authorizationCode(
@@ -22,7 +23,7 @@ const auth2 = await getAuthorizationCode(
 //     'CLIENT_ID',
 //     'CLIENT_SECRET'
 //   )
-  
+
 //   const auth = await getOwnerCredentials('USERNAME', 'PASSWORD', 'OPTIONAL_SCOPES')
 const Button = ({
     heroiconsOutlinedevicePho,
@@ -54,7 +55,10 @@ const Button = ({
         <div
             onClick={handleOauth2Login}
             // onClick={functionClick}
-            className="rounded-lg cursor-pointer py-3 px-5 bg-white-97 self-stretch rounded-3xs flex flex-row items-start justify-center gap-[14px] border-[1px] border-solid border-white-95"
+            className={clsx(
+                styles.btn,
+                "rounded-lg cursor-pointer py-3 px-5 bg-white-97 self-stretch rounded-3xs flex flex-row items-start justify-center gap-[14px] border-[1px] border-solid border-white-95"
+            )}
             style={buttonStyle}
         >
             <div className="h-[25.5px] flex flex-col items-start justify-start pt-[1.5px] px-0 pb-0 box-border">

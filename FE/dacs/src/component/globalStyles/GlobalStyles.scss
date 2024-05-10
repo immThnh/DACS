@@ -322,3 +322,16 @@ body {
         cursor: not-allowed;
     }
 }
+
+button {
+    cursor: pointer;
+    transition: all 0.1s ease;
+    &:hover {
+        opacity: 0.8;
+    }
+}
+
+.btn {
+    background-color: black;
+    color: white;
+}

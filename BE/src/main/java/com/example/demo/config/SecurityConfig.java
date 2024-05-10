@@ -55,7 +55,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/v1/private/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name())
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/private/**").hasAuthority(ADMIN_DELETE.name())
                         .anyRequest()
-                        .authenticated()
+                        .permitAll()
                 )
                     .oauth2Login(o -> o
                             .successHandler(oauth2SuccessHandler)

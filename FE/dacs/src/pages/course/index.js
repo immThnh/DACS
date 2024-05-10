@@ -171,6 +171,7 @@ function Course() {
             return;
         }
         const enrollDTO = { email: userInfo.email, courseId: id };
+        console.log(userInfo.email);
         toast.promise(userApi.enrollCourse(enrollDTO), {
             loading: "Loading...",
             success: (data) => {

@@ -9,10 +9,39 @@
 
 .input {
     font-size: 14px;
-    border-bottom: 1px solid #ccc;
+    margin-top: 10px;
+    height: 30px;
+    border-bottom: 1px solid #fbf3f3;
 }
 
 .input:focus {
     border-bottom: 1px solid black;
     outline: none;
+}
+.cmtItem {
+    width: 100%;
+}
+
+.cmtContent {
+    padding: 4px 12px;
+    align-items: center;
+    border-radius: 8px;
+    background: #f0f2f5;
+    font-size: 14px;
+    min-height: 70px;
+
+    span {
+        font-weight: 600;
+        margin-bottom: 6px;
+    }
+}
+
+.content {
+    margin-top: 12px;
+    font-size: 12px;
+}
+
+.cmtWrap {
+    max-height: 430px;
+    overflow-y: scroll;
 }

@@ -39,15 +39,6 @@ public class User implements UserDetails {
     @MapKeyColumn(name = "code")
     @Column(name = "expiration")
     private Map<String, LocalDateTime> code = new HashMap<String, LocalDateTime>();
-
-    @ManyToMany
-    @JoinTable(
-            name = "user_course",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "course_id")
-    )
-    private Set<Course> courses = new HashSet<>();
-
     @Enumerated(EnumType.STRING)
     private Role role;
 

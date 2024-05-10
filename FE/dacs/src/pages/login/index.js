@@ -321,7 +321,7 @@ export default function Login() {
                             ></ShowPassword>
                         </div>
                         <div
-                            className="cursor-pointer float-right mt-2 self-stretch relative leading-[150%] text-grey-30 text-right"
+                            className="text-sm cursor-pointer float-right mt-2 self-stretch relative leading-[150%] text-grey-30 text-right"
                             onClick={handleForgotPasswordClick}
                         >
                             Forgot Password?

@@ -2,7 +2,7 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import OAuth2Form from "../../component/auth/OAuth2Form.js";
 import * as authService from "../../api/apiService/authService.js";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import eyeSlash from "../../assets/images/eye-slash.png";
 import { useDispatch, useSelector } from "react-redux";
@@ -185,7 +185,12 @@ export default function SignUp() {
                                     placeholder="Enter your First Name"
                                     value={formData.firstName}
                                     onChange={handleInputChange}
-                                    className={`justify-center p-2.5 mt-2.5 bg-gray-50 rounded-lg border border-gray-100 border-solid text-stone-500 max-md:max-w-full w-full outline-none`}
+                                    className={clsx(
+                                        styles.input,
+                                        `justify-center p-2.5 mt-2.5 
+                                    bg-white text-sm rounded-lg  
+                                    text-stone-500 max-md:max-w-full w-full outline-none`
+                                    )}
                                 />
                                 {errors.firstName !== "" && (
                                     <div className="text-red-500 mt-1 text-sm ml-1">
@@ -209,7 +214,12 @@ export default function SignUp() {
                                     placeholder="Enter your Last Name"
                                     value={formData.lastName}
                                     onChange={handleInputChange}
-                                    className="justify-center p-2.5 mt-2.5 bg-gray-50 rounded-lg border border-gray-100 border-solid text-stone-500 max-md:max-w-full w-full outline-none"
+                                    className={clsx(
+                                        styles.input,
+                                        `justify-center p-2.5 mt-2.5 
+                                    bg-white text-sm rounded-lg  
+                                    text-stone-500 max-md:max-w-full w-full outline-none`
+                                    )}
                                 />
                                 {errors.lastName && (
                                     <div className="text-red-500 mt-1 text-sm ml-1">
@@ -226,7 +236,12 @@ export default function SignUp() {
                         >
                             Email
                         </label>
-                        <div className="flex p-2.5 mt-2.5 bg-gray-50 rounded-lg border border-gray-100 border-solid text-stone-500 max-md:flex-wrap">
+                        <div
+                            className={clsx(
+                                styles.input,
+                                "flex p-2.5 mt-2.5 bg-white text-sm rounded-lg text-stone-500 max-md:flex-wrap"
+                            )}
+                        >
                             <input
                                 type="email"
                                 id="email"
@@ -250,7 +265,12 @@ export default function SignUp() {
                         >
                             Password
                         </label>
-                        <div className="flex p-2.5 mt-2.5 bg-gray-50 rounded-lg border border-gray-100 border-solid text-stone-500 max-md:flex-wrap">
+                        <div
+                            className={clsx(
+                                styles.input,
+                                "flex p-2.5 mt-2.5 bg-white text-sm rounded-lg text-stone-500 max-md:flex-wrap"
+                            )}
+                        >
                             <input
                                 type="password"
                                 id="password"
@@ -285,7 +305,12 @@ export default function SignUp() {
                         >
                             Confirm Password
                         </label>
-                        <div className="flex p-2.5 mt-2.5 bg-gray-50 rounded-lg border border-gray-100 border-solid text-stone-500 max-md:flex-wrap">
+                        <div
+                            className={clsx(
+                                styles.input,
+                                "flex p-2.5 mt-2.5 bg-white text-sm rounded-lg text-stone-500 max-md:flex-wrap"
+                            )}
+                        >
                             <input
                                 type="password"
                                 name="confirmPassword"
@@ -319,7 +344,12 @@ export default function SignUp() {
                         >
                             Code
                         </label>
-                        <div className="flex mt-2.5 bg-gray-50 rounded-lg border border-gray-100 border-solid text-stone-500 max-md:flex-wrap">
+                        <div
+                            className={clsx(
+                                styles.input,
+                                "flex mt-2.5 bg-white text-sm rounded-lg text-stone-500 max-md:flex-wrap"
+                            )}
+                        >
                             <input
                                 type="text"
                                 id="code"
