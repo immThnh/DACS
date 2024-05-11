@@ -2,6 +2,7 @@ package com.example.demo.auth;
 
 import com.example.demo.cloudinary.CloudService;
 import com.example.demo.dto.*;
+import com.example.demo.entity.data.Comment;
 import com.example.demo.entity.data.Progress;
 import com.example.demo.entity.user.Role;
 import com.example.demo.entity.user.User;
@@ -11,6 +12,7 @@ import com.example.demo.mail.MailRequest;
 import com.example.demo.repository.TokenRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.data.CourseRepository;
+import com.example.demo.repository.data.LessonRepository;
 import com.example.demo.repository.data.ProgressRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -35,7 +37,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class AuthService {
     private final UserRepository userRepository;
-    private final TokenRepository tokenRepository;
     private final AuthenticationManager authenticationManager;
     private final CourseRepository courseRepository;
     private final ProgressRepository progressRepository;
@@ -43,6 +44,8 @@ public class AuthService {
     private final JwtService jwtService;
     private final CloudService cloudService;
     private final PasswordEncoder passwordEncoder;
+
+
 
     public ResponseObject updateLessonsIds(String alias, int courseId, List<Integer> lessonIds) {
         var email = alias + "@gmail.com";

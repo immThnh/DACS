@@ -453,3 +453,83 @@
         height: 50px;
     }
 }
+
+.cmt {
+    img {
+        width: 40px;
+        height: 40px;
+        border-radius: 100rem;
+        margin-right: 10px;
+    }
+}
+
+.input {
+    font-size: 14px;
+    margin-top: 10px;
+    height: 30px;
+    border-bottom: 1px solid #e2e1e1;
+}
+
+.input:focus {
+    border-bottom: 1px solid black;
+    outline: none;
+}
+.cmtItem {
+    width: 100%;
+}
+
+.cmtContent {
+    align-items: center;
+    font-size: 14px;
+    min-height: 70px;
+
+    .wrap {
+        padding: 8px 12px;
+        border-radius: 8px;
+        display: inline-block;
+        background: #f0f2f5;
+        span {
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+    }
+
+    .timeCmt {
+        font-size: 12px;
+    }
+
+    .actionsCmt {
+        padding: 2px;
+        font-weight: 500;
+        margin-right: 12px;
+        font-size: 12px;
+    }
+}
+
+.content {
+    margin-top: 4px;
+    font-size: 12px;
+}
+
+.cmtWrap {
+    max-height: 430px;
+    padding-right: 10px;
+    overflow-y: scroll;
+}
+
+.replyBox {
+    display: none;
+    margin-top: 12px;
+}
+
+.btnSend {
+    font-size: 14px;
+    background-color: black;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    &:hover {
+        opacity: 0.8;
+    }
+}

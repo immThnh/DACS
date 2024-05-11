@@ -13,7 +13,6 @@ const getToken = () => {
 
 const publicInstance = axios.create({
     baseURL: "http://localhost:8080/api/v1/public",
-    headers: { Authorization: `Bearer ${getToken()}` },
 });
 
 publicInstance.interceptors.response.use(
@@ -26,10 +25,6 @@ publicInstance.interceptors.response.use(
 );
 
 publicInstance.interceptors.request.use(function (config) {
-    let token = sessionStorage.getItem("token");
-    if (token != null) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
     return config;
 });
 
@@ -42,7 +37,11 @@ privateInstance.interceptors.response.use(
         return res.data;
     },
     function (error) {
-        console.log("error: " + error);
+        if (error.response.status === 403) {
+            toast.error("You don't have permission to access this page");
+            redirectPage("/");
+            return Promise.reject(error.response.data);
+        }
         return Promise.reject(error.response.data);
     }
 );
@@ -62,7 +61,6 @@ userInstance.interceptors.response.use(
         return res.data;
     },
     function (error) {
-        // const dispatch = useDispatch;
         if (error.response.status === 401) {
             sessionStorage.removeItem("token");
             sessionStorage.removeItem("user");

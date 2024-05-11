@@ -5,21 +5,13 @@ import { useNavigate } from "react-router-dom";
 const Dashboard = () => {
     const navigator = useNavigate();
     useEffect(() => {
-        toast.promise(getAdminDashBoard(), {
-            loading: "Loading...",
-            success: (result) => {
-                return result.mess;
-            },
-            error: (error) => {
+        const fetchApi = async () => {
+            try {
+                const result = await getAdminDashBoard();
+            } catch (error) {
                 console.log(error);
-                if (error.status === "UNAUTHORIZED") {
-                    navigator("/login");
-                    sessionStorage.removeItem("token");
-                    return error.mess;
-                }
-                return error.mess;
-            },
-        });
+            }
+        };
     });
     return (
         <></>

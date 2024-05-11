@@ -105,6 +105,8 @@ public class LessonService {
 //            }
 //        }
 //    }
+
+
     public int updateLessonsOfSection(List<LessonDTO> newLessons, List<Lesson> currentLessons, Section section, List<String> videos, int indexVideo) {
         if(section.getLessons().size() == 0) {
             System.out.println("No lesson added to section");

@@ -1,7 +1,12 @@
-import instance, { setToken, privateInstance, userInstance } from "../instance";
+import publicInstance, {
+    setToken,
+    privateInstance,
+    userInstance,
+} from "../instance";
+
 export const getAllCategories = async (page = 0, size = 9999999) => {
     try {
-        const res = await instance.get(
+        const res = await publicInstance.get(
             `/category/getAll?page=${page}&size=${size}`
         );
         return res;
@@ -19,8 +24,6 @@ export const getAllCategoryDeleted = async (page, size) => {
         return Promise.reject(error);
     }
 };
-
-
 
 export const createCourse = async (
     course,
@@ -85,7 +88,7 @@ export const updateCourse = async (id, course, thumbnail, video, videos) => {
 
 export const getAllCourse = async (page = 0, size = 5) => {
     try {
-        const result = await instance.get(
+        const result = await publicInstance.get(
             `/course/getAll?page=${page}&size=${size}`
         );
         return result;
@@ -118,7 +121,7 @@ export const getAllCourseDeleted = async (page, size) => {
 
 export const getCourseById = async (id) => {
     try {
-        return await instance.get(`/course/${id}`);
+        return await publicInstance.get(`/course/${id}`);
     } catch (error) {
         return Promise.reject(error.response.data);
     }
@@ -145,7 +148,7 @@ export const hardDeleteCourse = async (id) => {
 
 export const getCoursesDeletedByCategory = (id, page, size) => {
     try {
-        return instance.get(
+        return publicInstance.get(
             `/course/deleted/category?id=${id}&page=${page}&size=${size}`
         );
     } catch (error) {
@@ -155,7 +158,7 @@ export const getCoursesDeletedByCategory = (id, page, size) => {
 };
 export const getCoursesByCategory = (id, page, size) => {
     try {
-        return instance.get(
+        return publicInstance.get(
             `/course/category?id=${id}&page=${page}&size=${size}`
         );
     } catch (error) {
@@ -166,7 +169,7 @@ export const getCoursesByCategory = (id, page, size) => {
 
 export const getCourseByName = (title, page, selected) => {
     try {
-        return instance.get(
+        return publicInstance.get(
             `/course?title=${title}&page=${page}&selected=${selected}`
         );
     } catch (error) {
@@ -200,7 +203,9 @@ export const restoreCategoryById = (id) => {
 export const getCategoryByTitle = (name, page, selected) => {
     console.log(name);
     try {
-        return instance.get(`/category?name=${name}&page=${page}&selected`);
+        return publicInstance.get(
+            `/category?name=${name}&page=${page}&selected`
+        );
     } catch (error) {
         Promise.reject(error);
     }
@@ -216,7 +221,7 @@ export const editCategory = (id, category) => {
 
 export const getCategoryById = (id) => {
     try {
-        return instance.get(`/category/${id}`);
+        return publicInstance.get(`/category/${id}`);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -238,3 +243,10 @@ export const restoreCourseById = (id) => {
     }
 };
 
+export const getComments = async (lessonId) => {
+    try {
+        return await publicInstance.get(`/lesson/${lessonId}/comments`);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};

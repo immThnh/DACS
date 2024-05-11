@@ -6,51 +6,55 @@ import styles from "./Comment.module.scss";
 import { over } from "stompjs";
 import SockJS from "sockjs-client";
 import { useParams } from "react-router-dom";
-
-export default function Comment({ openModal, funcCloseModal }) {
+import { useSelector } from "react-redux";
+import * as dataApi from "../../api/apiService/dataService";
+export default function Comment({
+    lessonId,
+    openModal,
+    funcCloseModal,
+    stompClient,
+}) {
     const [comments, setComments] = useState([]);
-    const [comment, setComment] = useState("");
-    const { id } = useParams();
-
-    // client.activate();
-    var stompClient = null;
-    useEffect(() => {
-        connect();
-        console.log("Connect socket");
-    }, []);
-
-    const connect = () => {
-        let Sock = new SockJS("http://localhost:8080/ws");
-        stompClient = over(Sock);
-        stompClient.connect({}, onConnected, onError);
-    };
-    const onError = (err) => {
-        console.log(err);
-    };
-
-    const onConnected = () => {
-        stompClient.subscribe(`/comment/lesson/${id}`, onMessageReceived);
-    };
-
+    const userInfo = useSelector((state) => state.login.user);
+    const [comment, setComment] = useState({
+        email: userInfo.email,
+        lessonId: lessonId,
+    });
     const onMessageReceived = (payload) => {
         var payloadData = payload.body;
-        console.log("payload: " + payload);
-        setComments([...comments, payloadData]);
+        setComments([...comments, JSON.parse(payloadData)]);
     };
+
+    useEffect(() => {
+        setComment({ ...comment, lessonId: lessonId });
+        const fetchApi = async () => {
+            try {
+                const result = await dataApi.getComments(lessonId);
+                setComments(result.content.content);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchApi();
+    }, []);
+
+    
 
     const sendValue = () => {
         if (stompClient) {
-            console.log("send Comment");
-            stompClient.send(`/comment/lesson/${id}`, {}, comment);
-            setComment("");
+            stompClient.send(
+                `/app/comment/lesson/${lessonId}`,
+                {},
+                JSON.stringify(comment)
+            );
+            setComment({ ...comment, content: "" });
         }
     };
 
     const handleComment = () => {
         sendValue();
     };
-    console.log(comments);
-
+    console.log("object");
     return (
         <>
             <Transition appear show={openModal} as={Fragment}>
@@ -99,11 +103,13 @@ export default function Comment({ openModal, funcCloseModal }) {
                                             >
                                                 <img src={avatar} alt="" />
                                                 <textarea
-                                                    value={comment}
+                                                    value={comment.content}
                                                     onChange={(e) =>
-                                                        setComment(
-                                                            e.target.value
-                                                        )
+                                                        setComment({
+                                                            ...comment,
+                                                            content:
+                                                                e.target.value,
+                                                        })
                                                     }
                                                     className={clsx(
                                                         styles.input,
@@ -164,7 +170,9 @@ export default function Comment({ openModal, funcCloseModal }) {
                                                                     styles.content
                                                                 )}
                                                             >
-                                                                {comment}
+                                                                {
+                                                                    comment.content
+                                                                }
                                                             </div>
                                                         </div>
                                                     </div>

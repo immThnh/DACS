@@ -20,7 +20,7 @@ public class Progress {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  int id;
     private List<Integer> lessonIds;
-    @OneToOne
+    @ManyToOne
     private Course course;
     @ManyToOne
     private User user;

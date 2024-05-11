@@ -1,4 +1,4 @@
-import { userInstance } from "../instance";
+import publicInstance, { userInstance } from "../instance";
 import axios from "axios";
 import instance, { privateInstance } from "../instance";
 
@@ -53,7 +53,6 @@ export const login = async ({ email, password }) => {
 };
 
 export const sendMail = async (email) => {
-    console.log(email);
     try {
         const res = await instance.post(
             "/user/send-verify-email",
@@ -66,7 +65,6 @@ export const sendMail = async (email) => {
         );
         return res;
     } catch (error) {
-        console.log(error);
         return Promise.reject(error);
     }
 };
@@ -219,7 +217,6 @@ export const oauth2Login = async (link) => {
         const result = await axios.get(
             "http://localhost:8080/oauth2/authorization/google"
         );
-        console.log(result);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -258,7 +255,7 @@ export const getProgress = async (alias, courseId) => {
     try {
         return await userInstance.get(`/${alias}/progress/${courseId}`);
     } catch (error) {
-        return Promise.reject(error.response.data);
+        return Promise.reject(error);
     }
 };
 
@@ -272,3 +269,4 @@ export const updateLessonIds = async (alias, courseId, lessonIds) => {
         return Promise.reject(error.response.data);
     }
 };
+

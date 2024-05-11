@@ -18,6 +18,13 @@ import java.util.List;
 @RequestMapping("/api/v1/me")
 public class MeController {
     private final AuthService authService;
+
+    @GetMapping("/")
+    public String greeting() {
+
+
+        return "Hello me";
+    }
     @GetMapping("/{email}")
     public ResponseEntity<ResponseObject> getUsername(@PathVariable String email) {
 
