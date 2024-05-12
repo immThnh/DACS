@@ -1,6 +1,6 @@
 import styles from "./List.module.scss";
 import clsx from "clsx";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import deleteIcon from "../../../../assets/images/delete.svg";
 import noDataIcon from "../../../../assets/images/ic_noData.svg";
 import viewIcon from "../../../../assets/images/view.svg";
@@ -29,13 +29,15 @@ function ListCourse() {
     const [selected, setSelected] = useState(selectes[0]);
     const [page, setPage] = useState(0);
     const [reRender, setReRender] = useState();
+    const navigator = useNavigate();
 
     const handleRemoveCourse = () => {
         const fetchApi = async () => {
             toast.promise(dataApi.softDeleteCourse(deleteId), {
                 loading: "Removing...",
-                success: () => {
-                    setReRender(!reRender);
+                success: (data) => {
+                    setCourses(data.content.content);
+                    setTotalData(data.content.totalElements);
                     setDeletedModalOpen(false);
                     return "Remove successfully";
                 },
@@ -50,13 +52,16 @@ function ListCourse() {
 
     const handlePageData = async (action) => {
         const currentTotalData = page * selected + selected;
+        let updatePage = page;
         if (action === "next" && currentTotalData < totalData) {
-            console.log("a");
-            setPage((prev) => prev + 1);
+            updatePage += 1;
+            setPage(updatePage);
         }
         if (action === "previous" && page > 0) {
-            setPage((prev) => prev - 1);
+            updatePage -= 1;
+            setPage(updatePage);
         }
+        fetchCourseUpdate(updatePage, selected);
     };
 
     const handleCloseModal = () => {
@@ -87,12 +92,11 @@ function ListCourse() {
         debounceApi();
     };
 
-    const handleSelectPageSizeChange = (size) => {
-        setSelected(size);
+    const fetchCourseUpdate = async (page = this.page, size = selected) => {
         const fetchApi = async () => {
             try {
                 const result = await dataApi.getAllCourse(page, size);
-                setCourses(result.content.content);
+                setCourses((prev) => result.content.content);
                 setTotalData(result.content.totalElements);
             } catch (error) {
                 console.log(error);
@@ -101,6 +105,10 @@ function ListCourse() {
         fetchApi();
     };
 
+    const handleSelectPageSizeChange = (size) => {
+        setSelected((prev) => size);
+        fetchCourseUpdate(page, size);
+    };
     const handleSearchInputChange = (e) => {
         const fetchApi = () => {
             toast.promise(
@@ -136,22 +144,29 @@ function ListCourse() {
 
     useEffect(() => {
         const fetchApi = async () => {
-            try {
-                const result = await dataApi.getAllCourse(0, 5);
-                let categories = [];
-                categories = await dataApi.getAllCategories(0, 99999);
-                categories.content.content.push({ id: "-1", name: "All" });
-                setCourses(result.content.content);
-                setTotalData(result.content.totalElements);
-                setOptions(categories.content.content);
-            } catch (error) {
-                console.log(error);
-            }
+            let categories = [];
+            categories = await dataApi.getAllCategories(0, 99999);
+            toast.promise(dataApi.getAllCourseAdmin(page, selected), {
+                loadin: "loading...",
+                success: (result) => {
+                    categories.content.content.push({ id: "-1", name: "All" });
+                    setCourses(result.content.content);
+                    setTotalData(result.content.totalElements);
+                    setOptions(categories.content.content);
+                    return "Get list course";
+                },
+                error: (error) => {
+                    if (error.status === "UNAUTHORIZED") {
+                        navigator("/404");
+                    }
+                    return error.mess;
+                },
+            });
         };
         fetchApi();
-    }, [reRender]);
+    }, []);
 
-    console.log(courses);
+    console.log("list course render");
     return (
         <div className="flex justify-center w-full ">
             <div className="container mt-5 mx-14">
@@ -444,7 +459,6 @@ function ListCourse() {
                                                                 index
                                                             ) => (
                                                                 <Listbox.Option
-                                                                    key={index}
                                                                     className={({
                                                                         active,
                                                                     }) =>
@@ -494,7 +508,6 @@ function ListCourse() {
                                 </div>
                                 <div className={clsx(styles.footerItem)}>
                                     <div className="mr-3">
-                                        {" "}
                                         <span id="currentPage">
                                             {page * selected + 1}-
                                             {totalData <

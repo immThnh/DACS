@@ -105,10 +105,6 @@ function HistoryDeletedCategory() {
     const handleCloseModal = () => {
         setDeletedModalOpen(false);
     };
-    const openDeleteModal = (id) => {
-        setDeleteId(id);
-        setDeletedModalOpen(true);
-    };
 
     const handleRestoreCategory = (id) => {
         toast.promise(dataApi.restoreCategoryById(id), {
@@ -131,6 +127,7 @@ function HistoryDeletedCategory() {
                     page,
                     selected
                 );
+                console.log(result);
                 setCategories(result.content.content);
             } catch (error) {
                 console.log(error);
@@ -278,7 +275,7 @@ function HistoryDeletedCategory() {
                                                             />
                                                         </button>
 
-                                                        <button
+                                                        {/* <button
                                                             data-micromodal-trigger="modal-1"
                                                             type="button"
                                                             onClick={() =>
@@ -292,7 +289,7 @@ function HistoryDeletedCategory() {
                                                                 alt=""
                                                                 className="cursor-pointer"
                                                             />
-                                                        </button>
+                                                        </button> */}
                                                     </div>
                                                 </div>
                                             </div>

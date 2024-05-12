@@ -3,7 +3,30 @@ import CourseSection from "../../component/ladingComponent/CourseSection.js";
 import CourseCard from "../../component/ladingComponent/CourseCard.js";
 import SlideShow from "../../component/ladingComponent/SlideShow.js";
 import Footer from "../../layout/footer/index.js";
+import loginSlice from "../../redux/reducers/loginSlice.js";
+import { useDispatch } from "react-redux";
 function LandingPageComponent() {
+    const dispatch = useDispatch();
+    React.useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get("token");
+        const lastName = params.get("lastName");
+        const email = params.get("email");
+        const avatar = params.get("avatar");
+        if (token) {
+            dispatch(
+                loginSlice.actions.setLogin({
+                    token,
+                    user: {
+                        lastName,
+                        email,
+                        avatar,
+                        firstName: "",
+                    },
+                })
+            );
+        }
+    }, []);
     return (
         <div className="z-49  flex flex-col items-center pt-5 bg-neutral-100">
             <main>
@@ -17,7 +40,6 @@ function LandingPageComponent() {
                 </div>
             </main>
             <Footer />
-
         </div>
     );
 }

@@ -1,6 +1,9 @@
 package com.example.demo.auth;
 
-import com.example.demo.dto.ResponseObject;
+import com.example.demo.cloudinary.CloudService;
+import com.example.demo.dto.*;
+import com.example.demo.entity.data.Comment;
+import com.example.demo.entity.data.Progress;
 import com.example.demo.entity.user.Role;
 import com.example.demo.entity.user.User;
 import com.example.demo.jwt.JwtService;
@@ -8,7 +11,9 @@ import com.example.demo.jwt.Token;
 import com.example.demo.mail.MailRequest;
 import com.example.demo.repository.TokenRepository;
 import com.example.demo.repository.UserRepository;
-import com.example.demo.twilio.TwilioService;
+import com.example.demo.repository.data.CourseRepository;
+import com.example.demo.repository.data.LessonRepository;
+import com.example.demo.repository.data.ProgressRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -17,11 +22,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -29,16 +37,52 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class AuthService {
     private final UserRepository userRepository;
-    private final TokenRepository tokenRepository;
-    public final AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+    private final CourseRepository courseRepository;
+    private final ProgressRepository progressRepository;
+
     private final JwtService jwtService;
+    private final CloudService cloudService;
     private final PasswordEncoder passwordEncoder;
-    private final TwilioService twilioService;
+
+
+
+    public ResponseObject updateLessonsIds(String alias, int courseId, List<Integer> lessonIds) {
+        var email = alias + "@gmail.com";
+        System.out.println(alias + courseId + lessonIds);
+        var user = userRepository.findByEmail(email).orElse(null);
+        if(user == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("User not found").build();
+        }
+        var progress = progressRepository.findByCourseIdAndUser(courseId, user).orElse(null);
+        if (progress == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("User has not registered for the course ").build();
+        }
+        progress.setLessonIds(lessonIds);
+        progressRepository.save(progress);
+        return ResponseObject.builder().status(HttpStatus.OK).build();
+    }
+
+    public ResponseObject getProgressByCourseId(String alias, int courseId) {
+        var email = alias + "@gmail.com";
+        var user = userRepository.findByEmail(email).orElse(null);
+        if(user == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("User not found").build();
+        }
+        var progress = progressRepository.findByCourseIdAndUser(courseId, user).orElse(null);
+        if (progress == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("User has not registered for the course ").build();
+        }
+        var progressDTO = ProgressDTO.builder().course(progress.getCourse()).lessonIds(progress.getLessonIds()).build();
+
+        return ResponseObject.builder().status(HttpStatus.OK).content(progressDTO).build();
+
+    }
 
     public boolean register(RegisterRequest request) {
         if(isUsedEmail(request.getEmail())) return  false;
-            saveUser(request);
-            return true;
+        saveUser(request);
+        return true;
     }
 
     public ResponseObject authenticate(AuthenticationRequest auth) {
@@ -50,12 +94,25 @@ public class AuthService {
             }
             Token token = new Token(jwtService.generateToken(user));
             user.setToken(token);
-            return ResponseObject.builder().status(HttpStatus.OK).content(token).build();
+            var userDTO = getUserDTOFromUser(user);
+            userDTO.setToken(token.getToken());
+            return ResponseObject.builder().status(HttpStatus.OK).content(userDTO).build();
         }
         catch (AuthenticationException ex) {
             System.out.println(ex.getMessage() + "Xác thực người dùng thất bại!");
-            return null;
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("error while authentication user with error " + ex.getMessage()).build();
+
         }
+    }
+
+    public UserDTO getUserDTOFromUser(User user) {
+        return UserDTO.builder()
+                .avatar(user.getAvatar())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .build();
     }
 
     public ResponseObject getAllByPage(int page, int size) {
@@ -78,11 +135,19 @@ public class AuthService {
         return ResponseObject.builder().status(HttpStatus.OK).content(userRepository.findByRole(role, PageRequest.of(page, size))).build();
     }
 
-    public boolean sendOtpVerification(OtpVerifyRequest request) {
-
-        return twilioService.senOTPVerify(request,getVerifyCode());
+    public ResponseObject getUserByEmail(String email) {
+        if(!email.contains("@")) {
+            email+="@gmail.com";
+        }
+        var user = userRepository.findByEmail(email).orElse(null);
+        var userDTO = getUserDTOFromUser(user);
+        if(user == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Username not found").build();
+        }
+        return ResponseObject.builder().status(HttpStatus.OK).content(userDTO).mess("Successfully").build();
     }
-    private User saveUser(RegisterRequest request) {
+
+    private void saveUser(RegisterRequest request) {
         User user = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -90,7 +155,7 @@ public class AuthService {
                 .lastName(request.getLastName())
                 .role(Role.USER)
                 .build();
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
 
@@ -151,4 +216,79 @@ public class AuthService {
         userRepository.save(user);
         return true;
     }
+
+    public ResponseObject getUserByToken(String token) {
+        String userName;
+        try {
+            userName = jwtService.extractUserName(token);
+        }
+        catch (Exception e) {
+            System.out.println("getUserByToken: " + e.getMessage());
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Username not found").build();
+        }
+        var user = userRepository.findByEmail(userName).orElse(null);
+        if(user == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Username not found").build();
+        }
+        return ResponseObject.builder().status(HttpStatus.OK).mess("Get user data successfully").build();
+    }
+
+    public ResponseObject updateProfile(UserDTO userDTO, MultipartFile avatar)  {
+        var user = userRepository.findByEmail(userDTO.getEmail()).orElse(null);
+        if(user == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Username not found").build();
+        }
+        if(avatar != null) {
+            try {
+                user.setAvatar(cloudService.uploadImage(avatar.getBytes()));
+            }
+            catch (IOException ex) {
+                System.out.println("updateProfile:  " + ex.getMessage());
+                return ResponseObject.builder().status(HttpStatus.OK).mess("Error occurred when updating profile").content(userDTO).build();
+            }
+        }
+        userDTO.setAvatar(user.getAvatar());
+        user.setFirstName(userDTO.getFirstName());
+        user.setLastName(userDTO.getLastName());
+        user.setPhoneNumber(userDTO.getPhoneNumber());
+        userRepository.save(user);
+        return ResponseObject.builder().status(HttpStatus.OK).mess("Update successfully").content(userDTO).build();
+    }
+
+    public ResponseObject updatePassword(PasswordDTO passwordDTO) {
+        var user = userRepository.findByEmail(passwordDTO.getEmail()).orElse(null);
+        if(user == null) {
+            return ResponseObject.builder().mess("User not found").status(HttpStatus.BAD_REQUEST).build();
+        }
+        if(!passwordEncoder.matches( passwordDTO.getOldPassword(), user.getPassword())) {
+            return ResponseObject.builder().mess("Old password not correct").status(HttpStatus.BAD_REQUEST).build();
+        }
+        user.setPassword(passwordEncoder.encode(passwordDTO.getNewPassword()));
+        userRepository.save(user);
+        return ResponseObject.builder().status(HttpStatus.OK).mess("Update password successfully").build();
+    }
+
+    public ResponseObject enrollCourse(EnrollDTO enrollDTO) {
+
+        var user = userRepository.findByEmail(enrollDTO.getEmail()).orElse(null);
+        if (user == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("User not found").build();
+        }
+
+        var temp = progressRepository.findByCourseIdAndUser(enrollDTO.getCourseId(), user).orElse(null);
+        if(temp != null) {
+            return ResponseObject.builder().status(HttpStatus.OK).mess("Continue studying").content(temp).build();
+        }
+
+        var course = courseRepository.findById(enrollDTO.getCourseId()).orElse(null);
+        if (course == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Course not found").build();
+        }
+
+        Progress progress = Progress.builder().course(course).user(user).lessonIds(enrollDTO.getLessonIds()).build();
+        progressRepository.save(progress);
+        return ResponseObject.builder().status(HttpStatus.OK).mess("Enroll course successfully").content(progress).build();
+
+    }
+
 }

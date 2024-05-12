@@ -105,13 +105,15 @@ public class LessonService {
 //            }
 //        }
 //    }
+
+
     public int updateLessonsOfSection(List<LessonDTO> newLessons, List<Lesson> currentLessons, Section section, List<String> videos, int indexVideo) {
         if(section.getLessons().size() == 0) {
             System.out.println("No lesson added to section");
             return indexVideo;
         }
 
-        if(newLessons.isEmpty() && section.getLessons().size() != 0) {
+        if(newLessons.isEmpty()) {
             System.out.println("remove all lessons");
             for (var oldLesson:
                     currentLessons) {
@@ -162,24 +164,24 @@ public class LessonService {
         if(videos != null && videos.size() > index) {
             switch (lessonDTO.getActionVideo()) {
                 case "REMOVE" -> {
-                    System.out.println("REMOVE");
+                    System.out.println("REMOVE  VIDEO");
                     lesson.setVideo(null);
                 }
                 case "UPDATE" -> {
-                    System.out.println("UPDATE");
+                    System.out.println("UPDATE VIDEO");
                     lesson.setVideo(videos.get(index));
                     index++;
                 }
                 case "NONE" -> {
-                    System.out.println("NONE");
+                    System.out.println("NONE  VIDEO");
                     lesson.setVideo(null);
                 }
                 case "KEEP" -> {
-                    System.out.println("KEEP");
+                    System.out.println("KEEP  VIDEO");
                     System.out.println(lessonDTO.getVideo());
                     lesson.setVideo(lessonDTO.getVideo());
                 }
-                default -> System.out.println("DEFAULT");
+                default -> System.out.println("DEFAULT  VIDEO");
             }
         }
         return index;

@@ -1,6 +1,5 @@
 import styles from "../list/List.module.scss";
 import clsx from "clsx";
-import deleteIcon from "../../../../assets/images/delete.svg";
 import restoreIcon from "../../../../assets/images/restore.svg";
 import noDataIcon from "../../../../assets/images/ic_noData.svg";
 import { Fragment, useEffect, useState } from "react";
@@ -14,7 +13,7 @@ import {
     ChevronRightIcon,
     ChevronUpDownIcon,
 } from "@heroicons/react/20/solid";
-import Modal from "../../../../component/modal";
+import { useNavigate } from "react-router-dom";
 
 const selectes = [5, 10, 25];
 
@@ -26,26 +25,9 @@ function HistoryDeleted() {
     const [page, setPage] = useState(0);
     const [render, setRender] = useState();
     const [deleteId, setDeleteId] = useState(null);
+
     const [deletedModalOpen, setDeletedModalOpen] = useState(false);
-
-    const handleRemoveCourse = () => {
-        console.log(deleteId);
-        const fetchApi = async () => {
-            toast.promise(dataApi.hardDeleteCourse(deleteId), {
-                loading: "Removing...",
-                success: () => {
-                    setDeletedModalOpen(false);
-                    setRender(!render);
-                    return "Remove successfully";
-                },
-                error: (error) => {
-                    return error.content;
-                },
-            });
-        };
-
-        fetchApi();
-    };
+    const navigate = useNavigate();
 
     const handleSelectChange = (e) => {
         const fetchApi = () => {
@@ -71,18 +53,15 @@ function HistoryDeleted() {
         toast.promise(dataApi.restoreCourseById(id), {
             loading: "loading...",
             success: (data) => {
-                setRender(!render);
+                console.log(data);
+                setCourses(data.content.content);
                 return data.mess;
             },
             error: (error) => {
+                console.log(error);
                 return error.mess;
             },
         });
-    };
-
-    const openDeleteModal = (id) => {
-        setDeleteId(id);
-        setDeletedModalOpen(true);
     };
 
     const handleSearchInputChange = (e) => {
@@ -133,10 +112,17 @@ function HistoryDeleted() {
                 setOptions(categories.content.content);
             } catch (error) {
                 console.log(error);
+                if (error.status === "UNAUTHORIZED") {
+                    sessionStorage.removeItem("token");
+                    navigate("/login");
+                    toast.error(
+                        "Token is not authorized, please try login again."
+                    );
+                }
             }
         };
         fetchApi();
-    }, [render]);
+    }, []);
 
     const handlePageData = async (action) => {
         const currentTotalData = page * selected + selected;
@@ -359,7 +345,7 @@ function HistoryDeleted() {
                                                                     alt=""
                                                                 />
                                                             </button>
-                                                            <button
+                                                            {/* <button
                                                                 onClick={() =>
                                                                     openDeleteModal(
                                                                         course.id
@@ -373,7 +359,7 @@ function HistoryDeleted() {
                                                                     alt=""
                                                                     className="cursor-pointer"
                                                                 />
-                                                            </button>
+                                                            </button> */}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -527,13 +513,6 @@ function HistoryDeleted() {
                     </div>
                 </div>
             </div>
-            <Modal
-                isOpen={deletedModalOpen}
-                closeModal={handleCloseModal}
-                title={"Delete"}
-                description={"Are you sure want to delete?"}
-                handleRemove={handleRemoveCourse}
-            ></Modal>
         </div>
     );
 }

@@ -1,0 +1,56 @@
+.myCourses {
+    background-color: #f9f9f9; // Set the background color of the course container
+    padding: 20px;
+    border-radius: 8px; // Rounded corners for the container
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); // Add shadow for depth
+   
+    .myCoursesTitle {
+      color: #333; // Dark color for the title
+      margin-bottom: 20px; // Space below the title
+    }
+  
+    .courseList {
+      display: flex;
+      flex-direction: row; // Stack courses vertically
+    }
+  
+    .courseCard {
+      background-color: #fff; // White background for each card
+      margin-bottom: 20px;
+      padding: 20px;
+      border-left: 5px solid; // Add a left border for color coding
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); // Shadow for each card
+      margin-right: 20px;
+      &:nth-child(1) { border-color: #007bff; } // Blue for HTML/CSS
+      &:nth-child(2) { border-color: #ffc107; } // Yellow for JavaScript
+      &:nth-child(3) { border-color: #6f42c1; } // Purple for Responsive Design
+    }
+  
+    .courseTitle {
+      color: #fff; // White text for the title
+      font-size: 1.25rem; // Larger font size for the title
+      margin-bottom: 10px; // Space below the title
+    }
+  
+    .courseStatus {
+      color: #333; // Dark color for the status
+      font-size: 0.875rem; // Smaller font size for the status
+    }
+  
+    .courseTime {
+      color: #333; // Dark color for the time
+      font-size: 0.875rem; // Smaller font size for the time
+    }
+  
+    .addCourseButton {
+      background-color: #28a745; // Green background for the button
+      color: #fff; // White text for the button
+      font-size: 1rem; // Regular font size for the button
+      margin-top: 20px; // Space above the button
+      &:hover {
+        background-color: #218838; // Darker green on hover
+      }
+    }
+  }
+  

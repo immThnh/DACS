@@ -42,7 +42,6 @@
 
 .formField {
     position: relative;
-    overflow: hidden;
     border-radius: 8px;
 }
 
@@ -75,7 +74,7 @@
 
 .formLabel2 {
     margin: 0px;
-    height: 100%;
+    // height: 100%;
     font-weight: 600;
     line-height: 1.57143;
     font-size: 14px;

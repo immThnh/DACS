@@ -1,56 +1,26 @@
-import React, { useEffect, useState } from "react"; // This imports the useState hook
+import React, { Fragment, useEffect, useState } from "react"; // This imports the useState hook
 import styles from "./DetailCourse.module.scss";
-import { useParams } from "react-router-dom";
-import { toast } from "sonner";
+import { Link, useParams } from "react-router-dom";
 import clsx from "clsx";
-import * as dataApi from "../../../api/apiService/dataService.js";
+import * as userApi from "../../../api/apiService/authService.js";
+import logoPage from "../../../assets/images/logo.png";
+import { useSelector } from "react-redux";
+import SockJS from "sockjs-client";
+import { over } from "stompjs";
+import { Dialog, Transition } from "@headlessui/react";
+import avatar from "../../../assets/images/avatar_25.jpg";
+import * as dataApi from "../.../../../../api/apiService/dataService.js";
+import moment from "moment/moment.js";
 
-const PlayIcon = () => (
-    <div className={styles.playIcon}>
-        <img
-            src="https://cdn.builder.io/api/v1/image/assets/TEMP/91b4c2d063585c32b868da3584ddb0514cbf2955902271549e68b7c3ffeb1802?apiKey=9349475655ee4a448868f824f5feb11d&"
-            alt="Play icon"
-        />
-    </div>
-);
-
-const TimeInfo = ({ icon, time }) => (
-    <div className={styles.timeInfo}>
-        <img src={icon} alt="Clock icon" className={styles.clockIcon} />
-        <div className={styles.time}>{time} Minutes</div>
-    </div>
-);
-const LessonItem = ({
-    id,
-    title,
-    lesson,
-    time,
-    isHighlighted,
-    videoUrl,
-    onVideoSelect,
-}) => (
-    <div
-        className={`${styles.lessonItem} ${
-            isHighlighted ? styles.highlighted : ""
-        }`}
-        onClick={() => onVideoSelect(id, videoUrl)}
-    >
-        <div className={styles.lessonInfo}>
-            <div className={styles.lessonTitle}>{title}</div>
-            <div className={styles.lessonNumber}>{lesson}</div>
-        </div>
-        <div className={styles.timeInfo}>
-            <TimeInfo
-                icon={
-                    isHighlighted
-                        ? "https://cdn.builder.io/api/v1/image/assets/TEMP/23214151b02736ebba19b562aabfd0bc3fc955a52ce1a15c8b59fd722461241d?apiKey=9349475655ee4a448868f824f5feb11d&"
-                        : "https://cdn.builder.io/api/v1/image/assets/TEMP/23214151b02736ebba19b562aabfd0bc3fc955a52ce1a15c8b59fd722461241d?apiKey=9349475655ee4a448868f824f5feb11d&"
-                }
-                time={time}
-            />
-        </div>
-    </div>
-);
+let timerId = null;
+const debounce = (func, delay = 1000) => {
+    return () => {
+        clearTimeout(timerId);
+        timerId = setTimeout(() => {
+            func();
+        }, delay);
+    };
+};
 
 const CourseHero = ({ video = "", thumbnail }) => {
     if (!video.startsWith("https://res.cloudinary.com")) {
@@ -67,7 +37,7 @@ const CourseHero = ({ video = "", thumbnail }) => {
                     controls
                     className={clsx(
                         styles.videoPlayer,
-                        "rounded-lg cursor-pointer h-full w-full object-contain bg-black"
+                        "cursor-pointer h-full w-full object-contain bg-black"
                     )}
                 >
                     <source src={video} type="video/mp4" />
@@ -90,30 +60,74 @@ const CourseHero = ({ video = "", thumbnail }) => {
 };
 
 const initFormData = {
-    title: "",
-    desc: "",
-    price: "",
-    thumbnail: "",
-    date: "",
-    categories: [],
+    course: {
+        title: "",
+        desc: "",
+        price: "",
+        thumbnail: "",
+        date: "",
+        categories: [],
+    },
 };
-const CurriculumItem = ({ item, index, isHighlighted, handleVideoSelect }) => {
-    const handleOpenSubLesson = () => {
-        const sub = document.getElementById(index);
+const CurriculumItem = ({
+    active,
+    section,
+    aliasEmail,
+    sectionId,
+    courseId,
+    isHighlighted,
+    currentProgress,
+    handleVideoSelect,
+    setCurrentProgress,
+}) => {
+    const handleOpenSubLesson = (e) => {
+        const sub = document.getElementById(`section${sectionId}`);
         sub.classList.toggle("disabled");
+        e.currentTarget.classList.toggle(styles.active);
+    };
+    let newUpdate = currentProgress;
+
+    const handleChecked = (e) => {
+        const id = parseInt(e.target.id, 10);
+        if (e.target.checked && !currentProgress.includes(id)) {
+            newUpdate = [...newUpdate, id];
+        } else {
+            newUpdate = [...newUpdate.filter((item) => item !== id)];
+        }
+        setCurrentProgress((prev) => newUpdate);
+        const fetchUpdateLessonIds = async () => {
+            try {
+                console.log("deeeeeee");
+                const result = await userApi.updateLessonIds(
+                    aliasEmail,
+                    courseId,
+                    newUpdate
+                );
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        const debounceAPi = debounce(fetchUpdateLessonIds, 500);
+        debounceAPi();
     };
 
     return (
         <div className={clsx(styles.curriculumItem, {})}>
             <div
-                className={clsx(styles.title, "flex cursor-pointer p-2 w-full")}
-                onClick={handleOpenSubLesson}
+                className={clsx(
+                    styles.title,
+                    "flex cursor-pointer p-2 w-full",
+                    {
+                        [styles.active]: active === 0,
+                    }
+                )}
+                onClick={(e) => handleOpenSubLesson(e)}
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 16 16"
                     fill="currentColor"
-                    className="w-6 h-6 mt-1.5"
+                    className={clsx(styles.transfrom, "w-6 h-6 mt-1.5")}
                 >
                     <path
                         fillRule="evenodd"
@@ -128,51 +142,47 @@ const CurriculumItem = ({ item, index, isHighlighted, handleVideoSelect }) => {
                     )}
                 >
                     <div className="w-3/4 line-clamp-2 flex-1">
-                        {item.title}
+                        {section.title}
                     </div>
                 </div>
             </div>
 
             <div
-                id={index}
-                className={clsx(styles.wrapLesson, "w-full disabled")}
+                id={`section${sectionId}`}
+                className={clsx(styles.wrapLesson, "w-full ", {
+                    disabled: active !== 0,
+                })}
             >
-                {item.lessons &&
-                    item.lessons.map((lesson, ind) => {
+                {section.lessons &&
+                    section.lessons.map((lesson, ind) => {
                         return (
                             <div
                                 key={ind}
-                                onClick={() =>
-                                    handleVideoSelect(
-                                        ind,
-                                        lesson.video,
-                                        lesson.linkVideo
-                                    )
-                                }
+                                onClick={() => handleVideoSelect(lesson)}
                                 className={clsx(
                                     styles.lessonItem,
 
-                                    "flex ml-6 gap-6",
+                                    "flex items-center ml-6 gap-3.5",
                                     {
                                         [styles.highlighted]:
-                                            ind === isHighlighted,
+                                            lesson.id === isHighlighted,
                                     }
                                 )}
                             >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    strokeWidth="1.5"
-                                    stroke="currentColor"
-                                    className="w-5 h-6"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h1.5C5.496 19.5 6 18.996 6 18.375m-3.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-1.5A1.125 1.125 0 0 1 18 18.375M20.625 4.5H3.375m17.25 0c.621 0 1.125.504 1.125 1.125M20.625 4.5h-1.5C18.504 4.5 18 5.004 18 5.625m3.75 0v1.5c0 .621-.504 1.125-1.125 1.125M3.375 4.5c-.621 0-1.125.504-1.125 1.125M3.375 4.5h1.5C5.496 4.5 6 5.004 6 5.625m-3.75 0v1.5c0 .621.504 1.125 1.125 1.125m0 0h1.5m-1.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m1.5-3.75C5.496 8.25 6 7.746 6 7.125v-1.5M4.875 8.25C5.496 8.25 6 8.754 6 9.375v1.5m0-5.25v5.25m0-5.25C6 5.004 6.504 4.5 7.125 4.5h9.75c.621 0 1.125.504 1.125 1.125m1.125 2.625h1.5m-1.5 0A1.125 1.125 0 0 1 18 7.125v-1.5m1.125 2.625c-.621 0-1.125.504-1.125 1.125v1.5m2.625-2.625c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125M18 5.625v5.25M7.125 12h9.75m-9.75 0A1.125 1.125 0 0 1 6 10.875M7.125 12C6.504 12 6 12.504 6 13.125m0-2.25C6 11.496 5.496 12 4.875 12M18 10.875c0 .621-.504 1.125-1.125 1.125M18 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m-12 5.25v-5.25m0 5.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125m-12 0v-1.5c0-.621-.504-1.125-1.125-1.125M18 18.375v-5.25m0 5.25v-1.5c0-.621.504-1.125 1.125-1.125M18 13.125v1.5c0 .621.504 1.125 1.125 1.125M18 13.125c0-.621.504-1.125 1.125-1.125M6 13.125v1.5c0 .621-.504 1.125-1.125 1.125M6 13.125C6 12.504 5.496 12 4.875 12m-1.5 0h1.5m-1.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M19.125 12h1.5m0 0c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h1.5m14.25 0h1.5"
-                                    />
-                                </svg>
+                                <div className="checkbox-wrapper ml-3">
+                                    <label>
+                                        <input
+                                            checked={currentProgress.includes(
+                                                lesson.id
+                                            )}
+                                            id={lesson.id}
+                                            type="checkbox"
+                                            onChange={handleChecked}
+                                        />
+                                        <span className="checkbox"></span>
+                                    </label>
+                                </div>
+
                                 <span>{lesson.title}</span>
                             </div>
                         );
@@ -182,50 +192,196 @@ const CurriculumItem = ({ item, index, isHighlighted, handleVideoSelect }) => {
     );
 };
 function DetailCourse() {
-    const [currentVideoUrl, setCurrentVideoUrl] = useState("");
-    const [highlightedId, setHighlightedId] = useState(null);
-    const [course, setCourse] = useState(initFormData);
     const { id } = useParams();
+    const userInfo = useSelector((state) => state.login.user);
+    const alias = userInfo.email.split("@")[0];
+    const [currentVideoUrl, setCurrentVideoUrl] = useState("");
+    const [lessonSelected, setLessonSelected] = useState({
+        id: "",
+    });
+    const [totalLesson, setTotalLesson] = useState(0);
+    const [currentProgress, setCurrentProgress] = useState([]);
+    const [openModal, setOpenModal] = useState(false);
+    const [progressObject, setProgressObject] = useState(initFormData);
+    const [comments, setComments] = useState([]);
+    const [comment, setComment] = useState({});
+    const [subComment, setSubComment] = useState({});
+    const [showReplyBox, setShowReplyBox] = useState(-1);
 
-    const handleVideoSelect = (id, video, linkVideo) => {
-        if (video !== "" && linkVideo === "") {
-            setCurrentVideoUrl(video);
-        } else {
-            setCurrentVideoUrl(linkVideo);
+    const handleCloseComment = () => {
+        if (stompClient) {
+            stompClient.disconnect(onDisconnected, {});
         }
-        setHighlightedId(id);
+        setOpenModal(false);
+    };
+
+    const onDisconnected = () => {
+        console.log("Disconnect");
+    };
+    const onMessageReceived = (payload) => {
+        var payloadData = payload.body;
+        comments.push(JSON.parse(payloadData));
+        setComments([...comments]);
+    };
+
+    const onConnected = () => {
+        stompClient.subscribe(
+            `/comment/lesson/${lessonSelected.id}`,
+            onMessageReceived
+        );
+    };
+
+    const onError = (err) => {
+        console.log(err);
+    };
+
+    var stompClient = null;
+    const OpenConnect = () => {
+        return new Promise((resolve, reject) => {
+            const Sock = new SockJS("http://localhost:8080/ws");
+            stompClient = over(Sock);
+            stompClient.connect(
+                {},
+                () => {
+                    onConnected();
+                    resolve();
+                },
+                onError
+            );
+        });
+    };
+    const handleOpenComment = async () => {
+        OpenConnect().then(() => {});
+        const fetchApi = async () => {
+            try {
+                const result = await dataApi.getComments(lessonSelected.id);
+                setComments(result.content.content);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchApi();
+        setOpenModal(true);
+    };
+    const sendValue = (sub) => {
+        OpenConnect().then(() => {
+            if (stompClient) {
+                let data = null;
+                !sub ? (data = { ...comment }) : (data = { ...subComment });
+                data = {
+                    ...data,
+                    lessonId: lessonSelected.id,
+                    userName: userInfo.firstName + " " + userInfo.lastName,
+                    email: userInfo.email,
+                };
+                stompClient.send(
+                    `/app/comment/lesson/${lessonSelected.id}`,
+                    {},
+                    JSON.stringify(data)
+                );
+                sub
+                    ? setSubComment({ ...subComment, content: "" })
+                    : setComment({ ...comment, content: "" });
+            } else {
+                console.log("WebSocket connection is not established yet");
+            }
+        });
+    };
+
+    const handleSendComment = (sub) => {
+        sendValue(sub);
+    };
+
+    const handleVideoSelect = (lesson) => {
+        if (lesson.video !== "" && lesson.linkVideo === "") {
+            setCurrentVideoUrl(lesson.video);
+        } else {
+            setCurrentVideoUrl(lesson.linkVideo);
+        }
+        setLessonSelected(lesson);
+    };
+
+    const handleReply = (commentId) => {
+        setShowReplyBox(commentId);
     };
 
     useEffect(() => {
-        const fetchApi = () => {
-            toast.promise(dataApi.getCourseById(id), {
-                loading: "Loading...",
-                success: (data) => {
-                    setCurrentVideoUrl(data.content.video);
-                    setCourse(data.content);
-                    return "Get data is successful";
-                },
-                error: (error) => {
-                    return error.content;
-                },
-            });
+        const fetchApi = async () => {
+            try {
+                const data = await userApi.getProgress(alias, id);
+                let total = 0;
+                const lessonFirst = data.content.course.sections[0].lessons[0];
+                const video = lessonFirst.video;
+                const linkVideo = lessonFirst.linkVideo;
+
+                data.content.course.sections.map(
+                    (section) => (total += section.lessons.length)
+                );
+                if (data.content.lessonIds !== null) {
+                    setCurrentProgress(data.content.lessonIds);
+                }
+
+                setLessonSelected(lessonFirst);
+                setCurrentVideoUrl(video ? video : linkVideo);
+                setProgressObject(data.content);
+                setTotalLesson(total);
+            } catch (error) {
+                console.log(error);
+            }
         };
 
         fetchApi();
-    }, []);
-
+    }, [id]);
     return (
-        <>
+        <div className={clsx(styles.wrapperPage)}>
+            <div
+                className={clsx(
+                    styles.headerPage,
+                    "flex items-center justify-between b-shadow"
+                )}
+            >
+                <Link to={"/"} className={clsx(styles.logoPage)}>
+                    <img src={logoPage} alt="" />
+                </Link>
+                <h5 className="mb-0 text-center">
+                    {progressObject.course.title}
+                </h5>
+                <div className={clsx(styles.progress)}>
+                    Progress: {currentProgress.length}/{totalLesson}
+                </div>
+            </div>
             <main className={clsx(styles.uiUxCourse)}>
-                <div className={clsx("w-full")}>
+                <div className={clsx(styles.sectionVideo, "w-full")}>
                     <div className={clsx("row")}>
                         <div
                             className={clsx(styles.videoContainer, "col-lg-9")}
                         >
                             <CourseHero
                                 video={currentVideoUrl}
-                                thumbnail={course.thumbnail}
+                                thumbnail={progressObject.course.thumbnail}
                             />
+                            <div
+                                className={clsx(styles.sectionComment)}
+                                onClick={handleOpenComment}
+                            >
+                                <div className="flex gap-2">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth="1.5"
+                                        stroke="currentColor"
+                                        className="w-6 h-6"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"
+                                        />
+                                    </svg>
+                                    Q&A
+                                </div>
+                            </div>
                         </div>
                         <div
                             className={clsx(
@@ -234,31 +390,296 @@ function DetailCourse() {
                             )}
                         >
                             <section className={styles.courseSection}>
-                                <div className={styles.sectionHeader}>
+                                <div className={clsx(styles.sectionHeader)}>
                                     <div className={styles.sectionNumber}>
                                         Curriculum
                                     </div>
                                 </div>
                                 <div className={styles.courseCurriculum}>
-                                    {course.sections &&
-                                        course.sections.map((item, index) => (
-                                            <CurriculumItem
-                                                isHighlighted={highlightedId}
-                                                handleVideoSelect={
-                                                    handleVideoSelect
-                                                }
-                                                key={index}
-                                                index={index}
-                                                item={item}
-                                            />
-                                        ))}
+                                    {progressObject.course.sections &&
+                                        progressObject.course.sections.map(
+                                            (section, index) => (
+                                                <CurriculumItem
+                                                    active={index}
+                                                    setCurrentProgress={
+                                                        setCurrentProgress
+                                                    }
+                                                    courseId={id}
+                                                    currentProgress={
+                                                        currentProgress
+                                                    }
+                                                    aliasEmail={alias}
+                                                    isHighlighted={
+                                                        lessonSelected.id
+                                                    }
+                                                    handleVideoSelect={
+                                                        handleVideoSelect
+                                                    }
+                                                    sectionId={index}
+                                                    key={index}
+                                                    section={section}
+                                                />
+                                            )
+                                        )}
                                 </div>
                             </section>
                         </div>
                     </div>
                 </div>
+                {/* <Comment
+                    lessonId={lessonId}
+                    openModal={openModal}
+                    funcCloseModal={handleCloseComment}
+                ></Comment> */}
+                <Transition appear show={openModal} as={Fragment}>
+                    <Dialog
+                        as="div"
+                        className="relative z-10"
+                        onClose={handleCloseComment}
+                    >
+                        <Transition.Child
+                            as={Fragment}
+                            enter="ease-out duration-300"
+                            enterFrom="opacity-0"
+                            enterTo="opacity-100"
+                            leave="ease-in duration-200"
+                            leaveFrom="opacity-100"
+                            leaveTo="opacity-0"
+                        >
+                            <div className="fixed inset-0 bg-black/25" />
+                        </Transition.Child>
+
+                        <div className="fixed inset-0 overflow-y-auto">
+                            <div className="flex min-h-full items-center justify-center p-4 text-center">
+                                <Transition.Child
+                                    as={Fragment}
+                                    enter="ease-out duration-300"
+                                    enterFrom="opacity-0 scale-95"
+                                    enterTo="opacity-100 scale-100"
+                                    leave="ease-in duration-200"
+                                    leaveFrom="opacity-100 scale-100"
+                                    leaveTo="opacity-0 scale-95"
+                                >
+                                    <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                                        <Dialog.Title
+                                            as="h3"
+                                            className="text-lg font-medium leading-6 text-gray-900"
+                                        >
+                                            Q&A
+                                        </Dialog.Title>
+                                        <div className="mt-6">
+                                            <div className="flex flex-col flex-none">
+                                                <div
+                                                    className={clsx(
+                                                        styles.cmt,
+                                                        "flex"
+                                                    )}
+                                                >
+                                                    <img src={avatar} alt="" />
+                                                    <textarea
+                                                        value={comment.content}
+                                                        onChange={(e) =>
+                                                            setComment({
+                                                                ...comment,
+                                                                content:
+                                                                    e.target
+                                                                        .value,
+                                                            })
+                                                        }
+                                                        className={clsx(
+                                                            styles.input,
+                                                            "flex-1"
+                                                        )}
+                                                        type="text"
+                                                        placeholder="Do you have any questions about this lesson?"
+                                                    />
+                                                </div>
+                                                <div
+                                                    onClick={() =>
+                                                        handleSendComment(false)
+                                                    }
+                                                    className={clsx(
+                                                        styles.btnSend,
+                                                        "mt-3 text-sm self-end flex-grow-0"
+                                                    )}
+                                                >
+                                                    Send
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div
+                                            className={clsx(
+                                                styles.cmtWrap,
+                                                "flex flex-col gap-3 mt-8"
+                                            )}
+                                        >
+                                            {comments &&
+                                                comments.map((comment, ind) => {
+                                                    const timeElapsed = moment(
+                                                        comment.date
+                                                    ).fromNow();
+                                                    return (
+                                                        <div key={ind}>
+                                                            <div
+                                                                className={clsx(
+                                                                    styles.cmtItem,
+                                                                    "flex flex-col flex-none"
+                                                                )}
+                                                            >
+                                                                <div
+                                                                    className={clsx(
+                                                                        styles.cmt,
+                                                                        "flex"
+                                                                    )}
+                                                                >
+                                                                    <img
+                                                                        src={
+                                                                            avatar
+                                                                        }
+                                                                        alt=""
+                                                                    />
+                                                                    <div
+                                                                        className={clsx(
+                                                                            styles.cmtContent,
+                                                                            "flex-1"
+                                                                        )}
+                                                                    >
+                                                                        <div
+                                                                            className={clsx(
+                                                                                styles.wrap
+                                                                            )}
+                                                                        >
+                                                                            <span>
+                                                                                {
+                                                                                    comment.userName
+                                                                                }
+                                                                            </span>
+                                                                            <div
+                                                                                className={clsx(
+                                                                                    styles.content
+                                                                                )}
+                                                                            >
+                                                                                {
+                                                                                    comment.content
+                                                                                }
+                                                                            </div>
+                                                                        </div>
+                                                                        <div
+                                                                            className={clsx(
+                                                                                "mt-2 ml-2"
+                                                                            )}
+                                                                        >
+                                                                            <button
+                                                                                className={
+                                                                                    styles.actionsCmt
+                                                                                }
+                                                                                type="button"
+                                                                                onClick={() =>
+                                                                                    handleReply(
+                                                                                        comment.id
+                                                                                    )
+                                                                                }
+                                                                            >
+                                                                                Reply
+                                                                            </button>
+                                                                            <span
+                                                                                className={
+                                                                                    styles.timeCmt
+                                                                                }
+                                                                            >
+                                                                                {
+                                                                                    timeElapsed
+                                                                                }
+                                                                            </span>
+                                                                        </div>
+                                                                        <div
+                                                                            className={clsx(
+                                                                                styles.replyBox,
+                                                                                {
+                                                                                    show:
+                                                                                        showReplyBox ===
+                                                                                        comment.id,
+                                                                                }
+                                                                            )}
+                                                                        >
+                                                                            <div className="lex flex-col flex-none">
+                                                                                <div
+                                                                                    className={clsx(
+                                                                                        styles.cmt,
+                                                                                        "flex"
+                                                                                    )}
+                                                                                >
+                                                                                    <img
+                                                                                        src={
+                                                                                            avatar
+                                                                                        }
+                                                                                        alt=""
+                                                                                    />
+                                                                                    <textarea
+                                                                                        value={
+                                                                                            subComment.content
+                                                                                        }
+                                                                                        onChange={(
+                                                                                            e
+                                                                                        ) =>
+                                                                                            setSubComment(
+                                                                                                {
+                                                                                                    ...subComment,
+                                                                                                    content:
+                                                                                                        e
+                                                                                                            .target
+                                                                                                            .value,
+                                                                                                }
+                                                                                            )
+                                                                                        }
+                                                                                        className={clsx(
+                                                                                            styles.input,
+                                                                                            "flex-1"
+                                                                                        )}
+                                                                                        type="text"
+                                                                                        placeholder="Do you have any questions about this lesson?"
+                                                                                    />
+                                                                                </div>
+                                                                                <div
+                                                                                    onClick={() =>
+                                                                                        handleSendComment(
+                                                                                            true
+                                                                                        )
+                                                                                    }
+                                                                                    className={clsx(
+                                                                                        styles.btnSend,
+                                                                                        "float-right btn mt-3 self-end flex-grow-0"
+                                                                                    )}
+                                                                                >
+                                                                                    Send
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })}
+                                        </div>
+
+                                        <div className="mt-8">
+                                            <button
+                                                type="button"
+                                                className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                                                onClick={handleCloseComment}
+                                            >
+                                                Close
+                                            </button>
+                                        </div>
+                                    </Dialog.Panel>
+                                </Transition.Child>
+                            </div>
+                        </div>
+                    </Dialog>
+                </Transition>
             </main>
-        </>
+        </div>
     );
 }
 

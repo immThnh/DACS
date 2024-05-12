@@ -7,7 +7,7 @@ import Select from "react-select";
 import * as DataApi from "../../../../api/apiService/dataService";
 import { toast } from "sonner";
 import btnClose from "../../../../assets/images/btnClose.svg";
-import axios from "axios";
+import { redirect } from "react-router-dom";
 
 const initFormData = {
     title: "",
@@ -218,6 +218,10 @@ function CreateCourse() {
                     },
                     error: (error) => {
                         console.log(error);
+                        if (error.status === "UNAUTHORIZED") {
+                            sessionStorage.removeItem("token");
+                            window.location.replace("/login");
+                        }
                         return error.mess;
                     },
                 }
@@ -242,8 +246,8 @@ function CreateCourse() {
     console.log("render");
     return (
         <>
-            <div className="container flex flex-col">
-                <div className="wrapMainDash mr-auto w-3/4 ">
+            <div className="container flex flex-col justify-center">
+                <div className="wrapMainDash mr-auto">
                     <h3 className="titleMainDash">Create a new course</h3>
                     <div
                         className={clsx(
@@ -341,7 +345,7 @@ function CreateCourse() {
                                 )}
                             </div>
                         </div>
-                        <div className="flex">
+                        <div className="flex overflow-hidden">
                             <div className={clsx(styles.formField, "w-1/2")}>
                                 <span className={clsx(styles.formLabel2)}>
                                     Thumbnail
@@ -403,7 +407,7 @@ function CreateCourse() {
                                 )}
                             </div>
                         </div>
-                        <div className="flex">
+                        <div className="flex  overflow-hidden">
                             <div className={clsx(styles.formField, "w-1/2")}>
                                 <span className={clsx(styles.formLabel2)}>
                                     Video
@@ -464,7 +468,7 @@ function CreateCourse() {
                             </div>
                         </div>
                         {/*NOTE Lesson */}
-                        <h5 className="text-center font-semibold text-3xl">
+                        <h5 className="text-center font-semibold text-3xl mt-12">
                             Curriculum
                         </h5>
 

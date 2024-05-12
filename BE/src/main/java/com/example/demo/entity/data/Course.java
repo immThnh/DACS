@@ -40,7 +40,6 @@ public class Course {
     )
     private List<Category> categories;
 
-
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Section> sections;

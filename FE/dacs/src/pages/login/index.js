@@ -3,7 +3,7 @@ import OAuth2Form from "../../component/auth/OAuth2Form.js";
 import * as authService from "../../api/apiService/authService.js";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import loginSlice from "../../redux/reducers/loginReducer.js";
+import loginSlice from "../../redux/reducers/loginSlice.js";
 import { useDispatch } from "react-redux";
 import { Dialog, Transition } from "@headlessui/react";
 import ShowPassword from "../../component/auth/ShowPassword.js";
@@ -96,9 +96,15 @@ export default function Login() {
             toast.promise(authService.login({ ...formData }), {
                 loading: "Loading...",
                 success: (data) => {
-                    setCode(data.content.token);
-                    dispatch(loginSlice.actions.setLogin(true));
-                    navigate("/");
+                    const { token, ...user } = data.content;
+                    const payload = {
+                        token,
+                        user,
+                    };
+                    dispatch(loginSlice.actions.setLogin(payload));
+                    const prePath = sessionStorage.getItem("prevPath");
+                    prePath ? navigate(prePath) : navigate("/");
+                    sessionStorage.removeItem("prevPath");
                     return "Welcome to Dream Chasers";
                 },
                 error: () => {
@@ -138,7 +144,6 @@ export default function Login() {
         };
 
         fetchApi();
-        // setLastClickTime();
         setCountdown(60);
     };
 
@@ -244,6 +249,9 @@ export default function Login() {
         fetchApi();
     };
 
+    useEffect(() => {
+        dispatch(loginSlice.actions.setLogout());
+    }, []);
     console.log("re-render");
 
     return (
@@ -261,8 +269,14 @@ export default function Login() {
                         >
                             Email
                         </label>
-                        <div className="flex p-2.5 mt-2.5 bg-gray-50 rounded-lg border border-gray-100 border-solid text-stone-500 max-md:flex-wrap">
+                        <div
+                            className={clsx(
+                                styles.input,
+                                "flex p-2.5 mt-2.5 bg-gray-50 rounded-lg  text-stone-500 max-md:flex-wrap"
+                            )}
+                        >
                             <input
+                                autoComplete="true"
                                 type="email"
                                 id="email"
                                 name="email"
@@ -285,8 +299,14 @@ export default function Login() {
                         >
                             Password
                         </label>
-                        <div className=" flex p-2.5 mt-2.5 bg-gray-50 rounded-lg border border-gray-100 border-solid text-stone-500 max-md:flex-wrap">
+                        <div
+                            className={clsx(
+                                styles.input,
+                                "flex p-2.5 mt-2.5 bg-gray-50 rounded-lg  text-stone-500 max-md:flex-wrap"
+                            )}
+                        >
                             <input
+                                autoComplete="true"
                                 type="password"
                                 id="password"
                                 name="password"
@@ -300,7 +320,7 @@ export default function Login() {
                             ></ShowPassword>
                         </div>
                         <div
-                            className="cursor-pointer float-right mt-2 self-stretch relative leading-[150%] text-grey-30 text-right"
+                            className="text-sm cursor-pointer float-right mt-2 self-stretch relative leading-[150%] text-grey-30 text-right"
                             onClick={handleForgotPasswordClick}
                         >
                             Forgot Password?

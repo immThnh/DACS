@@ -1,8 +1,6 @@
 package com.example.demo.repository.data;
 
-import com.example.demo.entity.data.Category;
 import com.example.demo.entity.data.Course;
-import com.example.demo.entity.data.Section;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,24 +1,25 @@
 /* Course.module.css */
 .uiUxCourse {
-    background-color: var(--White-97, #f7f7f8);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
-    padding: 0px 20px;
+    overflow-x: hidden;
 }
+
+.sectionVideo {
+    background-color: var(--White-97, #f7f7f8);
+}
+
 .courseSectionsContainer {
-    // display: grid;
-    // grid-template-columns: repeat(2, 1fr); /* Two columns */
-    // gap: 20px; /* Space between sections */
-    // justify-content: center;
     max-width: 1280px;
     height: 100%;
     position: fixed;
-    top: 144px;
-    right: 0;
-    padding: 0 !important;
-    // margin: 0 auto;
+    right: -4px;
+    height: 100vh;
+    top: 60px;
+    padding-left: 2px;
+    padding-right: 4px;
 }
 
 .courseSection {
@@ -100,12 +101,15 @@
 }
 
 .videoContainer {
-    height: 490px;
+    height: calc(100vh - 60px);
+    overflow-y: scroll;
+    overflow-x: hidden;
+    position: relative;
     padding: 0 !important;
 }
 
 .courseHero {
-    height: 100%;
+    height: 550px;
 
     justify-content: center;
     align-items: center;
@@ -214,7 +218,7 @@
 .sectionHeader {
     display: flex;
     flex-direction: column; // Stack number on top of title
-    margin-left: 50px;
+    margin-left: 28px;
     width: 100%;
 }
 
@@ -390,4 +394,142 @@
 
 .courseCurriculum {
     width: 100%;
+}
+
+.active {
+    svg {
+        transform: rotate(-180deg) !important;
+    }
+}
+
+.transfrom {
+    transition: all 0.2s ease-in-out;
+}
+
+.svgHiglighted {
+    color: rgb(255, 175, 73);
+}
+
+.progress {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.sectionComment {
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 500;
+    position: fixed;
+    bottom: 4%;
+    right: 26%;
+    padding: 8px 26px;
+    cursor: pointer;
+    background: #a435f0;
+    color: white;
+    box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px,
+        rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+}
+
+.headerPage {
+    height: 60px;
+    background: black;
+    color: white;
+    padding: 0 100px;
+    border-bottom: 1px solid #ccc;
+}
+
+.wrapperPage {
+    margin-top: -144px;
+}
+
+.logoPage {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-weight: 700;
+    font-size: 26px;
+    img {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+.cmt {
+    img {
+        width: 40px;
+        height: 40px;
+        border-radius: 100rem;
+        margin-right: 10px;
+    }
+}
+
+.input {
+    font-size: 14px;
+    margin-top: 10px;
+    height: 30px;
+    border-bottom: 1px solid #e2e1e1;
+}
+
+.input:focus {
+    border-bottom: 1px solid black;
+    outline: none;
+}
+.cmtItem {
+    width: 100%;
+}
+
+.cmtContent {
+    align-items: center;
+    font-size: 14px;
+    min-height: 70px;
+
+    .wrap {
+        padding: 8px 12px;
+        border-radius: 8px;
+        display: inline-block;
+        background: #f0f2f5;
+        span {
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+    }
+
+    .timeCmt {
+        font-size: 12px;
+    }
+
+    .actionsCmt {
+        padding: 2px;
+        font-weight: 500;
+        margin-right: 12px;
+        font-size: 12px;
+    }
+}
+
+.content {
+    margin-top: 4px;
+    font-size: 12px;
+}
+
+.cmtWrap {
+    max-height: 430px;
+    padding-right: 10px;
+    overflow-y: scroll;
+}
+
+.replyBox {
+    display: none;
+    margin-top: 12px;
+}
+
+.btnSend {
+    font-size: 14px;
+    background-color: black;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    &:hover {
+        opacity: 0.8;
+    }
 }
