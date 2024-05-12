@@ -3,11 +3,9 @@ import styles from "./UserProfile.module.scss";
 import clsx from "clsx";
 import avatar from "../../../assets/images/avatar_25.jpg";
 import ShowPassword from "../../../component/auth/ShowPassword";
-import { useNavigate, useNavigation, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import * as userApi from "../../../api/apiService/authService";
-import { data } from "autoprefixer";
 import { toast } from "sonner";
-import { clear } from "@testing-library/user-event/dist/clear";
 
 const ImageWrapper = ({ src, alt, className }) => (
     <img loading="lazy" src={src} alt={alt} className={className} />

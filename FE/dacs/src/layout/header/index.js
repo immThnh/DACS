@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
 import avatar from "../../assets/images/avatar_25.jpg";
@@ -24,8 +24,11 @@ export default function Header() {
         }
     }, []);
 
-    useEffect(() => {
-        if (sessionStorage.getItem("token") !== null) {
+    useLayoutEffect(() => {
+        if (
+            sessionStorage.getItem("token") !== null &&
+            sessionStorage.getItem("user") !== null
+        ) {
             setUser(JSON.parse(sessionStorage.getItem("user")));
         } else {
             setUser({ avatar });
@@ -130,11 +133,7 @@ export default function Header() {
                                 elementClick={
                                     <img
                                         className="border circle object-cover w-11 h-11 border-gray-200 cursor-pointer"
-                                        src={
-                                            user.avatar != ""
-                                                ? avatar
-                                                : user.avatar
-                                        }
+                                        src={user.avatar}
                                         alt=""
                                     />
                                 }

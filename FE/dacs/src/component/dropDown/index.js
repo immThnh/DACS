@@ -62,7 +62,7 @@ function Dropdown({ elementClick, ...props }) {
                             "absolute right-0 mt-2origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
                         )}
                     >
-                        <div className="px-4 py-1 ">
+                        <div className="px-4 py-1 w-max">
                             <div
                                 className={`${"text-gray-900"} group flex w-full items-center rounded-md py-2.5 text-sm`}
                             >

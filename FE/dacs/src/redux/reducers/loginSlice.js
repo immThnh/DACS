@@ -4,16 +4,19 @@ const loginSlice = createSlice({
     name: "isLogin",
     initialState: {
         isLogin: sessionStorage.getItem("token") !== null,
-        user: JSON.parse(sessionStorage.getItem("user")),
+        user: sessionStorage.getItem("user")
+            ? JSON.parse(sessionStorage.getItem("user"))
+            : null,
+
         token: sessionStorage.getItem("token"),
     },
     reducers: {
         setLogin: (state, action) => {
-            const { isLogin, token, user } = action.payload;
-            sessionStorage.setItem("user", JSON.stringify(user));
-            sessionStorage.setItem("token", token);
-            state.isLogin = isLogin;
+            const { token, user } = action.payload;
+            user && sessionStorage.setItem("user", JSON.stringify(user));
+            token && sessionStorage.setItem("token", token);
             state.user = user;
+            state.isLogin = true;
         },
         setLogout: (state, payload) => {
             sessionStorage.removeItem("token");

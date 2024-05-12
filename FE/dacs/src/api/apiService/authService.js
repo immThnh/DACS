@@ -217,6 +217,7 @@ export const oauth2Login = async (link) => {
         const result = await axios.get(
             "http://localhost:8080/oauth2/authorization/google"
         );
+        return result;
     } catch (error) {
         return Promise.reject(error);
     }
@@ -269,4 +270,3 @@ export const updateLessonIds = async (alias, courseId, lessonIds) => {
         return Promise.reject(error.response.data);
     }
 };
-

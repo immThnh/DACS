@@ -98,7 +98,6 @@ export default function Login() {
                 success: (data) => {
                     const { token, ...user } = data.content;
                     const payload = {
-                        isLogin: true,
                         token,
                         user,
                     };
