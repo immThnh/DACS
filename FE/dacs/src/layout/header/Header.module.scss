@@ -6,6 +6,41 @@
 a {
     color: rgb(38 38 38 / var(--tw-text-opacity));
 }
+.header {
+    @apply flex items-center justify-between p-4 bg-white shadow-md;
+  }
+  .menu-icon, .search-icon, .profile-info {
+    @apply flex items-center;
+  }
+  .logo {
+    @apply flex-1 flex justify-center;
+  }
+  .avatar {
+    @apply w-10 h-10 rounded-full;
+  }
+  @media (max-width: 768px) {
+    .header {
+      @apply flex-wrap;
+    }
+  
+    .logo {
+      @apply order-2 w-full justify-center my-2;
+    }
+  
+    .menu-icon, .search-icon {
+      @apply order-1;
+    }
+  
+    .profile-info {
+      @apply order-3 w-full justify-center;
+    }
+    .notification{
+        width: 50px;
+        :hover {
+            cursor: pointer;
+        }
+    }
+  }    
 .dropdownList {
     display: none;
     position: absolute;
@@ -36,7 +71,6 @@ a {
 .notification {
     // align-items: center;
     // display: flex;
-
     :hover {
         cursor: pointer;
     }

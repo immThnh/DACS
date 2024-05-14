@@ -59,7 +59,7 @@ const CoursesComponent = () => {
         fetchApi();
     }, []);
     return (
-        <section className="p-4 sm:px-5 sm:py-10 mx-auto max-w-[1200px]">
+        <section className="p-4 sm:px-5 sm:py-10 mx-auto max-w-[1200px] w-[1200px]">
             <div className="flex flex-wrap justify-center">
                 {courses &&
                     courses.map((course, index) => (
