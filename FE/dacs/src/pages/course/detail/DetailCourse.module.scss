@@ -416,18 +416,13 @@
 }
 
 .sectionComment {
-    border-radius: 50px;
     font-size: 16px;
     font-weight: 500;
     position: fixed;
     bottom: 4%;
     right: 26%;
-    padding: 8px 26px;
     cursor: pointer;
-    background: #a435f0;
-    color: white;
-    box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px,
-        rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+    //     rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
 }
 
 .headerPage {

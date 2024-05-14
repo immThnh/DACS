@@ -32,6 +32,7 @@ export default function NotificationItem({ iconBtn }) {
     const handleRead = (notification) => {
         const fetchApi = async () => {
             try {
+                console.log("read");
                 const result = await userApi.readNotification(
                     user.email,
                     notification.id
@@ -52,7 +53,6 @@ export default function NotificationItem({ iconBtn }) {
 
         const fetchApi = async () => {
             try {
-                console.log("readAll");
                 const result = await userApi.readAllNotifications(user.email);
                 dispatch(notificationSlice.actions.init(result.content));
             } catch (error) {
@@ -65,7 +65,6 @@ export default function NotificationItem({ iconBtn }) {
     const handleRemoveAllNotification = () => {
         const fetchApi = async () => {
             try {
-                console.log("readAll");
                 const result = await userApi.removeAllNotifications(user.email);
                 dispatch(notificationSlice.actions.removeAll(result.content));
             } catch (error) {

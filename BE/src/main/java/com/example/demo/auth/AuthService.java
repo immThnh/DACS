@@ -91,7 +91,7 @@ public class AuthService {
         if (result == null) {
             return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).content("Error while read notification").build();
         }
-        return ResponseObject.builder().status(HttpStatus.OK).content(result).build();
+        return ResponseObject.builder().status(HttpStatus.OK).mess("Read notification successfully").content(result).build();
     }
     public ResponseObject getAllNotificationsByEmail(String email) {
         if(!email.contains("@")) {
