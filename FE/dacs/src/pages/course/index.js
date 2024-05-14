@@ -88,25 +88,7 @@ const initCourse = {
     title: "Web Design Fundamentals",
     description:
         "Learn the fundamentals of web design, including HTML, CSS, and responsive design principles. Develop the skills to create visually appealing and user-friendly websites.",
-    images: [
-        {
-            src: "https://picsum.photos/id/238/800",
-            alt: "Course Image 1",
-        },
-        {
-            src: "https://picsum.photos/id/239/800",
-            alt: "Course Image 2",
-        },
-        {
-            src: "https://picsum.photos/id/240/800",
-            alt: "Course Image 3",
-        },
-    ],
-
     thumbnail: "",
-    duration: "4 Weeks",
-    level: "Beginner",
-    author: "John Smith",
     price: "336.000",
     lessons: [
         {
@@ -170,17 +152,21 @@ function Course() {
             navigate("/login");
             return;
         }
-        const enrollDTO = { email: userInfo.email, courseId: id };
-        toast.promise(userApi.enrollCourse(enrollDTO), {
-            loading: "Loading...",
-            success: (data) => {
-                navigate(`/course/detail/${id}`);
-                return data.mess;
-            },
-            error: (err) => {
-                return err.mess;
-            },
-        });
+        if (course.price !== 0) {
+            navigate(`/course/payment/${id}`);
+        } else {
+            const enrollDTO = { email: userInfo.email, courseId: id };
+            toast.promise(userApi.enrollCourse(enrollDTO), {
+                loading: "Loading...",
+                success: (data) => {
+                    navigate(`/course/detail/${id}`);
+                    return data.mess;
+                },
+                error: (err) => {
+                    return err.mess;
+                },
+            });
+        }
     };
 
     return (
@@ -280,7 +266,6 @@ function Course() {
                                     <button
                                         type="button"
                                         onClick={() => handleEnrollCourse(id)}
-                                        to={`/course/detail/${id}`}
                                         className={clsx(
                                             styles.courseCta,
                                             "w-full"

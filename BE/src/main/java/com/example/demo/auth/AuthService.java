@@ -1,6 +1,7 @@
 package com.example.demo.auth;
 
 import com.example.demo.cloudinary.CloudService;
+import com.example.demo.config.ConfigVNPAY;
 import com.example.demo.dto.*;
 import com.example.demo.entity.data.Comment;
 import com.example.demo.entity.data.Notification;
@@ -18,6 +19,7 @@ import com.example.demo.repository.data.NotificationRepository;
 import com.example.demo.repository.data.ProgressRepository;
 import com.example.demo.service.NotificationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,13 +30,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
@@ -198,10 +205,10 @@ public class AuthService {
             email+="@gmail.com";
         }
         var user = userRepository.findByEmail(email).orElse(null);
-        var userDTO = getUserDTOFromUser(user);
         if(user == null) {
             return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Username not found").build();
         }
+        var userDTO = getUserDTOFromUser(user);
         return ResponseObject.builder().status(HttpStatus.OK).content(userDTO).mess("Successfully").build();
     }
 
@@ -250,6 +257,16 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         userRepository.save(user);
         return true;
+    }
+
+    public ResponseObject adminUpdatePasswordForUser(PasswordDTO passwordDTO, String email) {
+        var user = userRepository.findByEmail(email).orElse(null);
+        if(user == null) {
+            return ResponseObject.builder().mess("User not found").status(HttpStatus.BAD_REQUEST).build();
+        }
+        user.setPassword(passwordEncoder.encode(passwordDTO.getNewPassword()));
+        userRepository.save(user);
+        return ResponseObject.builder().status(HttpStatus.OK).mess("Update password for user successfully").build();
     }
 
     public User findUserByEmail(String email) {
@@ -349,4 +366,110 @@ public class AuthService {
 
     }
 
+    public ResponseObject getPayment(String method, int courseId, String email) {
+        var course = courseRepository.findById(courseId).orElse(null);
+        if(course == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Course not found").build();
+        }
+        if(!Objects.equals(method,"vnpay")) return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Just VNPAY method").build();
+        long amount = course.getPrice() * 100L;
+
+        String vnp_Version = "2.1.0";
+        String vnp_Command = "pay";
+        String orderType = "other";
+        String bankCode = "NCB";
+
+        String vnp_TxnRef = ConfigVNPAY.getRandomNumber(8);
+        String vnp_IpAddr = "127.0.0.1";
+
+        String vnp_TmnCode = ConfigVNPAY.vnp_TmnCode;
+
+        Map<String, String> vnp_Params = new HashMap<>();
+        vnp_Params.put("vnp_Version", vnp_Version);
+        vnp_Params.put("vnp_Command", vnp_Command);
+        vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
+        vnp_Params.put("vnp_Amount", String.valueOf(amount));
+        vnp_Params.put("vnp_CurrCode", "VND");
+
+        vnp_Params.put("vnp_BankCode", bankCode);
+        vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
+        vnp_Params.put("vnp_OrderInfo", "Pay for the course:" + vnp_TxnRef);
+        vnp_Params.put("vnp_OrderType", orderType);
+
+        vnp_Params.put("vnp_Locale", "vn");
+        vnp_Params.put("vnp_ReturnUrl", ConfigVNPAY.vnp_ReturnUrl + "/" + email + "/" + courseId);
+        vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
+
+        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+        String vnp_CreateDate = formatter.format(cld.getTime());
+        vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
+
+        cld.add(Calendar.MINUTE, 15);
+        String vnp_ExpireDate = formatter.format(cld.getTime());
+        vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
+
+        List fieldNames = new ArrayList(vnp_Params.keySet());
+        Collections.sort(fieldNames);
+        StringBuilder hashData = new StringBuilder();
+        StringBuilder query = new StringBuilder();
+        Iterator itr = fieldNames.iterator();
+        while (itr.hasNext()) {
+            String fieldName = (String) itr.next();
+            String fieldValue = (String) vnp_Params.get(fieldName);
+            if ((fieldValue != null) && (fieldValue.length() > 0)) {
+                //Build hash data
+             try {
+                 hashData.append(fieldName);
+                 hashData.append('=');
+                 hashData.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+                 //Build query
+                 query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII.toString()));
+                 query.append('=');
+                 query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII.toString()));
+             }
+             catch (Exception ex) {
+                 System.out.println("getPayment: " + ex.getMessage());
+                 log.info("Error while get payment" + ex.getMessage());
+                 return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Error while get payment").build();
+             }
+                if (itr.hasNext()) {
+                    query.append('&');
+                    hashData.append('&');
+                }
+            }
+        }
+        String queryUrl = query.toString();
+        String vnp_SecureHash = ConfigVNPAY.hmacSHA512(ConfigVNPAY.secretKey, hashData.toString());
+        queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
+        String paymentUrl = ConfigVNPAY.vnp_PayUrl + "?" + queryUrl;
+        return ResponseObject.builder().status(HttpStatus.OK).content(paymentUrl).build();
+    }
+
+
+    public ResponseObject unLockCourse(String email, int courseId) {
+        var user = userRepository.findByEmail(email).orElse(null);
+        var course = courseRepository.findById(courseId).orElse(null);
+        if(user == null || course == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("User or Course not found").build();
+        }
+
+        Progress progress = Progress.builder()
+                .user(user)
+                .course(course)
+                .build();
+        progressRepository.save(progress);
+        return ResponseObject.builder().status(HttpStatus.OK).content("Enroll course successfully").build();
+    }
+
+    public ResponseObject getAllCourseByEmail(String email) {
+        var user = userRepository.findByEmail(email).orElse(null);
+        if(user == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("User not found").build();
+        }
+        List<ProgressDTO> progresses = progressRepository.findAllDTOByUserEmail(email);
+
+        return ResponseObject.builder().status(HttpStatus.OK).content(progresses).build();
+    }
 }
+

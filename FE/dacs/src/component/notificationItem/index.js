@@ -84,9 +84,9 @@ export default function NotificationItem({ iconBtn }) {
               text-black  items-center group inline-flex x-3 py-2 text-base font-medium hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75`}
                         >
                             <span className="relative">
-                                <button className={clsx(styles.button)}>
+                                <div className={clsx(styles.button)}>
                                     {iconBtn}
-                                </button>
+                                </div>
                                 <div className={styles.neo}>{totalUnRead}</div>
                             </span>
                         </Popover.Button>
