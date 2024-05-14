@@ -1,12 +1,10 @@
 package com.example.demo.entity.user;
 
 import com.example.demo.entity.data.Course;
+import com.example.demo.entity.data.Notification;
 import com.example.demo.jwt.Token;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -38,9 +36,13 @@ public class User implements UserDetails {
     @CollectionTable(name = "code_table", joinColumns = @JoinColumn(name = "user_id"))
     @MapKeyColumn(name = "code")
     @Column(name = "expiration")
+    @ToString.Exclude
     private Map<String, LocalDateTime> code = new HashMap<String, LocalDateTime>();
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Notification> notifications = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

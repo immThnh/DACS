@@ -28,6 +28,10 @@ const publicRoutes = [
 
 const userRoutes = [
     { path: "/course/detail/:id", component: DetailCourse },
+    {
+        path: "/course/detail/:id/openComment",
+        component: DetailCourse,
+    },
     { path: "me/profile/:email", component: UserProfile },
 ];
 
@@ -36,7 +40,10 @@ const adminRoutes = [
     { path: "/admin/course/list", component: ListCourse },
     { path: "/admin/course/create", component: CreateCourse },
     { path: "/admin/course/edit/:id", component: EditCourse },
-    { path: "/admin/course/detail/:id", component: DetailCourseAdmin },
+    {
+        path: "/admin/course/detail/:id",
+        component: DetailCourseAdmin,
+    },
     { path: "/admin/course/historyDelete", component: HistoryDeleted },
     { path: "/admin/category/list", component: ListCategory },
     { path: "/admin/category/create", component: CreateCategory },

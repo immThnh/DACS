@@ -62,4 +62,26 @@ public class MeController {
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 
+    @GetMapping("/{email}/notification/getAll")
+    public ResponseEntity<ResponseObject> getAllNotification(@PathVariable String email) {
+        var result = authService.getAllNotificationsByEmail(email);
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
+    @DeleteMapping("/{email}/notification/removeAll")
+    public ResponseEntity<ResponseObject> removeAllNotification(@PathVariable String email) {
+        var result = authService.removeAllNotificationsByEmail(email);
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
+
+    @PutMapping("/{email}/notification/read/{id}")
+    public ResponseEntity<ResponseObject> readNotification(@PathVariable String email, @PathVariable int id) {
+        var result = authService.readNotification(email, id);
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
+    @PutMapping("/{email}/notification/readAll")
+    public ResponseEntity<ResponseObject> readAllNotification(@PathVariable String email) {
+        var result = authService.readAllNotification(email);
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
+
 }

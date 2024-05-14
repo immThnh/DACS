@@ -2,6 +2,7 @@ package com.example.demo.controller.PublicController;
 
 import com.example.demo.dto.CommentDTO;
 import com.example.demo.entity.data.Comment;
+import com.example.demo.entity.data.Notification;
 import com.example.demo.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,16 @@ public class CommentController {
     private SimpMessagingTemplate simpMessagingTemplate;
     @MessageMapping("/comment/lesson/{lessonId}")
     @SendTo("/comment/lesson/{lessonId}")
-    public CommentDTO handleComment(@Payload CommentDTO commentDTO, @DestinationVariable int lessonId) throws Exception {
+    public Comment handleComment(@Payload CommentDTO commentDTO, @DestinationVariable int lessonId) throws Exception {
+        if (commentDTO == null) {
+            throw new IllegalArgumentException("CommentDTO cannot be null");
+        }
+
+        if(commentDTO.getReplyToUser() != null) {
+            Notification notification = commentService.saveNotification(commentDTO);
+            var alias = notification.getUser().getEmail().split("@")[0];
+            simpMessagingTemplate.convertAndSendToUser(alias,"/notification", notification);
+        }
         return commentService.saveComment(commentDTO);
     }
 

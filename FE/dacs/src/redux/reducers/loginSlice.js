@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const loginSlice = createSlice({
-    name: "isLogin",
+    name: "login",
     initialState: {
         isLogin: sessionStorage.getItem("token") !== null,
         user: sessionStorage.getItem("user")
@@ -18,7 +18,7 @@ const loginSlice = createSlice({
             state.user = user;
             state.isLogin = true;
         },
-        setLogout: (state, payload) => {
+        setLogout: (state, action) => {
             sessionStorage.removeItem("token");
             sessionStorage.removeItem("user");
             localStorage.removeItem("prevPath");

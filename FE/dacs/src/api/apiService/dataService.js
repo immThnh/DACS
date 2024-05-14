@@ -247,6 +247,7 @@ export const getComments = async (lessonId) => {
     try {
         return await publicInstance.get(`/lesson/${lessonId}/comments`);
     } catch (error) {
+        console.log(error.status);
         return Promise.reject(error);
     }
 };

@@ -6,6 +6,7 @@ import ShowPassword from "../../../component/auth/ShowPassword";
 import { useNavigate, useParams } from "react-router-dom";
 import * as userApi from "../../../api/apiService/authService";
 import { toast } from "sonner";
+import { useSelector } from "react-redux";
 
 const ImageWrapper = ({ src, alt, className }) => (
     <img loading="lazy" src={src} alt={alt} className={className} />
@@ -80,8 +81,8 @@ function UserProfile() {
     });
 
     const [activeForm, setActiveForm] = useState("details");
+    const userInfo = useSelector((state) => state.login.user);
     const [errors, setErrors] = useState({});
-    const [avatarSrc, setAvatarSrc] = useState(avatar);
     const [passwords, setPasswords] = useState({
         oldPassowrd: "",
         newPassword: "",
@@ -93,7 +94,6 @@ function UserProfile() {
     const confirmPasswordRef = useRef();
 
     const navigate = useNavigate();
-    const dataSearch = useParams();
     const [selectedBtn, setSelectedBtn] = useState("0");
 
     const handleInputChange = (e) => {
@@ -224,7 +224,7 @@ function UserProfile() {
     useEffect(() => {
         const fetchApi = async () => {
             try {
-                const result = await userApi.getUserByEmail(dataSearch.email);
+                const result = await userApi.getUserByEmail(userInfo.email);
                 setUser(result.content);
                 setPasswords({ ...passwords, email: result.content.email });
             } catch (error) {
@@ -232,7 +232,7 @@ function UserProfile() {
             }
         };
         fetchApi();
-    }, [dataSearch.email]);
+    }, [userInfo]);
 
     return (
         <div className={styles.container}>

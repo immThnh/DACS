@@ -72,7 +72,7 @@ export default function Footer() {
                                     <h3 className="text-lg font-semibold leading-7 text-neutral-800">
                                         Social Profiles
                                     </h3>
-                                    <div className="flex gap-3.5  mt-3.5 max-md:pr-5 justify-center">
+                                    <div className="flex gap-3.5  mt-3.5 max-md:pr-5">
                                         <a
                                             href="#"
                                             className="flex justify-center items-center p-3 w-11 h-11 rounded-md border border-gray-100 border-solid bg-neutral-100"

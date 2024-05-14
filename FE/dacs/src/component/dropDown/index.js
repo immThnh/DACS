@@ -32,21 +32,19 @@ function Dropdown({ elementClick, ...props }) {
     }, [isLogged]);
 
     return (
-        <div className="text-right">
-            <Menu as="div" className="relative inline-block text-left">
-                <div>
-                    <Menu.Button className="inline-flex w-full justify-center rounded-md text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75">
-                        {elementClick
-                            ? elementClick
-                            : "Options" +
-                              (
-                                  <ChevronDownIcon
-                                      className="-mr-1 ml-2 h-5 w-5 text-violet-200 hover:text-violet-100"
-                                      aria-hidden="true"
-                                  />
-                              )}
-                    </Menu.Button>
-                </div>
+        <div className="text-right flex items-center">
+            <Menu as="div" className="relative text-left flex ml-2">
+                <Menu.Button className="inline-flex items-center w-full justify-center rounded-md text-sm font-medium text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75">
+                    {elementClick
+                        ? elementClick
+                        : "Options" +
+                          (
+                              <ChevronDownIcon
+                                  className="-mr-1 ml-2 h-5 w-5 text-violet-200 hover:text-violet-100"
+                                  aria-hidden="true"
+                              />
+                          )}
+                </Menu.Button>
                 <Transition
                     as={Fragment}
                     enter="transition ease-out duration-100"

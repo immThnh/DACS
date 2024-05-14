@@ -5,12 +5,7 @@ import clsx from "clsx";
 import * as userApi from "../../../api/apiService/authService.js";
 import logoPage from "../../../assets/images/logo.png";
 import { useSelector } from "react-redux";
-import SockJS from "sockjs-client";
-import { over } from "stompjs";
-import { Dialog, Transition } from "@headlessui/react";
-import avatar from "../../../assets/images/avatar_25.jpg";
-import * as dataApi from "../.../../../../api/apiService/dataService.js";
-import moment from "moment/moment.js";
+import Comment from "../../../component/comment/index.js";
 
 let timerId = null;
 const debounce = (func, delay = 1000) => {
@@ -94,10 +89,11 @@ const CurriculumItem = ({
         } else {
             newUpdate = [...newUpdate.filter((item) => item !== id)];
         }
+
         setCurrentProgress((prev) => newUpdate);
+
         const fetchUpdateLessonIds = async () => {
             try {
-                console.log("deeeeeee");
                 const result = await userApi.updateLessonIds(
                     aliasEmail,
                     courseId,
@@ -192,7 +188,6 @@ const CurriculumItem = ({
     );
 };
 function DetailCourse() {
-    const { id } = useParams();
     const userInfo = useSelector((state) => state.login.user);
     const alias = userInfo.email.split("@")[0];
     const [currentVideoUrl, setCurrentVideoUrl] = useState("");
@@ -201,95 +196,16 @@ function DetailCourse() {
     });
     const [totalLesson, setTotalLesson] = useState(0);
     const [currentProgress, setCurrentProgress] = useState([]);
-    const [openModal, setOpenModal] = useState(false);
     const [progressObject, setProgressObject] = useState(initFormData);
-    const [comments, setComments] = useState([]);
-    const [comment, setComment] = useState({});
-    const [subComment, setSubComment] = useState({});
-    const [showReplyBox, setShowReplyBox] = useState(-1);
+    const [openModal, setOpenModal] = useState(false);
+    const { id } = useParams();
 
     const handleCloseComment = () => {
-        if (stompClient) {
-            stompClient.disconnect(onDisconnected, {});
-        }
         setOpenModal(false);
     };
 
-    const onDisconnected = () => {
-        console.log("Disconnect");
-    };
-    const onMessageReceived = (payload) => {
-        var payloadData = payload.body;
-        comments.push(JSON.parse(payloadData));
-        setComments([...comments]);
-    };
-
-    const onConnected = () => {
-        stompClient.subscribe(
-            `/comment/lesson/${lessonSelected.id}`,
-            onMessageReceived
-        );
-    };
-
-    const onError = (err) => {
-        console.log(err);
-    };
-
-    var stompClient = null;
-    const OpenConnect = () => {
-        return new Promise((resolve, reject) => {
-            const Sock = new SockJS("http://localhost:8080/ws");
-            stompClient = over(Sock);
-            stompClient.connect(
-                {},
-                () => {
-                    onConnected();
-                    resolve();
-                },
-                onError
-            );
-        });
-    };
-    const handleOpenComment = async () => {
-        OpenConnect().then(() => {});
-        const fetchApi = async () => {
-            try {
-                const result = await dataApi.getComments(lessonSelected.id);
-                setComments(result.content.content);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        fetchApi();
+    const handleOpenComment = () => {
         setOpenModal(true);
-    };
-    const sendValue = (sub) => {
-        OpenConnect().then(() => {
-            if (stompClient) {
-                let data = null;
-                !sub ? (data = { ...comment }) : (data = { ...subComment });
-                data = {
-                    ...data,
-                    lessonId: lessonSelected.id,
-                    userName: userInfo.firstName + " " + userInfo.lastName,
-                    email: userInfo.email,
-                };
-                stompClient.send(
-                    `/app/comment/lesson/${lessonSelected.id}`,
-                    {},
-                    JSON.stringify(data)
-                );
-                sub
-                    ? setSubComment({ ...subComment, content: "" })
-                    : setComment({ ...comment, content: "" });
-            } else {
-                console.log("WebSocket connection is not established yet");
-            }
-        });
-    };
-
-    const handleSendComment = (sub) => {
-        sendValue(sub);
     };
 
     const handleVideoSelect = (lesson) => {
@@ -299,10 +215,6 @@ function DetailCourse() {
             setCurrentVideoUrl(lesson.linkVideo);
         }
         setLessonSelected(lesson);
-    };
-
-    const handleReply = (commentId) => {
-        setShowReplyBox(commentId);
     };
 
     useEffect(() => {
@@ -325,13 +237,15 @@ function DetailCourse() {
                 setCurrentVideoUrl(video ? video : linkVideo);
                 setProgressObject(data.content);
                 setTotalLesson(total);
-            } catch (error) {
-                console.log(error);
-            }
+            } catch (error) {}
         };
 
         fetchApi();
-    }, [id]);
+        if (window.location.pathname.includes("openComment")) {
+            setOpenModal(true);
+        }
+    }, [id, alias]);
+
     return (
         <div className={clsx(styles.wrapperPage)}>
             <div
@@ -426,258 +340,14 @@ function DetailCourse() {
                         </div>
                     </div>
                 </div>
-                {/* <Comment
-                    lessonId={lessonId}
-                    openModal={openModal}
-                    funcCloseModal={handleCloseComment}
-                ></Comment> */}
-                <Transition appear show={openModal} as={Fragment}>
-                    <Dialog
-                        as="div"
-                        className="relative z-10"
-                        onClose={handleCloseComment}
-                    >
-                        <Transition.Child
-                            as={Fragment}
-                            enter="ease-out duration-300"
-                            enterFrom="opacity-0"
-                            enterTo="opacity-100"
-                            leave="ease-in duration-200"
-                            leaveFrom="opacity-100"
-                            leaveTo="opacity-0"
-                        >
-                            <div className="fixed inset-0 bg-black/25" />
-                        </Transition.Child>
-
-                        <div className="fixed inset-0 overflow-y-auto">
-                            <div className="flex min-h-full items-center justify-center p-4 text-center">
-                                <Transition.Child
-                                    as={Fragment}
-                                    enter="ease-out duration-300"
-                                    enterFrom="opacity-0 scale-95"
-                                    enterTo="opacity-100 scale-100"
-                                    leave="ease-in duration-200"
-                                    leaveFrom="opacity-100 scale-100"
-                                    leaveTo="opacity-0 scale-95"
-                                >
-                                    <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                                        <Dialog.Title
-                                            as="h3"
-                                            className="text-lg font-medium leading-6 text-gray-900"
-                                        >
-                                            Q&A
-                                        </Dialog.Title>
-                                        <div className="mt-6">
-                                            <div className="flex flex-col flex-none">
-                                                <div
-                                                    className={clsx(
-                                                        styles.cmt,
-                                                        "flex"
-                                                    )}
-                                                >
-                                                    <img src={avatar} alt="" />
-                                                    <textarea
-                                                        value={comment.content}
-                                                        onChange={(e) =>
-                                                            setComment({
-                                                                ...comment,
-                                                                content:
-                                                                    e.target
-                                                                        .value,
-                                                            })
-                                                        }
-                                                        className={clsx(
-                                                            styles.input,
-                                                            "flex-1"
-                                                        )}
-                                                        type="text"
-                                                        placeholder="Do you have any questions about this lesson?"
-                                                    />
-                                                </div>
-                                                <div
-                                                    onClick={() =>
-                                                        handleSendComment(false)
-                                                    }
-                                                    className={clsx(
-                                                        styles.btnSend,
-                                                        "mt-3 text-sm self-end flex-grow-0"
-                                                    )}
-                                                >
-                                                    Send
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div
-                                            className={clsx(
-                                                styles.cmtWrap,
-                                                "flex flex-col gap-3 mt-8"
-                                            )}
-                                        >
-                                            {comments &&
-                                                comments.map((comment, ind) => {
-                                                    const timeElapsed = moment(
-                                                        comment.date
-                                                    ).fromNow();
-                                                    return (
-                                                        <div key={ind}>
-                                                            <div
-                                                                className={clsx(
-                                                                    styles.cmtItem,
-                                                                    "flex flex-col flex-none"
-                                                                )}
-                                                            >
-                                                                <div
-                                                                    className={clsx(
-                                                                        styles.cmt,
-                                                                        "flex"
-                                                                    )}
-                                                                >
-                                                                    <img
-                                                                        src={
-                                                                            avatar
-                                                                        }
-                                                                        alt=""
-                                                                    />
-                                                                    <div
-                                                                        className={clsx(
-                                                                            styles.cmtContent,
-                                                                            "flex-1"
-                                                                        )}
-                                                                    >
-                                                                        <div
-                                                                            className={clsx(
-                                                                                styles.wrap
-                                                                            )}
-                                                                        >
-                                                                            <span>
-                                                                                {
-                                                                                    comment.userName
-                                                                                }
-                                                                            </span>
-                                                                            <div
-                                                                                className={clsx(
-                                                                                    styles.content
-                                                                                )}
-                                                                            >
-                                                                                {
-                                                                                    comment.content
-                                                                                }
-                                                                            </div>
-                                                                        </div>
-                                                                        <div
-                                                                            className={clsx(
-                                                                                "mt-2 ml-2"
-                                                                            )}
-                                                                        >
-                                                                            <button
-                                                                                className={
-                                                                                    styles.actionsCmt
-                                                                                }
-                                                                                type="button"
-                                                                                onClick={() =>
-                                                                                    handleReply(
-                                                                                        comment.id
-                                                                                    )
-                                                                                }
-                                                                            >
-                                                                                Reply
-                                                                            </button>
-                                                                            <span
-                                                                                className={
-                                                                                    styles.timeCmt
-                                                                                }
-                                                                            >
-                                                                                {
-                                                                                    timeElapsed
-                                                                                }
-                                                                            </span>
-                                                                        </div>
-                                                                        <div
-                                                                            className={clsx(
-                                                                                styles.replyBox,
-                                                                                {
-                                                                                    show:
-                                                                                        showReplyBox ===
-                                                                                        comment.id,
-                                                                                }
-                                                                            )}
-                                                                        >
-                                                                            <div className="lex flex-col flex-none">
-                                                                                <div
-                                                                                    className={clsx(
-                                                                                        styles.cmt,
-                                                                                        "flex"
-                                                                                    )}
-                                                                                >
-                                                                                    <img
-                                                                                        src={
-                                                                                            avatar
-                                                                                        }
-                                                                                        alt=""
-                                                                                    />
-                                                                                    <textarea
-                                                                                        value={
-                                                                                            subComment.content
-                                                                                        }
-                                                                                        onChange={(
-                                                                                            e
-                                                                                        ) =>
-                                                                                            setSubComment(
-                                                                                                {
-                                                                                                    ...subComment,
-                                                                                                    content:
-                                                                                                        e
-                                                                                                            .target
-                                                                                                            .value,
-                                                                                                }
-                                                                                            )
-                                                                                        }
-                                                                                        className={clsx(
-                                                                                            styles.input,
-                                                                                            "flex-1"
-                                                                                        )}
-                                                                                        type="text"
-                                                                                        placeholder="Do you have any questions about this lesson?"
-                                                                                    />
-                                                                                </div>
-                                                                                <div
-                                                                                    onClick={() =>
-                                                                                        handleSendComment(
-                                                                                            true
-                                                                                        )
-                                                                                    }
-                                                                                    className={clsx(
-                                                                                        styles.btnSend,
-                                                                                        "float-right btn mt-3 self-end flex-grow-0"
-                                                                                    )}
-                                                                                >
-                                                                                    Send
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                })}
-                                        </div>
-
-                                        <div className="mt-8">
-                                            <button
-                                                type="button"
-                                                className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
-                                                onClick={handleCloseComment}
-                                            >
-                                                Close
-                                            </button>
-                                        </div>
-                                    </Dialog.Panel>
-                                </Transition.Child>
-                            </div>
-                        </div>
-                    </Dialog>
-                </Transition>
+                {openModal && (
+                    <Comment
+                        courseId={id}
+                        lessonId={lessonSelected.id}
+                        openModal={openModal}
+                        funcCloseModal={handleCloseComment}
+                    ></Comment>
+                )}
             </main>
         </div>
     );

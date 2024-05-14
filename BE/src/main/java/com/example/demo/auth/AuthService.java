@@ -3,6 +3,7 @@ package com.example.demo.auth;
 import com.example.demo.cloudinary.CloudService;
 import com.example.demo.dto.*;
 import com.example.demo.entity.data.Comment;
+import com.example.demo.entity.data.Notification;
 import com.example.demo.entity.data.Progress;
 import com.example.demo.entity.user.Role;
 import com.example.demo.entity.user.User;
@@ -13,7 +14,9 @@ import com.example.demo.repository.TokenRepository;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.data.CourseRepository;
 import com.example.demo.repository.data.LessonRepository;
+import com.example.demo.repository.data.NotificationRepository;
 import com.example.demo.repository.data.ProgressRepository;
+import com.example.demo.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -28,10 +31,7 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +44,65 @@ public class AuthService {
     private final JwtService jwtService;
     private final CloudService cloudService;
     private final PasswordEncoder passwordEncoder;
+    private  final NotificationService notificationService;
 
+    public ResponseObject removeAllNotificationsByEmail(String email) {
+        if(!email.contains("@")) {
+            email += "@gmail.com";
+        }
+        var user = userRepository.findByEmail(email).orElse(null);
+
+        if (user == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).content("User not found ").build();
+        }
+        var result = notificationService.removeAllNotificationsByEmail(user.getId());
+        if (result.size() > 0) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Error while remove all notification").build();
+        }
+        user.setNotifications(new ArrayList<>());
+        userRepository.save(user);
+        return ResponseObject.builder().status(HttpStatus.OK).content(result).mess("Remove all notification successfully").build();
+    }
+    public ResponseObject readAllNotification(String email) {
+        if(!email.contains("@")) {
+            email += "@gmail.com";
+        }
+        var user = userRepository.findByEmail(email).orElse(null);
+
+        if (user == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).content("User not found ").build();
+        }
+        var result = notificationService.readAllNotification(user.getId());
+        if (result == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).content("Error while read notification").build();
+        }
+        return ResponseObject.builder().status(HttpStatus.OK).content(result).build();
+    }
+    public ResponseObject readNotification(String email, int id) {
+        if(!email.contains("@")) {
+            email += "@gmail.com";
+        }
+        var user = userRepository.findByEmail(email).orElse(null);
+
+        if (user == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).content("User not found ").build();
+        }
+        var result = notificationService.readNotification(id);
+        if (result == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).content("Error while read notification").build();
+        }
+        return ResponseObject.builder().status(HttpStatus.OK).content(result).build();
+    }
+    public ResponseObject getAllNotificationsByEmail(String email) {
+        if(!email.contains("@")) {
+            email += "@gmail.com";
+        }
+        var user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).content("User not found").build();
+        }
+        return ResponseObject.builder().status(HttpStatus.OK).content(notificationService.getAllNotificationsByEmail(user.getId())).build();
+    }
 
 
     public ResponseObject updateLessonsIds(String alias, int courseId, List<Integer> lessonIds) {

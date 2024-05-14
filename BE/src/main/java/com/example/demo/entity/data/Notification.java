@@ -3,38 +3,30 @@ package com.example.demo.entity.data;
 import com.example.demo.entity.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Comment {
+public class Notification {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private LocalDateTime date;
     @Column(columnDefinition = "TEXT")
     private String content;
-    private String userEmail;
-    private String userName;
-    private String avatar;
-    private int parentId;
-    private String replyToUser;
+    private LocalDateTime date;
+    private String fromUser;
+    private String path;
+    private String img;
+    private boolean isRead = false;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     @JsonIgnore
+    @ToString.Exclude
     private User user;
-
-    @ManyToOne
-    @JsonIgnore
-    private Lesson lesson;
 }

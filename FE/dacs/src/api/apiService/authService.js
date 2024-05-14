@@ -48,6 +48,7 @@ export const login = async ({ email, password }) => {
 
         return res;
     } catch (error) {
+        console.log(error);
         return Promise.reject(error);
     }
 };
@@ -212,17 +213,6 @@ export const logout = async () => {
     }
 };
 
-export const oauth2Login = async (link) => {
-    try {
-        const result = await axios.get(
-            "http://localhost:8080/oauth2/authorization/google"
-        );
-        return result;
-    } catch (error) {
-        return Promise.reject(error);
-    }
-};
-
 export const getUserByEmail = async (email) => {
     try {
         return userInstance.get(`${email}`);
@@ -268,5 +258,47 @@ export const updateLessonIds = async (alias, courseId, lessonIds) => {
         );
     } catch (error) {
         return Promise.reject(error.response.data);
+    }
+};
+
+export const getAllNotification = async (email) => {
+    if (email.includes("@")) {
+        email = email.substring(0, email.lastIndexOf("@"));
+    }
+    try {
+        return await userInstance.get(`/${email}/notification/getAll`);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const readNotification = async (email, id) => {
+    if (email.includes("@")) {
+        email = email.substring(0, email.lastIndexOf("@"));
+    }
+    try {
+        return await userInstance.put(`${email}/notification/read/${id}`);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+export const readAllNotifications = async (email) => {
+    if (email.includes("@")) {
+        email = email.substring(0, email.lastIndexOf("@"));
+    }
+    try {
+        return await userInstance.put(`${email}/notification/readAll`);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+export const removeAllNotifications = async (email) => {
+    if (email.includes("@")) {
+        email = email.substring(0, email.lastIndexOf("@"));
+    }
+    try {
+        return await userInstance.delete(`${email}/notification/removeAll`);
+    } catch (error) {
+        return Promise.reject(error);
     }
 };

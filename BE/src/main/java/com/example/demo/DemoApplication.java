@@ -53,7 +53,7 @@ public class DemoApplication {
 //			User manager = User.builder()
 //					.firstName("nguyen")
 //					.lastName("manager")
-//					.email("managern@gmail.com")
+//					.email("manager@gmail.com")
 //					.password(passwordEncoder.encode("1234Thanh@"))
 //					.role(Role.MANAGER)
 //					.build();
