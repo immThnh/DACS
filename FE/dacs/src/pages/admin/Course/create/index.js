@@ -171,34 +171,50 @@ function CreateCourse() {
         setFormData({ ...formData, video: null });
     };
 
+    const validateForm = (formData) => {
+        const errors = {};
+        if (!formData.title) errors.title = "Course Name is required.";
+        if (!formData.description) errors.description = "Description is required.";
+        if (!formData.price) errors.price = "Price is required.";
+        if (!formData.thumbnail) errors.thumbnail = "Thumbnail is required.";
+        if (formData.categories.length === 0) errors.categories = "At least one category is required.";
+
+        formData.sections.forEach((section, sectionIndex) => {
+            if (!section.title) errors[`section-${sectionIndex}`] = `Section ${sectionIndex + 1} Name is required.`;
+            section.lessons.forEach((lesson, lessonIndex) => {
+                if (!lesson.title) errors[`lesson-${sectionIndex}-${lessonIndex}`] = `Lesson ${lessonIndex + 1} Name is required in Section ${sectionIndex + 1}.`;
+                if (!lesson.description) errors[`lesson-desc-${sectionIndex}-${lessonIndex}`] = `Lesson ${lessonIndex + 1} Description is required in Section ${sectionIndex + 1}.`;
+            });
+        });
+
+        return errors;
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        let errors = [];
-        // Object.keys(formData).forEach((key) => {
-        //     if (formData[key] === "") {
-        //         errors[key] = "This field is required.";
-        //     }
-        // });
+        const validationErrors = validateForm(formData);
+        setErrors(validationErrors);
 
-        // if (Object.keys(errors).length > 0) {
-        //     setErrors(errors);
-        //     return;
-        // }
-        // console.log(formData);
+        if (Object.keys(validationErrors).length > 0) {
+                toast.error("You need to fill in the empty field");
+            return;
+        }
 
+        // ...rest of your submission logic
         const thumbnail = formData.thumbnail;
         const courseVideo = formData.video;
         formData.video = "";
 
         const videos = [];
         formData.sections.forEach((section) => {
-            if (section.lessons)
+            if (section.lessons) {
                 section.lessons.forEach((less) => {
                     if (less.video instanceof File) {
                         videos.push(less.video);
                         less.video = "";
                     }
                 });
+            }
         });
 
         const featchApi = async () => {
@@ -231,6 +247,7 @@ function CreateCourse() {
         const debounceApi = debounce(featchApi);
         debounceApi();
     };
+
     useEffect(() => {
         const fetchApi = async () => {
             try {

@@ -11,7 +11,7 @@ import { useParams } from "react-router-dom";
 import makeAnimated from "react-select/animated";
 import { clear } from "@testing-library/user-event/dist/clear";
 import { isEditable } from "@testing-library/user-event/dist/utils";
-
+import validateForm from "../../../../component/validation";
 const animatedComponents = makeAnimated();
 
 const initFormData = {
@@ -28,6 +28,7 @@ const initFormData = {
 function EditCourse() {
     const [formData, setFormData] = useState(initFormData);
     const [options, setOptions] = useState([]);
+    const [errors, setErrors] = useState({});
     const { id } = useParams();
 
     let timerId;
@@ -40,10 +41,11 @@ function EditCourse() {
             ...formData,
             [name]: value,
         });
+        errors[name] = "";
+        setErrors(errors);
     };
 
     const handleFileChange = (e, index, indexSection) => {
-        console.log("indexSection: " + indexSection);
         const file = e.target.files[0];
         if (file.type === "video/mp4") {
             let updateSection = { ...formData.sections[indexSection] };
@@ -68,6 +70,8 @@ function EditCourse() {
             });
         }
         e.target.value = "";
+        errors[e.target.name] = "";
+        setErrors(errors);
     };
 
     const handleUpdateVideoCourse = (e) => {
@@ -131,6 +135,9 @@ function EditCourse() {
             [name]: value,
         };
         updateSections[sectionIndex] = { ...updateSection };
+
+        errors[name] = "";
+        setErrors(errors);
 
         setFormData({
             ...formData,
@@ -198,6 +205,12 @@ function EditCourse() {
     //!======================================NOTE SUBMIT ========================
     const handleSubmit = (e) => {
         e.preventDefault();
+        const validationErrors = validateForm(formData);
+        setErrors(validationErrors);
+        if (Object.keys(validationErrors).length > 0) {       
+                toast.error("You need to fill in the empty field");
+            return;
+        }
 
         const thumbnail = formData.thumbnail;
         const video = formData.video;
@@ -268,7 +281,6 @@ function EditCourse() {
         const fetchApi = async () => {
             try {
                 const result = await DataApi.getAllCategories();
-
                 setOptions(result.content.content);
 
                 toast.promise(DataApi.getCourseById(id), {
@@ -287,7 +299,7 @@ function EditCourse() {
         };
 
         fetchApi();
-    }, []);
+    }, [id]);
 
     console.log("render");
 
@@ -312,6 +324,11 @@ function EditCourse() {
                         <label className={clsx(styles.formLabel)}>
                             Course Name
                         </label>
+                        {errors.title && (
+                            <div className="text-red-500 mt-1 text-sm ml-1">
+                                {errors.title}
+                            </div>
+                        )}
                     </div>
                     <div className={clsx(styles.formField)}>
                         <textarea
@@ -326,6 +343,11 @@ function EditCourse() {
                         >
                             Description
                         </label>
+                        {errors.description && (
+                            <div className="text-red-500 mt-1 text-sm ml-1">
+                                {errors.description}
+                            </div>
+                        )}
                     </div>
                     <div className={clsx("flex")}>
                         <div className={clsx(styles.formField, "w-1/2 mr-9")}>
@@ -349,6 +371,11 @@ function EditCourse() {
                             <label className={clsx(styles.formLabel)}>
                                 Category
                             </label>
+                            {errors.categories && (
+                                <div className="text-red-500 mt-1 text-sm ml-1">
+                                    {errors.categories}
+                                </div>
+                            )}
                         </div>
                         <div className={clsx(styles.formField, "w-1/2")}>
                             <input
@@ -362,6 +389,11 @@ function EditCourse() {
                             <label className={clsx(styles.formLabel)}>
                                 Price
                             </label>
+                            {errors.price && (
+                                <div className="text-red-500 mt-1 text-sm ml-1">
+                                    {errors.price}
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -546,6 +578,11 @@ function EditCourse() {
                                             >
                                                 Section Name
                                             </label>
+                                            {errors[`section-${sectionIndex}`] && (
+                                                <div className="text-red-500 mt-1 text-sm ml-1">
+                                                    {errors[`section-${sectionIndex}`]}
+                                                </div>
+                                            )}
                                         </div>
                                         {lessons &&
                                             lessons.map((lesson, index) => {
@@ -613,6 +650,11 @@ function EditCourse() {
                                                             >
                                                                 Lesson Name
                                                             </label>
+                                                            {errors[`lesson-${sectionIndex}-${index}`] && (
+                                                                <div className="text-red-500 mt-1 text-sm ml-1">
+                                                                    {errors[`lesson-${sectionIndex}-${index}`]}
+                                                                </div>
+                                                            )}
                                                         </div>
                                                         <div
                                                             className={clsx(
@@ -647,6 +689,11 @@ function EditCourse() {
                                                             >
                                                                 Description
                                                             </label>
+                                                            {errors[`lesson-desc-${sectionIndex}-${index}`] && (
+                                                                <div className="text-red-500 mt-1 text-sm ml-1">
+                                                                    {errors[`lesson-desc-${sectionIndex}-${index}`]}
+                                                                </div>
+                                                            )}
                                                         </div>
                                                         <div className="flex">
                                                             <div
@@ -684,10 +731,6 @@ function EditCourse() {
                                                                 </label>
                                                                 <input
                                                                     name="video"
-                                                                    o
-                                                                    data-sectionIndex={
-                                                                        sectionIndex
-                                                                    }
                                                                     onChange={(
                                                                         e
                                                                     ) =>

@@ -367,7 +367,7 @@ function ListUser() {
                                                         )}
                                                     >
                                                         <Link
-                                                            to={`/admin/user/view/${element.id}`}
+                                                            to={`/admin/user/view/${element.email}`}
                                                         >
                                                             <img
                                                                 src={viewIcon}

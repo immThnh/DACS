@@ -17,6 +17,7 @@ import HistoryDeletedCategory from "../pages/admin/Category/historyDeleted";
 import ListUser from "../pages/admin/user/list";
 import ListDeletedUser from "../pages/admin/user/historyDeleted";
 import UserProfile from "../pages/user/userprofile";
+import AdminView from "../pages/admin/user/userProfileAdmin";
 
 const publicRoutes = [
     { path: "/", component: LandingPage },
@@ -58,6 +59,7 @@ const adminRoutes = [
     { path: "/admin/user/edit/:id", component: EditCourse },
     { path: "/admin/user/detail/:id", component: DetailCourseAdmin },
     { path: "/admin/user/historyDelete", component: ListDeletedUser },
+    {path:"/admin/user/view/:email",component:AdminView}
 ];
 
 export { publicRoutes, adminRoutes, userRoutes };

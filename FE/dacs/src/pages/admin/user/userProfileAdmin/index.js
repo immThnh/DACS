@@ -1,76 +1,13 @@
-import React, { useState, useRef, useEffect } from "react";
-import styles from "./userProfile.module.scss";
+import React, { useState, useEffect } from "react";
+import styles from "../../../user/userprofile/userProfile.module.scss";
 import clsx from "clsx";
-import avatar from "../../../assets/images/avatar_25.jpg";
-import ShowPassword from "../../../component/auth/ShowPassword";
+import avatar from "../../../../assets/images/avatar_25.jpg";
+import ShowPassword from "../../../../component/auth/ShowPassword";
 import { useNavigate, useParams } from "react-router-dom";
-import * as userApi from "../../../api/apiService/authService";
+import * as userApi from "../../../../api/apiService/authService";
 import { toast } from "sonner";
 
-const ImageWrapper = ({ src, alt, className }) => (
-    <img loading="lazy" src={src} alt={alt} className={className} />
-);
-
-const Button = ({ children, className, onClick, type }) => (
-    <button type={type} className={className} onClick={onClick}>
-        {children}
-    </button>
-);
-
-const SectionTitle = ({ children }) => (
-    <h2 className={styles.sectionTitle}>{children}</h2>
-);
-
-const SectionSubtitle = ({ children }) => (
-    <h3 className={styles.sectionSubtitle}>{children}</h3>
-);
-
-const InputField = ({ label, value, onChange, error }) => (
-    <>
-        <label className={styles.visuallyHidden}>{label}</label>
-        <input
-            type="text"
-            className={clsx(styles.inputField, error && styles.errorInput)}
-            value={value}
-            onChange={onChange}
-            aria-label={label}
-        />
-        {error && <div className={styles.errorText}>{error}</div>}
-    </>
-);
-
-const PasswordField = ({ label, value, onChange, inputRef, error }) => (
-    <div style={{ position: "relative", marginBottom: "10px" }}>
-        <label className={styles.visuallyHidden}>{label}</label>
-        <div className={styles.inputContainer}>
-            <input
-                type="password"
-                className={clsx(error && styles.errorInput)}
-                value={value}
-                onChange={onChange}
-                ref={inputRef}
-                style={{ paddingRight: "30px" }}
-            />
-            <ShowPassword passInput={inputRef.current} />
-        </div>
-        {error && <div className={styles.errorText}>{error}</div>}
-    </div>
-);
-
-function isValidEmail(email) {
-    const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
-    return emailRegex.test(email);
-}
-
-function isPasswordStrong(password) {
-    const passwordRegex =
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$/;
-    return passwordRegex.test(password);
-}
-
-const Divider = () => <hr className={styles.divider} />;
-
-function UserProfile({ adminOpen = false }) {
+const AdminView = () => {
     const [user, setUser] = useState({
         firstName: "",
         lastName: "",
@@ -78,22 +15,16 @@ function UserProfile({ adminOpen = false }) {
         avatar: "",
         phoneNumber: "",
     });
-
-    const [activeForm, setActiveForm] = useState();
+    const [activeForm, setActiveForm] = useState("details");
     const [errors, setErrors] = useState({});
     const [avatarSrc, setAvatarSrc] = useState(avatar);
     const [passwords, setPasswords] = useState({
-        oldPassword: "",
         newPassword: "",
         confirmPassword: "",
     });
 
-    const currentPasswordRef = useRef();
-    const newPasswordRef = useRef();
-    const confirmPasswordRef = useRef();
-
     const navigate = useNavigate();
-    const dataSearch = useParams();
+    const { email } = useParams();
     const [selectedBtn, setSelectedBtn] = useState("0");
 
     const handleInputChange = (e) => {
@@ -109,29 +40,12 @@ function UserProfile({ adminOpen = false }) {
         setPasswords({ ...passwords, [name]: value });
     };
 
-    const handleNavItemClick = (formType) => {
-        setActiveForm(formType);
-    };
-
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         if (file) {
             setUser({ ...user, avatar: file });
         }
     };
-
-    function isURL(str) {
-        const urlPattern = new RegExp(
-            "^(https?:\\/\\/)?" + // protocol
-                "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
-                "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
-                "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
-                "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
-                "(\\#[-a-z\\d_]*)?$",
-            "i"
-        ); // fragment locator
-        return urlPattern.test(str);
-    }
 
     const handleSwitchPage = (e) => {
         const newIndex = e.target.dataset.index;
@@ -149,67 +63,65 @@ function UserProfile({ adminOpen = false }) {
         }
     };
 
-    const handleSubmitChangePassword = (e) => {
+    const handleSubmitChangePassword = async (e) => {
         e.preventDefault();
-        if (!validateForm()) {
+        if (!validatePasswordForm()) {
             console.error("Invalid password input");
+            toast.error("Failed to update password");
             return;
         }
-
-        toast.promise(userApi.updatePassword(passwords), {
-            loading: "Updating password...",
-            success: (data) => {
-                return data.mess;
-            },
-            error: (err) => {
-                return "Update Failed";
-            },
-        });
+        try {
+            await userApi.resetPasswordByEmail(passwords.newPassword, email);
+            toast.success("Password updated successfully");
+        } catch (error) {
+            console.error("Error resetting password:", error);
+            toast.error("Failed to update password");
+        }
     };
 
-    const validateForm = () => {
+    const validatePasswordForm = () => {
         let valid = true;
         const newErrors = {};
 
-        if (!user.firstName.trim()) {
-            newErrors.firstName = "First name cannot be empty";
+        if (!isPasswordStrong(passwords.newPassword)) {
+            newErrors.newPassword =
+                "Password must have at least 8 characters, including uppercase, lowercase, and special characters.";
             valid = false;
         }
-        if (!user.lastName.trim()) {
-            newErrors.lastName = "Last name cannot be empty";
+        if (passwords.newPassword !== passwords.confirmPassword) {
+            newErrors.confirmPassword = "Passwords do not match.";
             valid = false;
-        }
-
-        if (activeForm === "details") {
-            if (!isValidEmail(user.email)) {
-                newErrors.email = "Please enter a valid email";
-                valid = false;
-            }
-        } else if (activeForm === "password") {
-            if (!passwords.oldPassword) {
-                newErrors.oldPassword = "Old password is required.";
-                valid = false;
-            }
-            if (!isPasswordStrong(passwords.newPassword)) {
-                newErrors.newPassword =
-                    "Password must have at least 8 characters, including uppercase, lowercase, and special characters.";
-                
-                valid = false;
-            }
-            if (passwords.newPassword !== passwords.confirmPassword) {
-                newErrors.confirmPassword = "Passwords do not match.";
-                valid = false;
-            }
         }
 
         setErrors(newErrors);
         return valid;
     };
 
-    const handleSubmit = (event) => {
+    const validateProfileForm = () => {
+        let valid = true;
+        const newErrors = {};
+
+        if (!user.firstName) {
+            newErrors.firstName = "First name is required.";
+            valid = false;
+        }
+        if (!user.lastName) {
+            newErrors.lastName = "Last name is required.";
+            valid = false;
+        }
+        if (!isValidEmail(user.email)) {
+            newErrors.email = "Email is not valid.";
+            valid = false;
+        }
+
+        setErrors(newErrors);
+        return valid;
+    };
+
+    const handleSubmit = async (event) => {
         event.preventDefault();
-        if (!validateForm()) {
-            
+        if (!validateProfileForm()) {
+            console.error("Invalid input");
             return;
         }
         const { avatar, ...userData } = user;
@@ -220,7 +132,7 @@ function UserProfile({ adminOpen = false }) {
                 return "Update successfully";
             },
             error: (err) => {
-                return "Update Failed";
+                return err.mess;
             },
         });
     };
@@ -228,15 +140,14 @@ function UserProfile({ adminOpen = false }) {
     useEffect(() => {
         const fetchApi = async () => {
             try {
-                const result = await userApi.getUserByEmail(dataSearch.email);
+                const result = await userApi.getUserByEmail(email);
                 setUser(result.content);
-                setPasswords({ ...passwords, email: result.content.email });
             } catch (error) {
                 console.log(error.mess);
             }
         };
         fetchApi();
-    }, [dataSearch.email]);
+    }, [email]);
 
     return (
         <div className={styles.container}>
@@ -379,22 +290,21 @@ function UserProfile({ adminOpen = false }) {
                                                 >
                                                     First Name
                                                 </label>
-                                               
-                                            </div>
-                                            
-                                            {errors.firstName && (
-                                                    <div className="text-red-500 mt-1 text-sm ml-1">
-                                                        {errors.firstName}
-                                                    </div>
-                                                )}
                                                 </div>
-                                                <div>
+                                                 {errors.firstName && (
+                                                <div className="text-red-500 mt-1 text-sm ml-1">
+                                                    {errors.firstName}
+                                                </div>
+                                            )}
+                                            </div>
+                                            <div>
                                             <div
                                                 className={clsx(
                                                     styles.formField,
                                                     "flex-1"
                                                 )}
                                             >
+                                            
                                                 <input
                                                     required
                                                     onChange={
@@ -415,14 +325,14 @@ function UserProfile({ adminOpen = false }) {
                                                 >
                                                     Last Name
                                                 </label>
-                                                
                                             </div>
                                             {errors.lastName && (
-                                                    <div className="text-red-500 mt-1 text-sm ml-1">
-                                                        {errors.lastName}
-                                                    </div>
-                                                )}
+                                                <div className="text-red-500 mt-1 text-sm ml-1">
+                                                    {errors.lastName}
                                                 </div>
+                                            )}
+                                            </div>
+
                                         </div>
                                         <div
                                             className={clsx(
@@ -449,12 +359,13 @@ function UserProfile({ adminOpen = false }) {
                                                 >
                                                     Email
                                                 </label>
-                                                {errors.email && (
-                                                    <div className="text-red-500 mt-1 text-sm ml-1">
-                                                        {errors.email}
-                                                    </div>
-                                                )}
+                                                
                                             </div>
+                                            {errors.email && (
+                                                <div className="text-red-500 mt-1 text-sm ml-1">
+                                                    {errors.email}
+                                                </div>
+                                            )}
                                         </div>
                                         <div
                                             className={clsx(
@@ -514,54 +425,7 @@ function UserProfile({ adminOpen = false }) {
                                         className={clsx(styles.field)}
                                         action=""
                                     >
-                                        {!adminOpen && (
-                                            <div
-                                                className={clsx(
-                                                    styles.formField,
-                                                    "w-full "
-                                                )}
-                                            >
-                                                <div className="px-2 w-full flex text-sm">
-                                                    <input
-                                                        id="oldPassword"
-                                                        autoComplete="off"
-                                                        required
-                                                        onChange={
-                                                            handleInputPasswordChange
-                                                        }
-                                                        name="oldPassword"
-                                                        value={
-                                                            passwords.oldPassword ||
-                                                            ""
-                                                        }
-                                                        data-validate
-                                                        className={clsx(
-                                                            styles.formInput
-                                                        )}
-                                                        type="password"
-                                                    ></input>
-                                                    <label
-                                                        className={clsx(
-                                                            styles.formLabel
-                                                        )}
-                                                    >
-                                                        Old Password
-                                                    </label>
-                                                    <ShowPassword
-                                                        passInput={document.getElementById(
-                                                            "oldPassword"
-                                                        )}
-                                                    ></ShowPassword>
-                                                    
-                                                </div>
-                                                {errors.oldPassword && (
-                                                    <div className="text-red-500 mt-1 text-sm ml-1">
-                                                        {errors.oldPassword}
-                                                    </div>
-                                                )}
-                                            </div>
-                                            
-                                        )}
+                                        <div>
                                         <div
                                             className={clsx(
                                                 styles.formField,
@@ -602,10 +466,11 @@ function UserProfile({ adminOpen = false }) {
                                             
                                         </div>
                                         {errors.newPassword && (
-                                                <div className="text-red-500 text-sm ml-1">
+                                                <div className="text-red-500 mt-1 text-sm ml-1">
                                                     {errors.newPassword}
                                                 </div>
                                             )}
+                                        </div>
                                         <div
                                             className={clsx(
                                                 styles.formField,
@@ -646,7 +511,7 @@ function UserProfile({ adminOpen = false }) {
                                             
                                         </div>
                                         {errors.confirmPassword && (
-                                                <div className="text-red-500 text-sm ml-1">
+                                                <div className="text-red-500  text-sm ml-1">
                                                     {errors.confirmPassword}
                                                 </div>
                                             )}
@@ -666,6 +531,17 @@ function UserProfile({ adminOpen = false }) {
             </div>
         </div>
     );
+};
+
+function isValidEmail(email) {
+    const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
+    return emailRegex.test(email);
 }
 
-export default UserProfile;
+function isPasswordStrong(password) {
+    const passwordRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}$/;
+    return passwordRegex.test(password);
+}
+
+export default AdminView;

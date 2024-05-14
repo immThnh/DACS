@@ -97,11 +97,12 @@ export const validateCode = async ({ email, code }) => {
 
 export const resetPassword = async ({ email, password }) => {
     try {
-        return await instance.post(
-            "/user/reset-password",
+        return await privateInstance.post(
+            `/user/reset-password/?email=${email}`,
             {
-                email,
                 password,
+                email,
+                
             },
             {
                 "content-type": "application/json",
@@ -111,7 +112,22 @@ export const resetPassword = async ({ email, password }) => {
         return Promise.reject(error);
     }
 };
-
+export const resetPasswordByEmail= async (password,email)=>{
+    try {
+        return await privateInstance.put(`user/resetPassword/?email=${email}`, {
+            
+             password,
+             email
+        },
+            {
+                "content-type": "application/json",
+            }
+    );
+    } catch (error) {
+        console.error("Error resetting password:", error);
+        throw error;
+    }
+};
 export const getAllUser = async () => {
     try {
         return await privateInstance.get("/user/getAll?page=0&size=5");
