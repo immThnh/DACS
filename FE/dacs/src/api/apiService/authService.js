@@ -113,11 +113,12 @@ export const resetPassword = async ({ email, password }) => {
     }
 };
 export const resetPasswordByEmail= async (password,email)=>{
+    // ben nay gui len sai, gui 1 cai object len
+    console.log(password, email);
     try {
-        return await privateInstance.put(`user/resetPassword/?email=${email}`, {
-            
-             password,
-             email
+        return await privateInstance.put(`/user/resetPassword/${email}`, {
+           "newPassword" : password,
+           "email": email
         },
             {
                 "content-type": "application/json",
