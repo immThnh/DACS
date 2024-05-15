@@ -156,9 +156,9 @@ export const getCoursesDeletedByCategory = (id, page, size) => {
         Promise.reject(error);
     }
 };
-export const getCoursesByCategory = (id, page, size) => {
+export const getCoursesByCategory = async (id, page, size) => {
     try {
-        return publicInstance.get(
+        return await publicInstance.get(
             `/course/category?id=${id}&page=${page}&size=${size}`
         );
     } catch (error) {
@@ -167,10 +167,12 @@ export const getCoursesByCategory = (id, page, size) => {
     }
 };
 
-export const getCourseByName = (title, page, selected) => {
+export const getCourseByName = async (title, page = 0, selected = 5) => {
     try {
-        return publicInstance.get(
-            `/course?title=${title}&page=${page}&selected=${selected}`
+        return await publicInstance.get(
+            `/course?title=${encodeURIComponent(
+                title
+            )}&page=${page}&selected=${selected}`
         );
     } catch (error) {
         Promise.reject(error.mess);

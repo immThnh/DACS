@@ -81,13 +81,17 @@ export default function NotificationItem({ iconBtn }) {
                     <>
                         <Popover.Button
                             className={`
-              text-black  items-center group inline-flex x-3 py-2 text-base font-medium hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75`}
+              text-black  items-center group inline-flex x-3 text-base font-medium hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75`}
                         >
                             <span className="relative">
                                 <div className={clsx(styles.button)}>
                                     {iconBtn}
                                 </div>
-                                <div className={styles.neo}>{totalUnRead}</div>
+                                {totalUnRead > 0 && (
+                                    <div className={styles.neo}>
+                                        {totalUnRead}
+                                    </div>
+                                )}
                             </span>
                         </Popover.Button>
                         <Transition

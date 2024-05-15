@@ -2,7 +2,7 @@ import * as React from "react";
 
 function CourseSection() {
     return (
-        <section className="flex flex-wrap gap-5 w-full max-w-screen-xl text-start px-4 md:px-8 mt-10">
+        <section className="flex flex-wrap gap-5 mx-auto max-w-[1200px] w-[1200px] text-start px-4 md:px-8 mt-10">
             <div className="flex flex-col flex-1">
                 <h2 className="text-2xl md:text-4xl font-semibold leading-tight md:leading-snug text-neutral-800">
                     Our Courses
