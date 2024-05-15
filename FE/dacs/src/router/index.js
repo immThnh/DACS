@@ -17,6 +17,9 @@ import HistoryDeletedCategory from "../pages/admin/Category/historyDeleted";
 import ListUser from "../pages/admin/user/list";
 import ListDeletedUser from "../pages/admin/user/historyDeleted";
 import UserProfile from "../pages/user/userprofile";
+import Payment from "../pages/payment";
+import SuccessPayment from "../pages/payment/success";
+import FailurePayment from "../pages/payment/failure";
 import AdminView from "../pages/admin/user/userProfileAdmin";
 
 const publicRoutes = [
@@ -33,6 +36,9 @@ const userRoutes = [
         path: "/course/detail/:id/openComment",
         component: DetailCourse,
     },
+    { path: "/course/payment/:id", component: Payment },
+    { path: "/payment/success", component: SuccessPayment },
+    { path: "/payment/failure", component: FailurePayment },
     { path: "me/profile/:email", component: UserProfile },
 ];
 

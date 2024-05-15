@@ -23,7 +23,7 @@ const loginSlice = createSlice({
             sessionStorage.removeItem("user");
             localStorage.removeItem("prevPath");
             state.isLogin = false;
-            state.user=null;
+            state.user = null;
         },
     },
 });

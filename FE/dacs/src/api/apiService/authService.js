@@ -319,3 +319,21 @@ export const removeAllNotifications = async (email) => {
         return Promise.reject(error);
     }
 };
+
+export const getPaymentVNPAY = async ({ method, email, courseId }) => {
+    try {
+        return await userInstance.get(
+            `create_payment/${method}/${email}/${courseId}`
+        );
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getListCourse = async (email) => {
+    try {
+        return await userInstance.get(`/course/getAll/${email}`);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
