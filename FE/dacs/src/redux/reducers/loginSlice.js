@@ -13,6 +13,7 @@ const loginSlice = createSlice({
     reducers: {
         setLogin: (state, action) => {
             const { token, user } = action.payload;
+           
             user && sessionStorage.setItem("user", JSON.stringify(user));
             token && sessionStorage.setItem("token", token);
             state.user = user;

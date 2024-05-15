@@ -17,6 +17,7 @@ import com.example.demo.repository.data.CourseRepository;
 import com.example.demo.repository.data.LessonRepository;
 import com.example.demo.repository.data.NotificationRepository;
 import com.example.demo.repository.data.ProgressRepository;
+import com.example.demo.service.InvoiceService;
 import com.example.demo.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +53,7 @@ public class AuthService {
     private final CloudService cloudService;
     private final PasswordEncoder passwordEncoder;
     private  final NotificationService notificationService;
+    private final InvoiceService invoiceService;
 
     public ResponseObject removeAllNotificationsByEmail(String email) {
         if(!email.contains("@")) {
@@ -101,9 +103,6 @@ public class AuthService {
         return ResponseObject.builder().status(HttpStatus.OK).mess("Read notification successfully").content(result).build();
     }
     public ResponseObject getAllNotificationsByEmail(String email) {
-        if(!email.contains("@")) {
-            email += "@gmail.com";
-        }
         var user = userRepository.findByEmail(email).orElse(null);
         if (user == null) {
             return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).content("User not found").build();
@@ -201,9 +200,7 @@ public class AuthService {
     }
 
     public ResponseObject getUserByEmail(String email) {
-        if(!email.contains("@")) {
-            email+="@gmail.com";
-        }
+
         var user = userRepository.findByEmail(email).orElse(null);
         if(user == null) {
             return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Username not found").build();
@@ -323,6 +320,9 @@ public class AuthService {
             }
         }
         userDTO.setAvatar(user.getAvatar());
+        if(!user.getEmail().contains("@") && userDTO.getEmail().contains("@")) {
+            user.setEmail(userDTO.getEmail());
+        }
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
         user.setPhoneNumber(userDTO.getPhoneNumber());
@@ -453,11 +453,12 @@ public class AuthService {
         if(user == null || course == null) {
             return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("User or Course not found").build();
         }
-
+        invoiceService.saveForUser(user, course);
         Progress progress = Progress.builder()
                 .user(user)
                 .course(course)
                 .build();
+        user.getProgresses().add(progress);
         progressRepository.save(progress);
         return ResponseObject.builder().status(HttpStatus.OK).content("Enroll course successfully").build();
     }

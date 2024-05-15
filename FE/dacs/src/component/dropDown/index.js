@@ -4,20 +4,23 @@ import styles from "./Menu.module.scss";
 import { Fragment, useEffect, useState } from "react";
 import avatarDefault from "../../assets/images/avatar_25.jpg";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as authApi from "../../api/apiService/authService";
 import { useDispatch, useSelector } from "react-redux";
 import loginSlice from "../../redux/reducers/loginSlice";
 
 function Dropdown({ elementClick, admin = false, ...props }) {
-    const isLogged = useSelector((state) => state.login.isLogin);
     const dispatch = useDispatch();
-    const [user, setUser] = useState();
+    const user = useSelector((state) => state.login.user);
+    const navigate = useNavigate();
+    console.log(user);
+
     const handleLogout = () => {
         const fetchApi = async () => {
             try {
                 await authApi.logout();
                 dispatch(loginSlice.actions.setLogout());
+                navigate("/");
             } catch (error) {
                 console.log(error);
             }
@@ -25,11 +28,6 @@ function Dropdown({ elementClick, admin = false, ...props }) {
 
         fetchApi();
     };
-
-    useEffect(() => {
-        var temp = sessionStorage.getItem("user");
-        setUser(JSON.parse(temp));
-    }, [isLogged]);
 
     return (
         <div className="text-right flex items-center">
@@ -83,12 +81,13 @@ function Dropdown({ elementClick, admin = false, ...props }) {
                                         {user && user.lastName}
                                     </span>
                                     <div>
-                                        {user &&
-                                            "@" +
-                                                user.email.substring(
-                                                    0,
-                                                    user.email.indexOf("@")
-                                                )}
+                                        {user && user.email.includes("@")
+                                            ? "@" +
+                                              user.email.substring(
+                                                  0,
+                                                  user.email.indexOf("@")
+                                              )
+                                            : "@" + user.email}
                                     </div>
                                 </div>
                             </div>
@@ -96,11 +95,13 @@ function Dropdown({ elementClick, admin = false, ...props }) {
                         <div className="px-1 py-1 ">
                             <Link
                                 to={`/me/profile/${
-                                    user &&
-                                    user.email.substring(
-                                        0,
-                                        user.email.indexOf("@")
-                                    )
+                                    user && user.email.includes("@")
+                                        ? "@" +
+                                          user.email.substring(
+                                              0,
+                                              user.email.indexOf("@")
+                                          )
+                                        : "@" + user.email
                                 }`}
                             >
                                 <Menu.Item>

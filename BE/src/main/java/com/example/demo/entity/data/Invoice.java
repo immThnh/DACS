@@ -14,16 +14,15 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Payment {
-
+public class Invoice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    private LocalDateTime date;
+    private long total;
+    private String content;
     @ManyToOne
     private User user;
-    private String content;
-    private long amount;
-    private LocalDateTime date;
-    @OneToOne
+    @ManyToOne
     private Course course;
 }

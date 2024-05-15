@@ -15,7 +15,6 @@ import SearchBar from "../../component/search";
 
 export default function Header() {
     const navigate = useNavigate();
-
     const [page, setPage] = React.useState("login");
     const [isAdmin, setIsAdmin] = React.useState(false);
     const notifications = useSelector(
