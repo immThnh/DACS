@@ -5,6 +5,7 @@ import SlideShow from "../../component/ladingComponent/SlideShow.js";
 import Footer from "../../layout/footer/index.js";
 import loginSlice from "../../redux/reducers/loginSlice.js";
 import { useDispatch } from "react-redux";
+
 function LandingPageComponent() {
     const dispatch = useDispatch();
     React.useEffect(() => {
@@ -28,14 +29,14 @@ function LandingPageComponent() {
         }
     }, []);
     return (
-        <div className="z-49  flex flex-col items-center pt-5 bg-neutral-100">
-            <main>
+        <div className="flex flex-col items-center pt-5 bg-neutral-100">
+            <main className="w-full">
                 <div className="relative mx-auto max-w-screen-xl overflow-hidden my-4 rounded-xl">
                     <SlideShow />
                 </div>
                 <CourseSection />
-                <hr></hr>
-                <div className="flex items-center">
+                <hr />
+                <div className="flex items-center justify-center">
                     <CourseCard />
                 </div>
             </main>

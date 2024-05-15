@@ -11,6 +11,7 @@ import NotificationItem from "../../component/notificationItem";
 import useNotificationWebSocket from "../../component/useNotificationWebSocket";
 import * as userApi from "../../api/apiService/authService";
 import notificationSlice from "../../redux/reducers/notificationSlice";
+import SearchBar from "../../component/search";
 
 export default function Header() {
     const navigate = useNavigate();
@@ -63,7 +64,7 @@ export default function Header() {
 
                 <header
                     className={clsx(
-                        ` ${styles.boxShadow} rounded-b-xl z-header w-1400  bg-white mt-10 fixed flex gap-5 justify-between px-16 pt-2.5 pb-2.5 text-sm leading-5 border-b border-gray-100 border-solid  max-md:flex-wrap max-md:px-5 max-md:max-w-full`
+                        ` ${styles.boxShadow} rounded-b-xl z-header w-1400  bg-white mt-10 items-center fixed flex gap-5 justify-between px-16 pt-2.5 pb-2.5 text-sm leading-5 border-b border-gray-100 border-solid  max-md:flex-wrap max-md:px-5 max-md:max-w-full`
                     )}
                 >
                     <div className="flex gap-5 justify-between self-start text-neutral-800">
@@ -87,6 +88,9 @@ export default function Header() {
                                 Home
                             </Link>
                         </nav>
+                        <div className="flex items-center">
+                            <SearchBar></SearchBar>
+                        </div>
                     </div>
 
                     <div className="flex gap-3 justify-between">
@@ -119,7 +123,12 @@ export default function Header() {
                             </>
                         ) : (
                             <>
-                                <div className={clsx(styles.notification)}>
+                                <div
+                                    className={clsx(
+                                        styles.notification,
+                                        "flex items-center"
+                                    )}
+                                >
                                     <NotificationItem
                                         iconBtn={
                                             <svg

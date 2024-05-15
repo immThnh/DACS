@@ -2,21 +2,18 @@ import * as React from "react";
 
 function CourseSection() {
     return (
-        <section className="flex gap-5 w-full max-w-[1200px] max-md:flex-wrap max-md:mt-10 max-md:max-w-full text-start pl-8 mt-20">
-            <div className="flex flex-col flex-1 max-w-[1350px]">
-                <h2 className="text-4xl font-semibold leading-[57px] text-neutral-800 max-md:max-w-full">
+        <section className="flex flex-wrap gap-5 mx-auto max-w-[1200px] w-[1200px] text-start px-4 md:px-8 mt-10">
+            <div className="flex flex-col flex-1">
+                <h2 className="text-2xl md:text-4xl font-semibold leading-tight md:leading-snug text-neutral-800">
                     Our Courses
                 </h2>
-                <p className="mt-1 text-base leading-6 text-zinc-600 max-md:max-w-full ">
+                <p className="mt-1 text-sm md:text-base leading-snug md:leading-normal text-zinc-600">
                     Lorem ipsum dolor sit amet consectetur. Tempus tincidunt
                     etiam eget elit id imperdiet et. Cras eu sit dignissim lorem
                     nibh et. Ac cum eget habitasse in velit fringilla feugiat
                     senectus in.
                 </p>
             </div>
-            {/* <button className="justify-center self-end px-5 py-3.5 mt-16 text-sm font-medium leading-5 text-center bg-gray-50 rounded-md border border-gray-100 border-solid text-neutral-800 max-md:mt-10">
-        View All
-      </button> */}
         </section>
     );
 }

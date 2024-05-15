@@ -1,3 +1,5 @@
+// Course.module.scss
+
 .courseCard {
     border-radius: 12px;
     background-color: var(--Absolute-White, #fff);
@@ -91,12 +93,6 @@
     }
 }
 
-@media (max-width: 1366px) {
-    .courseImageWrapper {
-        width: 100%;
-    }
-}
-
 .courseImage {
     aspect-ratio: 0.89;
     object-fit: fill;
@@ -177,7 +173,6 @@
 
 .curriculumItem {
     display: flex;
-    // border-bottom: 1px solid #ffffff;
     align-items: start;
     background-color: #f2f5f7;
     border: 1px solid #ccc;
@@ -200,8 +195,8 @@
 }
 
 .curriculumItemNumber {
-    font-size: 32px; /* Adjust font size as needed */
-    font-weight: bold; /* Make the number bold */
+    font-size: 32px;
+    font-weight: bold;
     margin-right: 10px;
     text-align: start;
     color: var(--Grey-15, #262626);
@@ -214,6 +209,7 @@
     border-radius: 8px;
     display: flex;
 }
+
 .coursePrice {
     height: 48px;
     color: #1a1a1a;
@@ -255,4 +251,33 @@
     position: sticky;
     top: 132px;
     overflow: hidden;
+}
+
+@media (max-width: 992px) {
+    .detailsContainer {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .courseDetailsWrapper {
+        order: 1;
+    }
+
+    .courseCurriculumWrapper {
+        order: 3;
+    }
+
+    .col-lg-8 {
+        width: 100%;
+    }
+
+    .col-lg-4 {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .sticky {
+        position: relative;
+        top: auto;
+    }
 }

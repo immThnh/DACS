@@ -20,6 +20,7 @@ import UserProfile from "../pages/user/userprofile";
 import Payment from "../pages/payment";
 import SuccessPayment from "../pages/payment/success";
 import FailurePayment from "../pages/payment/failure";
+import AdminView from "../pages/admin/user/userProfileAdmin";
 
 const publicRoutes = [
     { path: "/", component: LandingPage },
@@ -64,6 +65,7 @@ const adminRoutes = [
     { path: "/admin/user/edit/:id", component: EditCourse },
     { path: "/admin/user/detail/:id", component: DetailCourseAdmin },
     { path: "/admin/user/historyDelete", component: ListDeletedUser },
+    {path:"/admin/user/view/:email",component:AdminView}
 ];
 
 export { publicRoutes, adminRoutes, userRoutes };

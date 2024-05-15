@@ -7,6 +7,7 @@ $label-gray: #919eab;
 $bg-hover: rgba(145, 158, 171, 0.08);
 $border-color: #e9ecee;
 $h-header: 89px;
+$h-admin-header: 68px;
 $w-lefNav: 240px;
 $h-m-header: 144px;
 $b-shadow: rgba(17, 17, 26, 0.1) 0px 0px 16px;
@@ -243,7 +244,7 @@ ul {
 
 .active {
     svg {
-        transform: rotate(-180deg) !important;
+        transform: rotate(-180deg);
     }
 }
 
@@ -660,4 +661,15 @@ hr {
 
 .text-info-payment {
     width: 510px;
+}
+
+.w-140 {
+    width: 560px !important;
+}
+.w-130 {
+    width: 460px !important;
+}
+
+.mt-26px {
+    margin-top: 26px !important;
 }

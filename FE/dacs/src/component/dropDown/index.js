@@ -9,7 +9,7 @@ import * as authApi from "../../api/apiService/authService";
 import { useDispatch, useSelector } from "react-redux";
 import loginSlice from "../../redux/reducers/loginSlice";
 
-function Dropdown({ elementClick, ...props }) {
+function Dropdown({ elementClick, admin = false, ...props }) {
     const isLogged = useSelector((state) => state.login.isLogin);
     const dispatch = useDispatch();
     const [user, setUser] = useState();
@@ -148,52 +148,54 @@ function Dropdown({ elementClick, ...props }) {
                                     )}
                                 </Menu.Item>
                             </Link>
-                            <Link to={"/me/course"}>
-                                <Menu.Item>
-                                    {({ active }) => (
-                                        <button
-                                            className={`${
-                                                active
-                                                    ? "bg-black text-white"
-                                                    : "text-gray-900"
-                                            } group flex w-full items-center rounded-md px-2 py-2.5 text-sm`}
-                                        >
-                                            {active ? (
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    strokeWidth="1.5"
-                                                    stroke="currentColor"
-                                                    className="mr-2 w-6 h-6"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        stroklinejoin="round"
-                                                        d="M9 4.5v15m6-15v15m-10.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125Z"
-                                                    />
-                                                </svg>
-                                            ) : (
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    strokeWidth="1.5"
-                                                    stroke="currentColor"
-                                                    className="mr-2 w-6 h-6"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        stroklinejoin="round"
-                                                        d="M9 4.5v15m6-15v15m-10.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125Z"
-                                                    />
-                                                </svg>
-                                            )}
-                                            My course
-                                        </button>
-                                    )}
-                                </Menu.Item>
-                            </Link>
+                            {!admin && (
+                                <Link to={"/me/course"}>
+                                    <Menu.Item>
+                                        {({ active }) => (
+                                            <button
+                                                className={`${
+                                                    active
+                                                        ? "bg-black text-white"
+                                                        : "text-gray-900"
+                                                } group flex w-full items-center rounded-md px-2 py-2.5 text-sm`}
+                                            >
+                                                {active ? (
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        strokeWidth="1.5"
+                                                        stroke="currentColor"
+                                                        className="mr-2 w-6 h-6"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            stroklinejoin="round"
+                                                            d="M9 4.5v15m6-15v15m-10.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125Z"
+                                                        />
+                                                    </svg>
+                                                ) : (
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        strokeWidth="1.5"
+                                                        stroke="currentColor"
+                                                        className="mr-2 w-6 h-6"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            stroklinejoin="round"
+                                                            d="M9 4.5v15m6-15v15m-10.875 0h15.75c.621 0 1.125-.504 1.125-1.125V5.625c0-.621-.504-1.125-1.125-1.125H4.125C3.504 4.5 3 5.004 3 5.625v12.75c0 .621.504 1.125 1.125 1.125Z"
+                                                        />
+                                                    </svg>
+                                                )}
+                                                My course
+                                            </button>
+                                        )}
+                                    </Menu.Item>
+                                </Link>
+                            )}
                         </div>
                         <div className="px-1 py-1">
                             <div onClick={handleLogout}>

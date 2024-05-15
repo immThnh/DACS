@@ -9,31 +9,14 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/20/solid";
 import { useState } from "react";
 function LeftNavDash() {
     const [close, setClose] = useState(false);
+    const [listOpen, setListOpen] = useState([]);
 
     const handleOnSub = (e) => {
-        let clickElement = e.target;
-        switch (clickElement.textContent) {
-            case "User":
-                var sub = document.getElementById("subUser");
-                var link = document.getElementById("userLink");
-                sub.classList.toggle("d-block");
-                link.classList.toggle(clsx(styles.active));
-                break;
-            case "Course":
-                sub = document.getElementById("subCourse");
-                link = document.getElementById("courseLink");
-                sub.classList.toggle("d-block");
-                link.classList.toggle(clsx(styles.active));
-                break;
-            case "Category":
-                sub = document.getElementById("subCategory");
-                link = document.getElementById("categoryLink");
-                sub.classList.toggle("d-block");
-                link.classList.toggle(clsx(styles.active));
-                break;
-
-            default:
-                break;
+        const id = e.currentTarget.id;
+        if (listOpen.includes(id)) {
+            setListOpen((prev) => prev.filter((item) => item !== id));
+        } else {
+            setListOpen([...listOpen, id]);
         }
     };
     const subItemClickHandle = (e) => {
@@ -55,7 +38,7 @@ function LeftNavDash() {
 
     return (
         <div
-            className={clsx(styles.Wrapper, "fixed z-header h-full", {
+            className={clsx(styles.Wrapper, "fixed z-header", {
                 [styles.close]: close,
             })}
         >
@@ -117,7 +100,7 @@ function LeftNavDash() {
                         <div
                             id="userLink"
                             className={clsx(styles.actionLink, {
-                                [styles.active]: !close,
+                                [styles.active]: listOpen.includes("userLink"),
                             })}
                             onClick={handleOnSub}
                         >
@@ -147,63 +130,66 @@ function LeftNavDash() {
                                 ></path>
                             </svg>
                         </div>
-                        <div
-                            id="subUser"
-                            className={clsx(styles.subContent, {
-                                "d-block": !close,
-                            })}
-                        >
-                            <ul className={clsx(styles.subList)}>
-                                <Link
-                                    to="/admin/user/list"
-                                    id="list"
-                                    onClick={subItemClickHandle}
-                                    className={clsx(styles.subItem)}
-                                >
-                                    <li className="d-flex">
-                                        <span
-                                            className={clsx(styles.dotItem)}
-                                        ></span>
-                                        <span className={clsx(styles.text)}>
-                                            List
-                                        </span>
-                                    </li>
-                                </Link>
+                        {listOpen.includes("userLink") && (
+                            <div
+                                id="subUser"
+                                className={clsx(styles.subContent, {
+                                    "d-block": !close,
+                                })}
+                            >
+                                <ul className={clsx(styles.subList)}>
+                                    <Link
+                                        to="/admin/user/list"
+                                        id="list"
+                                        onClick={subItemClickHandle}
+                                        className={clsx(styles.subItem)}
+                                    >
+                                        <li className="d-flex">
+                                            <span
+                                                className={clsx(styles.dotItem)}
+                                            ></span>
+                                            <span className={clsx(styles.text)}>
+                                                List
+                                            </span>
+                                        </li>
+                                    </Link>
 
-                                <Link
-                                    to="/admin/user/create"
-                                    onClick={subItemClickHandle}
-                                    className={clsx(styles.subItem)}
-                                >
-                                    <li className="d-flex">
-                                        <span
-                                            className={clsx(styles.dotItem)}
-                                        ></span>
-                                        <span className={clsx(styles.text)}>
-                                            Create
-                                        </span>
-                                    </li>
-                                </Link>
-                                <Link
-                                    className={clsx(styles.subItem)}
-                                    to="/admin/user/historyDelete"
-                                >
-                                    <li className="d-flex">
-                                        <span
-                                            className={clsx(styles.dotItem)}
-                                        ></span>
-                                        <span className={clsx(styles.text)}>
-                                            History Delete
-                                        </span>
-                                    </li>
-                                </Link>
-                            </ul>
-                        </div>
+                                    <Link
+                                        to="/admin/user/create"
+                                        onClick={subItemClickHandle}
+                                        className={clsx(styles.subItem)}
+                                    >
+                                        <li className="d-flex">
+                                            <span
+                                                className={clsx(styles.dotItem)}
+                                            ></span>
+                                            <span className={clsx(styles.text)}>
+                                                Create
+                                            </span>
+                                        </li>
+                                    </Link>
+                                    <Link
+                                        className={clsx(styles.subItem)}
+                                        to="/admin/user/historyDelete"
+                                    >
+                                        <li className="d-flex">
+                                            <span
+                                                className={clsx(styles.dotItem)}
+                                            ></span>
+                                            <span className={clsx(styles.text)}>
+                                                History Delete
+                                            </span>
+                                        </li>
+                                    </Link>
+                                </ul>
+                            </div>
+                        )}
                         <div
                             onClick={handleOnSub}
                             id="courseLink"
                             className={clsx(styles.actionLink, {
-                                [styles.active]: !close,
+                                [styles.active]:
+                                    listOpen.includes("courseLink"),
                             })}
                         >
                             <span className={clsx(styles.icon)}>
@@ -232,63 +218,68 @@ function LeftNavDash() {
                                 ></path>
                             </svg>
                         </div>
-                        <div
-                            id="subCourse"
-                            className={clsx(styles.subContent, {
-                                "d-block": !close,
-                            })}
-                        >
-                            <ul className={clsx(styles.subList)}>
-                                <Link
-                                    className={clsx(styles.subItem)}
-                                    to="/admin/course/list"
-                                >
-                                    <li className="d-flex">
-                                        <span
-                                            className={clsx(styles.dotItem)}
-                                        ></span>
-                                        <span className={clsx(styles.text)}>
-                                            List
-                                        </span>
-                                    </li>
-                                </Link>
-                                <Link
-                                    className={clsx(styles.subItem)}
-                                    to="/admin/course/create"
-                                >
-                                    <li className="d-flex">
-                                        <span
-                                            className={clsx(styles.dotItem)}
-                                        ></span>
-                                        <span className={clsx(styles.text)}>
-                                            Create
-                                        </span>
-                                    </li>
-                                </Link>
-                                <Link
-                                    className={clsx(styles.subItem)}
-                                    to="/admin/course/historyDelete"
-                                >
-                                    <li className="d-flex">
-                                        <span
-                                            className={clsx(styles.dotItem)}
-                                        ></span>
-                                        <span className={clsx(styles.text)}>
-                                            History Delete
-                                        </span>
-                                    </li>
-                                </Link>
-                            </ul>
-                        </div>
+                        {listOpen.includes("courseLink") && (
+                            <div
+                                id="subCourse"
+                                className={clsx(styles.subContent, {
+                                    "d-block": !close,
+                                })}
+                            >
+                                <ul className={clsx(styles.subList)}>
+                                    <Link
+                                        className={clsx(styles.subItem)}
+                                        to="/admin/course/list"
+                                    >
+                                        <li className="d-flex">
+                                            <span
+                                                className={clsx(styles.dotItem)}
+                                            ></span>
+                                            <span className={clsx(styles.text)}>
+                                                List
+                                            </span>
+                                        </li>
+                                    </Link>
+                                    <Link
+                                        className={clsx(styles.subItem)}
+                                        to="/admin/course/create"
+                                    >
+                                        <li className="d-flex">
+                                            <span
+                                                className={clsx(styles.dotItem)}
+                                            ></span>
+                                            <span className={clsx(styles.text)}>
+                                                Create
+                                            </span>
+                                        </li>
+                                    </Link>
+                                    <Link
+                                        className={clsx(styles.subItem)}
+                                        to="/admin/course/historyDelete"
+                                    >
+                                        <li className="d-flex">
+                                            <span
+                                                className={clsx(styles.dotItem)}
+                                            ></span>
+                                            <span className={clsx(styles.text)}>
+                                                History Delete
+                                            </span>
+                                        </li>
+                                    </Link>
+                                </ul>
+                            </div>
+                        )}
+
                         <div
                             id="categoryLink"
                             className={clsx(styles.actionLink, {
-                                [styles.active]: !close,
+                                [styles.active]:
+                                    listOpen.includes("categoryLink"),
                             })}
                             onClick={handleOnSub}
                         >
                             <span className={clsx(styles.icon)}>
                                 <svg
+                                    className="transform-none"
                                     xmlns="http://www.w3.org/2000/svg"
                                     height="24"
                                     viewBox="0 -960 960 960"
@@ -321,54 +312,56 @@ function LeftNavDash() {
                                 ></path>
                             </svg>
                         </div>
-                        <div
-                            id="subCategory"
-                            className={clsx(styles.subContent, {
-                                "d-block": close === false,
-                            })}
-                        >
-                            <ul className={clsx(styles.subList)}>
-                                <Link
-                                    className={clsx(styles.subItem)}
-                                    to="/admin/category/list"
-                                >
-                                    <li className="d-flex">
-                                        <span
-                                            className={clsx(styles.dotItem)}
-                                        ></span>
-                                        <span className={clsx(styles.text)}>
-                                            List
-                                        </span>
-                                    </li>
-                                </Link>
-                                <Link
-                                    className={clsx(styles.subItem)}
-                                    to="/admin/category/create"
-                                >
-                                    <li className="d-flex">
-                                        <span
-                                            className={clsx(styles.dotItem)}
-                                        ></span>
-                                        <span className={clsx(styles.text)}>
-                                            Create
-                                        </span>
-                                    </li>
-                                </Link>
-                                <Link
-                                    className={clsx(styles.subItem)}
-                                    to="/admin/category/historyDelete"
-                                >
-                                    <li className="d-flex">
-                                        <span
-                                            className={clsx(styles.dotItem)}
-                                        ></span>
-                                        <span className={clsx(styles.text)}>
-                                            History Delete
-                                        </span>
-                                    </li>
-                                </Link>
-                            </ul>
-                        </div>
+                        {listOpen.includes("categoryLink") && (
+                            <div
+                                id="subCategory"
+                                className={clsx(styles.subContent, {
+                                    "d-block": close === false,
+                                })}
+                            >
+                                <ul className={clsx(styles.subList)}>
+                                    <Link
+                                        className={clsx(styles.subItem)}
+                                        to="/admin/category/list"
+                                    >
+                                        <li className="d-flex">
+                                            <span
+                                                className={clsx(styles.dotItem)}
+                                            ></span>
+                                            <span className={clsx(styles.text)}>
+                                                List
+                                            </span>
+                                        </li>
+                                    </Link>
+                                    <Link
+                                        className={clsx(styles.subItem)}
+                                        to="/admin/category/create"
+                                    >
+                                        <li className="d-flex">
+                                            <span
+                                                className={clsx(styles.dotItem)}
+                                            ></span>
+                                            <span className={clsx(styles.text)}>
+                                                Create
+                                            </span>
+                                        </li>
+                                    </Link>
+                                    <Link
+                                        className={clsx(styles.subItem)}
+                                        to="/admin/category/historyDelete"
+                                    >
+                                        <li className="d-flex">
+                                            <span
+                                                className={clsx(styles.dotItem)}
+                                            ></span>
+                                            <span className={clsx(styles.text)}>
+                                                History Delete
+                                            </span>
+                                        </li>
+                                    </Link>
+                                </ul>
+                            </div>
+                        )}
                     </div>
                 </div>
             </nav>
