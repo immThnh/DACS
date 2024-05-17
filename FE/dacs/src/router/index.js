@@ -18,13 +18,15 @@ import ListUser from "../pages/admin/user/list";
 import ListDeletedUser from "../pages/admin/user/historyDeleted";
 import UserProfile from "../pages/user/userprofile";
 import AdminView from "../pages/admin/user/userProfileAdmin";
-
+import SearchResults from "../pages/searchResult";
 const publicRoutes = [
     { path: "/", component: LandingPage },
     { path: "/sign-up", component: SignUp },
     { path: "/login", component: Login },
     { path: "*", component: NotFoundPage },
     { path: "/course/:id", component: Course },
+    { path: "/search/:query", component: SearchResults },
+
 ];
 
 const userRoutes = [
