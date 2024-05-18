@@ -79,7 +79,7 @@ function UserProfile({ adminOpen = false }) {
         phoneNumber: "",
     });
 
-    const [activeForm, setActiveForm] = useState();
+    const [activeForm, setActiveForm] = useState("details");
     const [errors, setErrors] = useState({});
     const [avatarSrc, setAvatarSrc] = useState(avatar);
     const [passwords, setPasswords] = useState({
@@ -102,11 +102,19 @@ function UserProfile({ adminOpen = false }) {
             ...user,
             [name]: value,
         });
+        setErrors((prevErrors) => ({
+            ...prevErrors,
+            [name]: "",
+        }));
     };
 
     const handleInputPasswordChange = (e) => {
         const { name, value } = e.target;
         setPasswords({ ...passwords, [name]: value });
+        setErrors((prevErrors) => ({
+            ...prevErrors,
+            [name]: "",
+        }));
     };
 
     const handleNavItemClick = (formType) => {
@@ -209,7 +217,6 @@ function UserProfile({ adminOpen = false }) {
     const handleSubmit = (event) => {
         event.preventDefault();
         if (!validateForm()) {
-            
             return;
         }
         const { avatar, ...userData } = user;
@@ -424,23 +431,27 @@ function UserProfile({ adminOpen = false }) {
                                                 )}
                                                 </div>
                                         </div>
+                                        <div>
                                         <div
                                             className={clsx(
                                                 styles.formField,
-                                                "w-full disabled-field"
+                                                "w-full "
                                             )}
                                         >
                                             <div className="relative">
-                                                <input
+                                            
+                                            <input
                                                     required
-                                                    value={user.email || " "}
+                                                    onChange={
+                                                        handleInputChange
+                                                    }
+                                                    value={user.email}
                                                     name="email"
                                                     data-validate
                                                     className={clsx(
                                                         styles.formInput
                                                     )}
                                                     type="text"
-                                                    disabled
                                                 />
                                                 <label
                                                     className={clsx(
@@ -449,13 +460,18 @@ function UserProfile({ adminOpen = false }) {
                                                 >
                                                     Email
                                                 </label>
-                                                {errors.email && (
+                                                
+                                            </div>
+                                            </div>
+
+                                            {errors.email && (
                                                     <div className="text-red-500 mt-1 text-sm ml-1">
                                                         {errors.email}
                                                     </div>
                                                 )}
-                                            </div>
                                         </div>
+
+                                       
                                         <div
                                             className={clsx(
                                                 styles.formField,
