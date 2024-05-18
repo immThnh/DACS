@@ -21,13 +21,15 @@ import Payment from "../pages/payment";
 import SuccessPayment from "../pages/payment/success";
 import FailurePayment from "../pages/payment/failure";
 import AdminView from "../pages/admin/user/userProfileAdmin";
-
+import SearchResults from "../pages/searchResult";
 const publicRoutes = [
     { path: "/", component: LandingPage },
     { path: "/sign-up", component: SignUp },
     { path: "/login", component: Login },
     { path: "*", component: NotFoundPage },
     { path: "/course/:id", component: Course },
+    { path: "/search/:query", component: SearchResults },
+
 ];
 
 const userRoutes = [
