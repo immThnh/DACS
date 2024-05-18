@@ -102,7 +102,6 @@ export const resetPassword = async ({ email, password }) => {
             {
                 password,
                 email,
-                
             },
             {
                 "content-type": "application/json",
@@ -112,18 +111,20 @@ export const resetPassword = async ({ email, password }) => {
         return Promise.reject(error);
     }
 };
-export const resetPasswordByEmail= async (password,email)=>{
+export const resetPasswordByEmail = async (password, email) => {
     // ben nay gui len sai, gui 1 cai object len
     console.log(password, email);
     try {
-        return await privateInstance.put(`/user/resetPassword/${email}`, {
-           "newPassword" : password,
-           "email": email
-        },
+        return await privateInstance.put(
+            `/user/resetPassword/${email}`,
+            {
+                newPassword: password,
+                email: email,
+            },
             {
                 "content-type": "application/json",
             }
-    );
+        );
     } catch (error) {
         console.error("Error resetting password:", error);
         throw error;
@@ -153,10 +154,10 @@ export const getAllRole = async () => {
     }
 };
 
-export const getUserByName = async (userName, page, size) => {
+export const getUserByName = async (userName, page, size, isDelete = false) => {
     try {
         return privateInstance.get(
-            `/user/search?name=${userName}&page=${page}&size=${size}`
+            `/user/search?name=${userName}&isDeleted=${isDelete}&page=${page}&size=${size}`
         );
     } catch (error) {
         Promise.reject(error);
@@ -279,11 +280,10 @@ export const updateLessonIds = async (alias, courseId, lessonIds) => {
 };
 
 export const getAllNotification = async (email) => {
-    if (email.includes("@")) {
-        email = email.substring(0, email.lastIndexOf("@"));
-    }
     try {
-        return await userInstance.get(`/${email}/notification/getAll`);
+        return await userInstance.get(
+            `/${encodeURIComponent(email)}/notification/getAll`
+        );
     } catch (error) {
         return Promise.reject(error);
     }
@@ -333,6 +333,26 @@ export const getPaymentVNPAY = async ({ method, email, courseId }) => {
 export const getListCourse = async (email) => {
     try {
         return await userInstance.get(`/course/getAll/${email}`);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const removeCommentById = async (email, cmtId) => {
+    try {
+        return await userInstance.delete(
+            `/${encodeURIComponent(email)}/comment/delete/${cmtId}`
+        );
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getAllUserAndRole = async (isDelete = "false") => {
+    try {
+        return await privateInstance.get(
+            `/user/getAllUserAndRole?isDeleted=${isDelete}`
+        );
     } catch (error) {
         return Promise.reject(error);
     }

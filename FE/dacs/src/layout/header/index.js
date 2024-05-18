@@ -32,6 +32,7 @@ export default function Header() {
     useNotificationWebSocket();
 
     useEffect(() => {
+        if (!user) return;
         const fetchApi = async () => {
             try {
                 const result = await userApi.getAllNotification(user.email);

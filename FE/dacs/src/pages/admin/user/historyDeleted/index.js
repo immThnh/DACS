@@ -1,10 +1,9 @@
 import styles from "../../Course/list/List.module.scss";
 import clsx from "clsx";
-import deleteIcon from "../../../../assets/images/delete.svg";
 import avatar from "../../../../assets/images/avatar_25.jpg";
 import noDataIcon from "../../../../assets/images/ic_noData.svg";
 import restoreIcon from "../../../../assets/images/restore.svg";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import * as authApi from "../../../../api/apiService/authService";
 import Select from "react-select";
 import { toast } from "sonner";
@@ -28,7 +27,7 @@ function ListDeletedUser() {
     const [deletedModalOpen, setDeletedModalOpen] = useState(false);
     const [deleteId, setDeleteId] = useState(null);
     const [reRender, setReRender] = useState();
-    let test = 1;
+    const firstRender = useRef(true);
 
     const handleRemoveUser = () => {
         const fetchApi = async () => {
@@ -48,60 +47,38 @@ function ListDeletedUser() {
         fetchApi();
     };
 
-    const ListDeletedUser = (id) => {
-        console.log(id);
-        const fetchApi = async () => {
-            toast.promise(authApi.softDeleteUser(id), {
-                loading: "Removing...",
-                success: () => {
-                    window.location.reload();
-                    return "Remove successfully";
-                },
-                error: (error) => {
-                    return error.content;
-                },
-            });
-        };
-
-        fetchApi();
-    };
-
     const handleSelectChange = (e) => {
-        const fetchApi = () => {
-            toast.promise(authApi.getUserByRole(e.name, page, selected), {
-                loading: "loading...",
-                success: (data) => {
-                    setUsers(data.content.content);
-                    setTotalData(data.content.totalElements);
-                    return "Get data successfully";
-                },
-                error: (error) => {
-                    return error;
-                },
-            });
+        const fetchApi = async () => {
+            try {
+                var result = await authApi.getUserByRole(
+                    e.name,
+                    page,
+                    selected
+                );
+                setUsers(result.content.content);
+                setTotalData(result.content.totalElements);
+            } catch (error) {
+                console.log(error);
+            }
         };
-
-        const debounceApi = debounce(fetchApi);
+        const debounceApi = debounce(fetchApi, 300);
         debounceApi();
     };
 
     const handleSearchInputChange = (e) => {
-        const fetchApi = () => {
-            toast.promise(
-                authApi.getUserByName(e.target.value, page, selected),
-                {
-                    loading: "loading...",
-                    success: (data) => {
-                        setUsers(data.content.content);
-                        setTotalData(data.content.totalElements);
-                        return "Get data successfully";
-                    },
-                    error: (error) => {
-                        console.log(error);
-                        return error;
-                    },
-                }
-            );
+        const fetchApi = async () => {
+            try {
+                const result = await authApi.getUserByName(
+                    e.target.value,
+                    page,
+                    selected,
+                    true
+                );
+                setUsers(result.content.content);
+                setTotalData(result.content.totalElements);
+            } catch (error) {
+                console.log(error);
+            }
         };
         const debounceApi = debounce(fetchApi, 1000);
         debounceApi();
@@ -134,16 +111,15 @@ function ListDeletedUser() {
     useEffect(() => {
         const fetchApi = async () => {
             try {
-                const result = await authApi.getAllDeletedUser();
+                const result = await authApi.getAllUserAndRole(true);
                 let array = [];
-                const roles = await authApi.getAllRole();
-                roles.content.map((value, index) =>
+                result.content.roles.map((value, index) =>
                     array.push({ id: index, name: value })
                 );
                 array.push({ id: "-1", name: "All" });
-                setTotalData(result.content.totalElements);
+                setTotalData(result.content.users.totalElements);
                 setOptions(array);
-                setUsers(result.content.content);
+                setUsers(result.content.users.content);
             } catch (error) {
                 console.log(error);
             }
@@ -152,6 +128,10 @@ function ListDeletedUser() {
     }, [reRender]);
 
     useEffect(() => {
+        if (firstRender.current) {
+            firstRender.current = false;
+            return;
+        }
         const fetchApi = async () => {
             try {
                 const result = await authApi.getAllDeletedUser(page, selected);
@@ -162,7 +142,7 @@ function ListDeletedUser() {
         };
         fetchApi();
     }, [page]);
-    console.log("render");
+
     const handleRestoreUser = (id) => {
         toast.promise(authApi.restoreUserById(id), {
             loading: "loading...",
@@ -190,11 +170,6 @@ function ListDeletedUser() {
 
     const handleCloseModal = () => {
         setDeletedModalOpen(false);
-    };
-
-    const openDeleteModal = (id) => {
-        setDeleteId(id);
-        setDeletedModalOpen(true);
     };
 
     return (
@@ -385,7 +360,6 @@ function ListDeletedUser() {
                                                                 alt=""
                                                             />
                                                         </button>
-                                                     
                                                     </div>
                                                 </div>
                                             </div>

@@ -155,37 +155,53 @@ function Course() {
             navigate("/login");
             return;
         }
-        if (course.price !== 0) {
-            navigate(`/course/payment/${id}`);
-        } else {
-            const enrollDTO = { email: userInfo.email, courseId: id };
-            toast.promise(userApi.enrollCourse(enrollDTO), {
-                loading: "Loading...",
-                success: (data) => {
-                    navigate(`/course/detail/${id}`);
-                    return data.mess;
-                },
-                error: (err) => {
-                    return err.mess;
-                },
-            });
-        }
+
+        const fetchApi = async () => {
+            try {
+                const result = await userApi.getUserByEmail(userInfo.email);
+                let isEnrollCourse = false;
+                result.content.progresses.forEach((pro) => {
+                    console.log(pro.course.title);
+                    if (pro.course.title === course.title) {
+                        isEnrollCourse = true;
+                    }
+                });
+                if (course.price !== 0 && !isEnrollCourse) {
+                    navigate(`/course/payment/${id}`);
+                } else {
+                    navigate(`/course/detail/${course.id}`);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchApi();
     };
 
     return (
         <div className={clsx(styles.detailsContainer)}>
             <div className={styles.courseCard}>
                 <div className={clsx(styles.content, "row")}>
-                    <div className={clsx(styles.courseDetailsWrapper, "col-lg-8")}>
+                    <div
+                        className={clsx(
+                            styles.courseDetailsWrapper,
+                            "col-lg-8"
+                        )}
+                    >
                         <div
                             className={clsx(
                                 styles.courseHeader,
-                                styles.someOtherCondition && styles.additionalClass
+                                styles.someOtherCondition &&
+                                    styles.additionalClass
                             )}
                         >
                             <div className={styles.courseInfo}>
-                                <h2 className={styles.courseTitle}>{course.title}</h2>
-                                <p className={styles.courseDescription}>{course.description}</p>
+                                <h2 className={styles.courseTitle}>
+                                    {course.title}
+                                </h2>
+                                <p className={styles.courseDescription}>
+                                    {course.description}
+                                </p>
                             </div>
                         </div>
                         <div className={styles.courseMeta}>
@@ -196,33 +212,63 @@ function Course() {
                                     course.categories.length > 0 &&
                                     course.categories.map((ca, index) => {
                                         return (
-                                            <div key={index} className={styles.courseLevel}>
+                                            <div
+                                                key={index}
+                                                className={styles.courseLevel}
+                                            >
                                                 {ca.name}
                                             </div>
                                         );
                                     })}
                             </div>
                         </div>
-                        <div className={clsx(styles.curriculumTitle, "font-semibold")}>Curriculum</div>
+                        <div
+                            className={clsx(
+                                styles.curriculumTitle,
+                                "font-semibold"
+                            )}
+                        >
+                            Curriculum
+                        </div>
                         <div className={styles.courseCurriculum}>
                             {course.sections &&
                                 course.sections.map((item, index) => (
-                                    <CurriculumItem key={index} index={index} item={item} />
+                                    <CurriculumItem
+                                        key={index}
+                                        index={index}
+                                        item={item}
+                                    />
                                 ))}
                         </div>
                     </div>
                     <div className={clsx("col-lg-4")}>
-                        <div className={clsx(styles.sticky, "mx-2 b-shadow rounded-lg")}>
+                        <div
+                            className={clsx(
+                                styles.sticky,
+                                "mx-2 b-shadow rounded-lg"
+                            )}
+                        >
                             <div className={clsx(styles.courseImages)}>
-                                <video key={course.video} controls className="w-full">
-                                    <source src={course.video} type="video/mp4" />
+                                <video
+                                    key={course.video}
+                                    controls
+                                    className="w-full"
+                                >
+                                    <source
+                                        src={course.video}
+                                        type="video/mp4"
+                                    />
                                 </video>
                             </div>
                             <div className={styles.courseDetails}>
                                 <div className="my-3">
                                     <div className={clsx(styles.coursePrice)}>
                                         {course.price !== 0
-                                            ? "Price: " + course.price.toLocaleString("vi-VN") + " VND"
+                                            ? "Price: " +
+                                              course.price.toLocaleString(
+                                                  "vi-VN"
+                                              ) +
+                                              " VND"
                                             : "Free Course"}
                                     </div>
                                     <button
@@ -236,7 +282,11 @@ function Course() {
                                         Enroll Now
                                     </button>
                                 </div>
-                                <div className={clsx("text-base font-semibold")}>This course includes:</div>
+                                <div
+                                    className={clsx("text-base font-semibold")}
+                                >
+                                    This course includes:
+                                </div>
                                 <div>
                                     <div className={clsx(styles.detailItem)}>
                                         <svg
@@ -253,7 +303,9 @@ function Course() {
                                                 d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m5.231 13.481L15 17.25m-4.5-15H5.625c-.621 0-1.125.504-1.125 1.125v16.5c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Zm3.75 11.625a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"
                                             />
                                         </svg>
-                                        <span>Detailed and in-depth knowledge</span>
+                                        <span>
+                                            Detailed and in-depth knowledge
+                                        </span>
                                     </div>
                                     <div className={clsx(styles.detailItem)}>
                                         <svg

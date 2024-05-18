@@ -23,26 +23,20 @@ function HistoryDeleted() {
     const [totalData, setTotalData] = useState(0);
     const [selected, setSelected] = useState(selectes[0]);
     const [page, setPage] = useState(0);
-    const [render, setRender] = useState();
-    const [deleteId, setDeleteId] = useState(null);
-
-    const [deletedModalOpen, setDeletedModalOpen] = useState(false);
-    const navigate = useNavigate();
 
     const handleSelectChange = (e) => {
-        const fetchApi = () => {
-            toast.promise(dataApi.getCoursesDeletedByCategory(e.id), {
-                loading: "loading...",
-                success: (data) => {
-                    setCourses(data.content.content);
-                    setTotalData(data.content.totalElements);
-
-                    return "Get data successfully";
-                },
-                error: (error) => {
-                    return error;
-                },
-            });
+        const fetchApi = async () => {
+            try {
+                const result = await dataApi.getCoursesDeletedByCategory(
+                    e.id,
+                    page,
+                    selected
+                );
+                setCourses(result.content.content);
+                setTotalData(result.content.totalElements);
+            } catch (error) {
+                console.log(error);
+            }
         };
 
         const debounceApi = debounce(fetchApi);
@@ -65,20 +59,21 @@ function HistoryDeleted() {
     };
 
     const handleSearchInputChange = (e) => {
-        const fetchApi = () => {
-            toast.promise(dataApi.getCourseByName(e.target.value), {
-                loading: "loading...",
-                success: (data) => {
-                    setCourses(data.content);
-                    return "Get data successfully";
-                },
-                error: (error) => {
-                    console.log(error);
-                    return error;
-                },
-            });
+        const fetchApi = async () => {
+            try {
+                const result = await dataApi.getCourseByName(
+                    e.target.value,
+                    page,
+                    selected,
+                    true
+                );
+                setCourses(result.content.content);
+                setTotalData(result.content.totalElements);
+            } catch (error) {
+                console.log(error);
+            }
         };
-        const debounceApi = debounce(fetchApi, 1000);
+        const debounceApi = debounce(fetchApi, 300);
         debounceApi();
     };
 
@@ -91,10 +86,6 @@ function HistoryDeleted() {
                 func();
             }, delay);
         };
-    };
-
-    const handleCloseModal = () => {
-        setDeletedModalOpen(false);
     };
 
     useEffect(() => {
@@ -112,13 +103,6 @@ function HistoryDeleted() {
                 setOptions(categories.content.content);
             } catch (error) {
                 console.log(error);
-                if (error.status === "UNAUTHORIZED") {
-                    sessionStorage.removeItem("token");
-                    navigate("/login");
-                    toast.error(
-                        "Token is not authorized, please try login again."
-                    );
-                }
             }
         };
         fetchApi();
@@ -225,127 +209,126 @@ function HistoryDeleted() {
                                             dateTime.toLocaleTimeString();
 
                                         return (
-                                            <>
+                                            <div
+                                                key={index}
+                                                className={clsx(
+                                                    styles.item,
+                                                    "row rounded-lg"
+                                                )}
+                                            >
                                                 <div
-                                                    key={index}
                                                     className={clsx(
-                                                        styles.item,
-                                                        "row rounded-lg"
+                                                        styles.field,
+                                                        "col-lg-1"
                                                     )}
                                                 >
                                                     <div
                                                         className={clsx(
-                                                            styles.field,
-                                                            "col-lg-1"
+                                                            styles.name
                                                         )}
                                                     >
+                                                        {course.id}
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    className={clsx(
+                                                        styles.field,
+                                                        "col-lg-5 flex "
+                                                    )}
+                                                >
+                                                    <div
+                                                        className={clsx(
+                                                            styles.cssImg
+                                                        )}
+                                                    >
+                                                        <img
+                                                            src={
+                                                                course.thumbnail
+                                                            }
+                                                            alt=""
+                                                        />
+                                                    </div>
+                                                    <div className="overflow-hidden">
                                                         <div
                                                             className={clsx(
                                                                 styles.name
                                                             )}
                                                         >
-                                                            {course.id}
+                                                            {course.title}
                                                         </div>
-                                                    </div>
-                                                    <div
-                                                        className={clsx(
-                                                            styles.field,
-                                                            "col-lg-5 flex "
-                                                        )}
-                                                    >
                                                         <div
                                                             className={clsx(
-                                                                styles.cssImg
+                                                                styles.categories
                                                             )}
+                                                        >
+                                                            {course.category &&
+                                                                course.category.join(
+                                                                    ", "
+                                                                )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    className={clsx(
+                                                        styles.field,
+                                                        "col-lg-2"
+                                                    )}
+                                                >
+                                                    <div
+                                                        className={clsx(
+                                                            styles.name
+                                                        )}
+                                                    >
+                                                        {date}
+                                                        <br />
+                                                        {time}
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    className={clsx(
+                                                        styles.field,
+                                                        "col-lg-2"
+                                                    )}
+                                                >
+                                                    <div
+                                                        className={clsx(
+                                                            styles.name
+                                                        )}
+                                                    >
+                                                        {course.price === 0
+                                                            ? "Free"
+                                                            : `${course.price} VND`}
+                                                    </div>
+                                                </div>
+
+                                                <div
+                                                    className={clsx(
+                                                        styles.field,
+                                                        "col-lg-2"
+                                                    )}
+                                                >
+                                                    <div
+                                                        className={clsx(
+                                                            styles.name,
+                                                            "flex gap-4"
+                                                        )}
+                                                    >
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                handleRestoreCourse(
+                                                                    course.id
+                                                                )
+                                                            }
                                                         >
                                                             <img
                                                                 src={
-                                                                    course.thumbnail
+                                                                    restoreIcon
                                                                 }
                                                                 alt=""
                                                             />
-                                                        </div>
-                                                        <div className="overflow-hidden">
-                                                            <div
-                                                                className={clsx(
-                                                                    styles.name
-                                                                )}
-                                                            >
-                                                                {course.title}
-                                                            </div>
-                                                            <div
-                                                                className={clsx(
-                                                                    styles.categories
-                                                                )}
-                                                            >
-                                                                {course.category &&
-                                                                    course.category.join(
-                                                                        ", "
-                                                                    )}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div
-                                                        className={clsx(
-                                                            styles.field,
-                                                            "col-lg-2"
-                                                        )}
-                                                    >
-                                                        <div
-                                                            className={clsx(
-                                                                styles.name
-                                                            )}
-                                                        >
-                                                            {date}
-                                                            <br />
-                                                            {time}
-                                                        </div>
-                                                    </div>
-                                                    <div
-                                                        className={clsx(
-                                                            styles.field,
-                                                            "col-lg-2"
-                                                        )}
-                                                    >
-                                                        <div
-                                                            className={clsx(
-                                                                styles.name
-                                                            )}
-                                                        >
-                                                            {course.price === 0
-                                                                ? "Free"
-                                                                : `${course.price} VND`}
-                                                        </div>
-                                                    </div>
-
-                                                    <div
-                                                        className={clsx(
-                                                            styles.field,
-                                                            "col-lg-2"
-                                                        )}
-                                                    >
-                                                        <div
-                                                            className={clsx(
-                                                                styles.name,
-                                                                "flex gap-4"
-                                                            )}
-                                                        >
-                                                            <button
-                                                                type="button"
-                                                                onClick={() =>
-                                                                    handleRestoreCourse(
-                                                                        course.id
-                                                                    )
-                                                                }
-                                                            >
-                                                                <img
-                                                                    src={
-                                                                        restoreIcon
-                                                                    }
-                                                                    alt=""
-                                                                />
-                                                            </button>
-                                                            {/* <button
+                                                        </button>
+                                                        {/* <button
                                                                 onClick={() =>
                                                                     openDeleteModal(
                                                                         course.id
@@ -360,10 +343,9 @@ function HistoryDeleted() {
                                                                     className="cursor-pointer"
                                                                 />
                                                             </button> */}
-                                                        </div>
                                                     </div>
                                                 </div>
-                                            </>
+                                            </div>
                                         );
                                     })}
 

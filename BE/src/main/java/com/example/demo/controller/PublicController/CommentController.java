@@ -14,6 +14,8 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
+import java.util.Objects;
+
 @Controller
 @RequiredArgsConstructor
 public class CommentController {
@@ -21,6 +23,7 @@ public class CommentController {
 
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
+
     @MessageMapping("/comment/lesson/{lessonId}")
     @SendTo("/comment/lesson/{lessonId}")
     public Comment handleComment(@Payload CommentDTO commentDTO, @DestinationVariable int lessonId) throws Exception {
@@ -28,7 +31,7 @@ public class CommentController {
             throw new IllegalArgumentException("CommentDTO cannot be null");
         }
 
-        if(commentDTO.getReplyToUser() != null) {
+        if(commentDTO.getReplyToUser() != null && !Objects.equals(commentDTO.getEmail(), commentDTO.getReplyToUser())) {
             Notification notification = commentService.saveNotification(commentDTO);
             var alias = notification.getUser().getEmail().split("@")[0];
             simpMessagingTemplate.convertAndSendToUser(alias,"/notification", notification);

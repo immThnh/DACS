@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class PUserController {
     private final AuthService authService;
     private final MailService mailService;
+
     @PostMapping("/login")
     public ResponseEntity<ResponseObject> authenticate(@RequestBody AuthenticationRequest request) {
         var res = authService.authenticate(request);

@@ -107,7 +107,8 @@ export default function Login() {
                     sessionStorage.removeItem("prevPath");
                     return "Welcome to Dream Chasers";
                 },
-                error: () => {
+                error: (error) => {
+                    console.log(error);
                     return "Email or password invalid, please try again";
                 },
             });

@@ -1,4 +1,4 @@
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import styles from "../Payment.module.scss";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
@@ -89,7 +89,7 @@ function SuccessPayment() {
                         <span>Go home</span>
                     </Link>
                     <Link
-                        to={`/course/${courseId}`}
+                        to={`/course/detail/${courseId}`}
                         className="btn-lgbt btn-black"
                     >
                         <span>Study now</span>

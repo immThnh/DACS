@@ -8,10 +8,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
     @Query(value = "SELECT * FROM comment WHERE lesson_id = :lessonId ORDER BY date DESC", nativeQuery = true)
     Page<Comment> findAllByLessonId(int lessonId, Pageable pageable);
+
+    List<Comment> findAllByParentId(int parentId);
 }

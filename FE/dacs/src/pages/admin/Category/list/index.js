@@ -22,7 +22,7 @@ function ListCategory() {
     const [selected, setSelected] = useState(selectes[0]);
     const [page, setPage] = useState(0);
     const [render, setRender] = useState();
-    
+
     const handleRemoveCategory = () => {
         const fetchApi = async () => {
             toast.promise(dataApi.softDeleteCategoryById(deleteId), {
@@ -68,20 +68,20 @@ function ListCategory() {
     };
 
     const handleSearchInputChange = (e) => {
-        const fetchApi = () => {
-            toast.promise(dataApi.getCategoryByTitle(e.target.value), {
-                loading: "loading...",
-                success: (data) => {
-                    setCategories(data.content);
-                    return "Get data successfully";
-                },
-                error: (error) => {
-                    console.log(error);
-                    return error;
-                },
-            });
+        const fetchApi = async () => {
+            try {
+                const result = await dataApi.getCategoryByTitle(
+                    e.target.value,
+                    page,
+                    selected
+                );
+                setCategories(result.content.content);
+                setTotalData(result.content.totalElements);
+            } catch (error) {
+                console.log(error);
+            }
         };
-        const debounceApi = debounce(fetchApi, 1000);
+        const debounceApi = debounce(fetchApi, 300);
         debounceApi();
     };
 

@@ -4,6 +4,7 @@ import com.example.demo.cloudinary.CloudService;
 import com.example.demo.config.ConfigVNPAY;
 import com.example.demo.dto.*;
 import com.example.demo.entity.data.Comment;
+import com.example.demo.entity.data.MethodPayment;
 import com.example.demo.entity.data.Notification;
 import com.example.demo.entity.data.Progress;
 import com.example.demo.entity.user.Role;
@@ -17,6 +18,7 @@ import com.example.demo.repository.data.CourseRepository;
 import com.example.demo.repository.data.LessonRepository;
 import com.example.demo.repository.data.NotificationRepository;
 import com.example.demo.repository.data.ProgressRepository;
+import com.example.demo.service.CommentService;
 import com.example.demo.service.InvoiceService;
 import com.example.demo.service.NotificationService;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +56,22 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private  final NotificationService notificationService;
     private final InvoiceService invoiceService;
+    private  final CommentService commentService;
+
+    public ResponseObject deleteCommentById(String email, int id) {
+        var comment = commentService.getById(id);
+        if(comment == null) {
+            return ResponseObject.builder().status(HttpStatus.OK).mess("Delete successfully").build();
+        }
+        var user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("User not found").build();
+        }
+        user.getComments().remove(comment);
+        commentService.deleteById(id);
+        userRepository.save(user);
+        return ResponseObject.builder().status(HttpStatus.OK).mess("Delete successfully").build();
+    }
 
     public ResponseObject removeAllNotificationsByEmail(String email) {
         if(!email.contains("@")) {
@@ -65,7 +83,7 @@ public class AuthService {
             return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).content("User not found ").build();
         }
         var result = notificationService.removeAllNotificationsByEmail(user.getId());
-        if (result.size() > 0) {
+        if (result != null) {
             return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Error while remove all notification").build();
         }
         user.setNotifications(new ArrayList<>());
@@ -176,6 +194,8 @@ public class AuthService {
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
+                .role(user.getRole())
+//                .progresses(user.getProgresses())
                 .build();
     }
 
@@ -447,13 +467,13 @@ public class AuthService {
     }
 
 
-    public ResponseObject unLockCourse(String email, int courseId) {
+    public ResponseObject unLockCourse(String email, int courseId, MethodPayment method) {
         var user = userRepository.findByEmail(email).orElse(null);
         var course = courseRepository.findById(courseId).orElse(null);
         if(user == null || course == null) {
             return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("User or Course not found").build();
         }
-        invoiceService.saveForUser(user, course);
+        invoiceService.saveForUser(user, course, method);
         Progress progress = Progress.builder()
                 .user(user)
                 .course(course)

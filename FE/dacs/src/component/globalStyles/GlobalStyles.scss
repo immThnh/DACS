@@ -9,7 +9,7 @@ $border-color: #e9ecee;
 $h-header: 89px;
 $h-admin-header: 68px;
 $w-lefNav: 240px;
-$h-m-header: 144px;
+$h-m-header: 104px;
 $b-shadow: rgba(17, 17, 26, 0.1) 0px 0px 16px;
 $c-black: rgb(33, 43, 54);
 
@@ -194,8 +194,10 @@ d-none {
     display: none;
 }
 
+.css-gymzdq-control,
 .css-s2gg24-control {
     height: 58px !important;
+    width: 200px !important;
 }
 
 .field-disable {
@@ -672,4 +674,12 @@ hr {
 
 .mt-26px {
     margin-top: 26px !important;
+}
+
+.color-delete {
+    color: rgb(255, 86, 48);
+}
+
+.h-full {
+    height: 100%;
 }

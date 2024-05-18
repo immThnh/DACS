@@ -19,8 +19,10 @@ public class Invoice {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private LocalDateTime date;
+    private MethodPayment method;
     private long total;
     private String content;
+    private boolean isDelete = false;
     @ManyToOne
     private User user;
     @ManyToOne

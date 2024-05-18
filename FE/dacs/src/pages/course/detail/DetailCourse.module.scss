@@ -1,3 +1,4 @@
+@import "../../../component//globalStyles//GlobalStyles.scss";
 /* Course.module.css */
 .uiUxCourse {
     display: flex;
@@ -434,7 +435,7 @@
 }
 
 .wrapperPage {
-    margin-top: -144px;
+    margin-top: -$h-m-header;
 }
 
 .logoPage {

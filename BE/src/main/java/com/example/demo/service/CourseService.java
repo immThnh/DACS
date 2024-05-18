@@ -58,7 +58,7 @@ public class CourseService {
         return ResponseObject.builder().status(HttpStatus.OK).mess("Get successfully").content(courses).build();
     }
 
-    public ResponseObject getAllCourseDeleted(int page,int size) {
+    public ResponseObject getAllCourseDeleted(int page, int size) {
         var courses = courseRepository.findAllByIsDeleted(true, PageRequest.of(page, size));
         return ResponseObject.builder().status(HttpStatus.OK).mess("Get successfully").content(courses).build();
     }
@@ -76,7 +76,7 @@ public class CourseService {
         List<CompletableFuture<Void>> futures = new ArrayList<>();
 
         if (thumbnail != null) {
-            if(courseDTO.getIsEditedThumbnail() == 1) {
+            if (courseDTO.getIsEditedThumbnail() == 1) {
                 fThumbnail = CompletableFuture.runAsync(() -> {
                     try {
                         course.setThumbnail(cloudService.uploadImage(thumbnail.getBytes()));
@@ -86,14 +86,14 @@ public class CourseService {
                 });
                 futures.add(fThumbnail);
             }
-            if(courseDTO.getIsEditedThumbnail() == 2) {
+            if (courseDTO.getIsEditedThumbnail() == 2) {
                 System.out.println("Remove thumbnail");
                 course.setThumbnail(null);
             }
         }
 
 
-        if(courseVideo != null) {
+        if (courseVideo != null) {
             if (Objects.equals(courseDTO.getActionVideo(), "UPDATE")) {
                 fVideo = CompletableFuture.runAsync(() -> {
                     try {
@@ -119,20 +119,18 @@ public class CourseService {
             categoryService.updateCategoriesForCourse(course, courseDTO.getCategories());
 
         // ! Update sections
-        if(courseDTO.getSections().isEmpty()) {
+        if (courseDTO.getSections().isEmpty()) {
             sectionService.removeAllSection(course.getSections());
             course.setSections(null);
-        }
-        else {
+        } else {
             List<String> urlVideos = new ArrayList<String>();
 
-            if(videos != null && !videos.isEmpty()) {
+            if (videos != null && !videos.isEmpty()) {
                 AtomicReference<List<String>> atmVideos = new AtomicReference<>();
                 CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                     try {
                         atmVideos.set(cloudService.uploadVideos(videos));
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         System.out.println("Upload videos: " + e.getMessage());
                     }
                 });
@@ -142,14 +140,13 @@ public class CourseService {
             }
             int indexVideo = 0;
             List<Section> updateSections = new ArrayList<>();
-            for(var section : courseDTO.getSections()) {
+            for (var section : courseDTO.getSections()) {
                 var currentSection = sectionService.findById(section.getId());
-                if(currentSection != null) {
+                if (currentSection != null) {
                     currentSection.setTitle(section.getTitle());
                     indexVideo = lessonService.updateLessonsOfSection(section.getLessons(), currentSection.getLessons(), currentSection, urlVideos, indexVideo);
                     updateSections.add(currentSection);
-                }
-                else {
+                } else {
                     System.out.println("Create section");
                     currentSection = Section.builder()
                             .course(course)
@@ -163,7 +160,7 @@ public class CourseService {
             //! remove
             for (int i = course.getSections().size() - 1; i >= 0; i--) {
                 Section section = course.getSections().get(i);
-                if(!updateSections.contains(section)) {
+                if (!updateSections.contains(section)) {
                     System.out.println("remove section");
                     course.getSections().remove(section);
                     sectionService.removeSection(section);
@@ -178,7 +175,7 @@ public class CourseService {
 
     public ResponseObject addCourse(CourseDTO request, MultipartFile thumbnail, MultipartFile courseVideo, List<MultipartFile> videos) {
         var course = courseRepository.findByTitle(request.getTitle()).orElse(null);
-        if (course != null){
+        if (course != null) {
             return ResponseObject.builder().mess("Course is already exist").status(HttpStatus.BAD_REQUEST).build();
         }
 
@@ -190,7 +187,7 @@ public class CourseService {
                 .sections(new ArrayList<>())
                 .date(LocalDateTime.now())
                 .build();
-            try {
+        try {
 
             newCourse.setCategories(new ArrayList<>());
             categoryService.addCategoriesForCourse(newCourse, request.getCategories());
@@ -220,11 +217,11 @@ public class CourseService {
                 futures.add(future);
             }
 
-                List<String> urlVideos = null;
+            List<String> urlVideos = null;
 
-            if(videos != null) {
+            if (videos != null) {
                 AtomicReference<List<String>> atmVideos = new AtomicReference<List<String>>();
-                for(var video : videos) {
+                for (var video : videos) {
                     CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                         try {
                             atmVideos.set(Collections.singletonList(cloudService.uploadVideo(video.getBytes())));
@@ -243,9 +240,9 @@ public class CourseService {
             }
 
             int indexVideo = 0;
-            if(request.getSections() != null) {
-                for(var section : request.getSections()) {
-                    if(!section.getLessons().isEmpty()) {
+            if (request.getSections() != null) {
+                for (var section : request.getSections()) {
+                    if (!section.getLessons().isEmpty()) {
                         Section tSection = Section.builder()
                                 .title(section.getTitle())
                                 .course(newCourse)
@@ -253,7 +250,7 @@ public class CourseService {
                                 .build();
                         newCourse.getSections().add(tSection);
 
-                        if(section.getLessons().size() > 0) {
+                        if (section.getLessons().size() > 0) {
                             for (var lesson : section.getLessons()
                             ) {
                                 Lesson tLesson = Lesson.builder()
@@ -274,8 +271,7 @@ public class CourseService {
             courseRepository.save(newCourse);
             CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
             allOf.join();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println(e);
         }
         return ResponseObject.builder().mess("Create success").status(HttpStatus.OK).build();
@@ -302,38 +298,45 @@ public class CourseService {
 
     public ResponseObject getAllCourseByCategoryIdAndTitle(int id, String title) {
         List<Course> result = courseRepository.findAll();
-        if(!Objects.equals(title, ""))
+        if (!Objects.equals(title, ""))
             result = result.stream().filter(c -> c.getTitle().contains(title)).toList();
-        if(id != -1) {
+        if (id != -1) {
             result = result.stream().filter(c -> c.getCategories().stream().anyMatch(ca -> ca.getId() == id)).toList();
         }
         return ResponseObject.builder().status(HttpStatus.OK).content(result).mess("Get data successfully").build();
     }
 
     public ResponseObject getAllCourseByCategoryId(int id, int page, int size) {
-
-       var result = courseRepository.findByCategoryId(id, PageRequest.of(page, size));
+        if(id == -1) {
+            return ResponseObject.builder().status(HttpStatus.OK).content(courseRepository.findAll(PageRequest.of(page, size))).mess("Get data successfully").build();
+        }
+        var result = courseRepository.findByCategoryId(id, PageRequest.of(page, size));
         return ResponseObject.builder().status(HttpStatus.OK).content(result).mess("Get data successfully").build();
     }
+
     public ResponseObject getAllCourseDeletedByCategoryId(int id, int page, int size) {
-
-       var result = courseRepository.findByCategoryIdAndIsDeleted(id, PageRequest.of(page, size));
+        if(id == -1) {
+            return ResponseObject.builder().status(HttpStatus.OK).content(courseRepository.findAllByIsDeleted(true, PageRequest.of(page, size))).mess("Get data successfully").build();
+        }
+        var result = courseRepository.findByCategoryIdAndIsDeleted(id, PageRequest.of(page, size));
         return ResponseObject.builder().status(HttpStatus.OK).content(result).mess("Get data successfully").build();
     }
-    public ResponseObject getAllCourseByCourseTitle(String  title, int page, int size) {
-        var result = courseRepository.findByTitleContaining(title, PageRequest.of(page, size));
+
+    public ResponseObject getAllCourseByCourseTitle(String title, boolean isDeleted, int page, int size) {
+        var result = courseRepository.findByTitleContainingAndIsDeleted(title,isDeleted, PageRequest.of(page, size));
         return ResponseObject.builder().status(HttpStatus.OK).content(result).mess("Get data successfully").build();
     }
 
     public ResponseObject restoreCourseById(int id) {
         var course = courseRepository.findById(id).orElse(null);
-        if(course == null) return ResponseObject.builder().mess("Course does not exist").status(HttpStatus.BAD_REQUEST).build();
+        if (course == null)
+            return ResponseObject.builder().mess("Course does not exist").status(HttpStatus.BAD_REQUEST).build();
         course.setDeleted(false);
         courseRepository.save(course);
         return ResponseObject.builder().content(courseRepository.findAllByIsDeleted(true, PageRequest.of(0, 5))).mess("Restore successfully").status(HttpStatus.OK).build();
     }
 
-    public ResponseObject getAllByPageable (int page, int size) {
+    public ResponseObject getAllByPageable(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
         var courses = courseRepository.findAllByIsDeleted(false, pageable);
         return ResponseObject.builder().status(HttpStatus.OK).content(courses).build();

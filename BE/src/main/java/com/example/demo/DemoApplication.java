@@ -22,13 +22,13 @@ import java.util.List;
 @SpringBootApplication
 @RequiredArgsConstructor
 public class DemoApplication {
-	private final UserRepository userRepository;
-	private final JwtService jwtService;
-	private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
 
-	public static void main(String[] args) {
-		SpringApplication.run(DemoApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(DemoApplication.class, args);
+    }
 
 //	@Bean
 //	CommandLineRunner commandLineRunner (AuthService authService) {

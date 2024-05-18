@@ -1,7 +1,7 @@
 import { Menu, Transition } from "@headlessui/react";
 import clsx from "clsx";
 import styles from "./Menu.module.scss";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment } from "react";
 import avatarDefault from "../../assets/images/avatar_25.jpg";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
 import { Link, useNavigate } from "react-router-dom";
@@ -9,12 +9,10 @@ import * as authApi from "../../api/apiService/authService";
 import { useDispatch, useSelector } from "react-redux";
 import loginSlice from "../../redux/reducers/loginSlice";
 
-function Dropdown({ elementClick, admin = false, ...props }) {
+function Dropdown({ elementClick, ...props }) {
     const dispatch = useDispatch();
     const user = useSelector((state) => state.login.user);
     const navigate = useNavigate();
-    console.log(user);
-
     const handleLogout = () => {
         const fetchApi = async () => {
             try {
@@ -25,7 +23,6 @@ function Dropdown({ elementClick, admin = false, ...props }) {
                 console.log(error);
             }
         };
-
         fetchApi();
     };
 
@@ -81,27 +78,65 @@ function Dropdown({ elementClick, admin = false, ...props }) {
                                         {user && user.lastName}
                                     </span>
                                     <div>
-                                        {user && user.email.includes("@")
+                                        {user?.email?.includes("@")
                                             ? "@" +
                                               user.email.substring(
                                                   0,
                                                   user.email.indexOf("@")
                                               )
-                                            : "@" + user.email}
+                                            : "@" + user?.email}
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                         <div className="px-1 py-1 ">
+                            {user?.role === "ADMIN" && (
+                                <Link to={"/admin"}>
+                                    <Menu.Item>
+                                        {({ active }) => (
+                                            <button
+                                                className={`${
+                                                    active
+                                                        ? "bg-black text-white"
+                                                        : "text-gray-900"
+                                                } group flex w-full items-center rounded-md px-2 py-2.5 text-sm`}
+                                            >
+                                                {active ? (
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 24 24"
+                                                        id="dashboard"
+                                                        className="mr-2 w-6 h-6"
+                                                        fill="#fff"
+                                                    >
+                                                        <path d="M8.5 3h-3a2.5 2.5 0 0 0 0 5h3a2.5 2.5 0 0 0 0-5zm0 4h-3a1.5 1.5 0 0 1 0-3h3a1.5 1.5 0 0 1 0 3zm0 3h-3A2.5 2.5 0 0 0 3 12.5v6A2.5 2.5 0 0 0 5.5 21h3a2.5 2.5 0 0 0 2.5-2.5v-6A2.5 2.5 0 0 0 8.5 10zm1.5 8.5A1.5 1.5 0 0 1 8.5 20h-3A1.5 1.5 0 0 1 4 18.5v-6A1.5 1.5 0 0 1 5.5 11h3a1.5 1.5 0 0 1 1.5 1.5zm8.5-2.5h-3a2.5 2.5 0 0 0 0 5h3a2.5 2.5 0 0 0 0-5zm0 4h-3a1.5 1.5 0 0 1 0-3h3a1.5 1.5 0 0 1 0 3zm0-17h-3A2.5 2.5 0 0 0 13 5.5v6a2.5 2.5 0 0 0 2.5 2.5h3a2.5 2.5 0 0 0 2.5-2.5v-6A2.5 2.5 0 0 0 18.5 3zm1.5 8.5a1.5 1.5 0 0 1-1.5 1.5h-3a1.5 1.5 0 0 1-1.5-1.5v-6A1.5 1.5 0 0 1 15.5 4h3A1.5 1.5 0 0 1 20 5.5z"></path>
+                                                    </svg>
+                                                ) : (
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 24 24"
+                                                        id="dashboard"
+                                                        className="mr-2 w-6 h-6 "
+                                                    >
+                                                        <path d="M8.5 3h-3a2.5 2.5 0 0 0 0 5h3a2.5 2.5 0 0 0 0-5zm0 4h-3a1.5 1.5 0 0 1 0-3h3a1.5 1.5 0 0 1 0 3zm0 3h-3A2.5 2.5 0 0 0 3 12.5v6A2.5 2.5 0 0 0 5.5 21h3a2.5 2.5 0 0 0 2.5-2.5v-6A2.5 2.5 0 0 0 8.5 10zm1.5 8.5A1.5 1.5 0 0 1 8.5 20h-3A1.5 1.5 0 0 1 4 18.5v-6A1.5 1.5 0 0 1 5.5 11h3a1.5 1.5 0 0 1 1.5 1.5zm8.5-2.5h-3a2.5 2.5 0 0 0 0 5h3a2.5 2.5 0 0 0 0-5zm0 4h-3a1.5 1.5 0 0 1 0-3h3a1.5 1.5 0 0 1 0 3zm0-17h-3A2.5 2.5 0 0 0 13 5.5v6a2.5 2.5 0 0 0 2.5 2.5h3a2.5 2.5 0 0 0 2.5-2.5v-6A2.5 2.5 0 0 0 18.5 3zm1.5 8.5a1.5 1.5 0 0 1-1.5 1.5h-3a1.5 1.5 0 0 1-1.5-1.5v-6A1.5 1.5 0 0 1 15.5 4h3A1.5 1.5 0 0 1 20 5.5z"></path>
+                                                    </svg>
+                                                )}
+                                                Dashboard
+                                            </button>
+                                        )}
+                                    </Menu.Item>
+                                </Link>
+                            )}
                             <Link
                                 to={`/me/profile/${
-                                    user && user.email.includes("@")
+                                    user?.email?.includes("@")
                                         ? "@" +
                                           user.email.substring(
                                               0,
                                               user.email.indexOf("@")
                                           )
-                                        : "@" + user.email
+                                        : "@" + user?.email
                                 }`}
                             >
                                 <Menu.Item>
@@ -149,8 +184,8 @@ function Dropdown({ elementClick, admin = false, ...props }) {
                                     )}
                                 </Menu.Item>
                             </Link>
-                            {!admin && (
-                                <Link to={"/me/course"}>
+                            {user?.role !== "ADMIN" && (
+                                <Link to={"/me/my-courses"}>
                                     <Menu.Item>
                                         {({ active }) => (
                                             <button
@@ -191,7 +226,7 @@ function Dropdown({ elementClick, admin = false, ...props }) {
                                                         />
                                                     </svg>
                                                 )}
-                                                My course
+                                                My courses
                                             </button>
                                         )}
                                     </Menu.Item>

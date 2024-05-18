@@ -1,13 +1,15 @@
 import clsx from "clsx";
 import styles from "./Comment.module.scss";
-import { Dialog, Transition } from "@headlessui/react";
+import { Menu, Dialog, Transition } from "@headlessui/react";
 import { Fragment, useEffect, useState } from "react";
 import avatar from "../../assets/images/avatar_25.jpg";
 import { over } from "stompjs";
 import SockJS from "sockjs-client";
 import { useSelector } from "react-redux";
 import * as dataApi from "../../api/apiService/dataService";
+import * as userApi from "../../api/apiService/authService";
 import moment from "moment";
+import { toast } from "sonner";
 
 var stompClient = null;
 
@@ -106,6 +108,7 @@ export default function Comment({
             content: "",
             parentId: cmt.id,
             replyToUser: cmt.userEmail,
+            replyToUserName: cmt.userName,
         });
         e.currentTarget.scrollIntoView({ behavior: "smooth" });
     };
@@ -139,7 +142,23 @@ export default function Comment({
         });
         return allSubComments;
     }
-    console.log("render ");
+
+    const handleRemoveComment = (cmtId) => {
+        console.log(cmtId);
+        const fetchApi = async () => {
+            try {
+                await userApi.removeCommentById(userInfo.email, cmtId);
+                const result = await dataApi.getComments(lessonId);
+                setComments(result.content.content);
+            } catch (error) {
+                toast.error(error.mess);
+                console.log(error);
+            }
+        };
+
+        fetchApi();
+    };
+
     return (
         <>
             <Transition appear show={openModal} as={Fragment}>
@@ -254,9 +273,53 @@ export default function Comment({
                                                 );
                                                 const totalSubComment =
                                                     subComments.length;
-                                                const timeElapsed = moment(
-                                                    cmt.date
-                                                ).fromNow();
+                                                const now = moment();
+                                                const then = moment(cmt.date);
+                                                const diffInSeconds = now.diff(
+                                                    then,
+                                                    "seconds"
+                                                );
+                                                const diffInMinutes = now.diff(
+                                                    then,
+                                                    "minutes"
+                                                );
+                                                const diffInHours = now.diff(
+                                                    then,
+                                                    "hours"
+                                                );
+                                                const diffInDays = now.diff(
+                                                    then,
+                                                    "days"
+                                                );
+                                                const diffInWeeks = now.diff(
+                                                    then,
+                                                    "weeks"
+                                                );
+                                                const diffInMonths = now.diff(
+                                                    then,
+                                                    "months"
+                                                );
+                                                const diffInYears = now.diff(
+                                                    then,
+                                                    "years"
+                                                );
+
+                                                let timeElapsed;
+                                                if (diffInYears > 0) {
+                                                    timeElapsed = `${diffInYears} year`;
+                                                } else if (diffInMonths > 0) {
+                                                    timeElapsed = `${diffInMonths} month`;
+                                                } else if (diffInWeeks > 0) {
+                                                    timeElapsed = `${diffInWeeks} week`;
+                                                } else if (diffInDays > 0) {
+                                                    timeElapsed = `${diffInDays} day`;
+                                                } else if (diffInHours > 0) {
+                                                    timeElapsed = `${diffInHours} hour`;
+                                                } else if (diffInMinutes > 0) {
+                                                    timeElapsed = `${diffInMinutes} minute`;
+                                                } else {
+                                                    timeElapsed = `${diffInSeconds} second`;
+                                                }
                                                 if (cmt.parentId !== 0)
                                                     return (
                                                         <span
@@ -313,13 +376,13 @@ export default function Comment({
                                                                     </div>
                                                                     <div
                                                                         className={clsx(
-                                                                            "mt-2"
+                                                                            "mt-2 flex items-center gap-1.5"
                                                                         )}
                                                                     >
                                                                         <button
-                                                                            className={
+                                                                            className={clsx(
                                                                                 styles.actionsCmt
-                                                                            }
+                                                                            )}
                                                                             type="button"
                                                                             onClick={(
                                                                                 e
@@ -341,6 +404,69 @@ export default function Comment({
                                                                                 timeElapsed
                                                                             }
                                                                         </span>
+                                                                        {userInfo.email ===
+                                                                            cmt.userEmail && (
+                                                                            <div className="text-right">
+                                                                                <Menu
+                                                                                    as="div"
+                                                                                    className="relative inline-block text-left"
+                                                                                >
+                                                                                    <div>
+                                                                                        <Menu.Button className="inline-flex w-full justify-center rounded-md bg-white px-0.5 text-sm font-medium text-gray-700 ">
+                                                                                            ...
+                                                                                        </Menu.Button>
+                                                                                    </div>
+                                                                                    <Transition
+                                                                                        as={
+                                                                                            Fragment
+                                                                                        }
+                                                                                        enter="transition ease-out duration-100"
+                                                                                        enterFrom="transform opacity-0 scale-95"
+                                                                                        enterTo="transform opacity-100 scale-100"
+                                                                                        leave="transition ease-in duration-75"
+                                                                                        leaveFrom="transform opacity-100 scale-100"
+                                                                                        leaveTo="transform opacity-0 scale-95"
+                                                                                    >
+                                                                                        <Menu.Items className="absolute right-0 w-28 mt-2 origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none">
+                                                                                            <Menu.Item>
+                                                                                                {({
+                                                                                                    active,
+                                                                                                }) => (
+                                                                                                    <button
+                                                                                                        onClick={() =>
+                                                                                                            handleRemoveComment(
+                                                                                                                cmt.id
+                                                                                                            )
+                                                                                                        }
+                                                                                                        className={`${
+                                                                                                            active
+                                                                                                                ? "bg-gray-100 "
+                                                                                                                : "text-gray-900"
+                                                                                                        } group flex w-full  items-center rounded-md pl-2 pr-5 py-2 text-xs color-delete`}
+                                                                                                    >
+                                                                                                        <svg
+                                                                                                            xmlns="http://www.w3.org/2000/svg"
+                                                                                                            viewBox="0 0 16 16"
+                                                                                                            fill="currentColor"
+                                                                                                            className="w-4 h-4 mr-1.5"
+                                                                                                        >
+                                                                                                            <path
+                                                                                                                fillRule="evenodd"
+                                                                                                                d="M5 3.25V4H2.75a.75.75 0 0 0 0 1.5h.3l.815 8.15A1.5 1.5 0 0 0 5.357 15h5.285a1.5 1.5 0 0 0 1.493-1.35l.815-8.15h.3a.75.75 0 0 0 0-1.5H11v-.75A2.25 2.25 0 0 0 8.75 1h-1.5A2.25 2.25 0 0 0 5 3.25Zm2.25-.75a.75.75 0 0 0-.75.75V4h3v-.75a.75.75 0 0 0-.75-.75h-1.5ZM6.05 6a.75.75 0 0 1 .787.713l.275 5.5a.75.75 0 0 1-1.498.075l-.275-5.5A.75.75 0 0 1 6.05 6Zm3.9 0a.75.75 0 0 1 .712.787l-.275 5.5a.75.75 0 0 1-1.498-.075l.275-5.5a.75.75 0 0 1 .786-.711Z"
+                                                                                                                clipRule="evenodd"
+                                                                                                            />
+                                                                                                        </svg>
+                                                                                                        <div className="mt-0.5 font-medium">
+                                                                                                            Delete
+                                                                                                        </div>
+                                                                                                    </button>
+                                                                                                )}
+                                                                                            </Menu.Item>
+                                                                                        </Menu.Items>
+                                                                                    </Transition>
+                                                                                </Menu>
+                                                                            </div>
+                                                                        )}
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -423,10 +549,83 @@ export default function Comment({
                                                                     sComment,
                                                                     ind
                                                                 ) => {
-                                                                    const sCommentTimeElapsed =
+                                                                    const now =
+                                                                        moment();
+                                                                    const then =
                                                                         moment(
-                                                                            sComment.date
-                                                                        ).fromNow();
+                                                                            cmt.date
+                                                                        );
+                                                                    const diffInSeconds =
+                                                                        now.diff(
+                                                                            then,
+                                                                            "seconds"
+                                                                        );
+                                                                    const diffInMinutes =
+                                                                        now.diff(
+                                                                            then,
+                                                                            "minutes"
+                                                                        );
+                                                                    const diffInHours =
+                                                                        now.diff(
+                                                                            then,
+                                                                            "hours"
+                                                                        );
+                                                                    const diffInDays =
+                                                                        now.diff(
+                                                                            then,
+                                                                            "days"
+                                                                        );
+                                                                    const diffInWeeks =
+                                                                        now.diff(
+                                                                            then,
+                                                                            "weeks"
+                                                                        );
+                                                                    const diffInMonths =
+                                                                        now.diff(
+                                                                            then,
+                                                                            "months"
+                                                                        );
+                                                                    const diffInYears =
+                                                                        now.diff(
+                                                                            then,
+                                                                            "years"
+                                                                        );
+
+                                                                    let timeElapsed;
+                                                                    if (
+                                                                        diffInYears >
+                                                                        0
+                                                                    ) {
+                                                                        timeElapsed = `${diffInYears} year`;
+                                                                    } else if (
+                                                                        diffInMonths >
+                                                                        0
+                                                                    ) {
+                                                                        timeElapsed = `${diffInMonths} month`;
+                                                                    } else if (
+                                                                        diffInWeeks >
+                                                                        0
+                                                                    ) {
+                                                                        timeElapsed = `${diffInWeeks} week`;
+                                                                    } else if (
+                                                                        diffInDays >
+                                                                        0
+                                                                    ) {
+                                                                        timeElapsed = `${diffInDays} day`;
+                                                                    } else if (
+                                                                        diffInHours >
+                                                                        0
+                                                                    ) {
+                                                                        timeElapsed = `${diffInHours} hour`;
+                                                                    } else if (
+                                                                        diffInMinutes >
+                                                                        0
+                                                                    ) {
+                                                                        timeElapsed = `${diffInMinutes} minute`;
+                                                                    } else {
+                                                                        timeElapsed = `${diffInSeconds} second`;
+                                                                    }
+
                                                                     return (
                                                                         <div
                                                                             key={
@@ -481,7 +680,7 @@ export default function Comment({
                                                                                             <span className="pr-1">
                                                                                                 @
                                                                                                 {
-                                                                                                    sComment.userReply
+                                                                                                    sComment.replyToUserName
                                                                                                 }
                                                                                             </span>
                                                                                             {
@@ -516,12 +715,18 @@ export default function Comment({
                                                                                             }
                                                                                         >
                                                                                             {
-                                                                                                sCommentTimeElapsed
+                                                                                                timeElapsed
                                                                                             }
                                                                                         </span>
+                                                                                        <div
+                                                                                            className={clsx(
+                                                                                                styles.moreAction
+                                                                                            )}
+                                                                                        ></div>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
+                                                                            {/* //!NOTE ------------------REPLYBOX------------------ */}
                                                                             <div
                                                                                 className={clsx(
                                                                                     styles.replyBox,
@@ -594,6 +799,7 @@ export default function Comment({
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
+                                                                            {/* //!NOTE ------------------REPLYBOX------------------ */}
                                                                         </div>
                                                                     );
                                                                 }

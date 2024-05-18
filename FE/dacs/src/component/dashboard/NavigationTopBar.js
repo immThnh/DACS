@@ -11,27 +11,7 @@ const NavigationTopBar = () => {
             <div className={styles.navigationTopBar11}>
                 <div className={styles.topBarBg} />
                 <div className={styles.div}></div>
-                <div className={styles.navLeftWrapper}>
-                    {/* <div className={styles.navLeft}>
-                        <div className={styles.search}>
-                            <input
-                                className={styles.search1}
-                                placeholder="Search"
-                                type="text"
-                            />
-                            <div
-                                className={styles.searchIcon}
-                                onClick={searchHandleISubmit}
-                            >
-                                <img
-                                    className={styles.searchIcon}
-                                    alt=""
-                                    src={SearchImg}
-                                />
-                            </div>
-                        </div>
-                    </div> */}
-                </div>
+                <div className={styles.navLeftWrapper}></div>
                 <div className={styles.navRight}>
                     <div className={styles.profile}>
                         <div
@@ -56,7 +36,8 @@ const NavigationTopBar = () => {
                                         "uppercase"
                                     )}
                                 >
-                                    {user.firstName + " " + user.lastName}
+                                    {user &&
+                                        user.firstName + " " + user.lastName}
                                 </b>
                                 <div className={clsx(styles.admin, "")}>
                                     Admin

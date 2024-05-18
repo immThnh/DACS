@@ -28,9 +28,9 @@ public class Comment {
     private String avatar;
     private int parentId;
     private String replyToUser;
+    private String replyToUserName;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
 

@@ -1,51 +1,121 @@
-import React from 'react';
-import Styles from './userCourses.module.scss';
+import React, { memo, useEffect, useState } from "react";
+import styles from "./userCourses.module.scss";
+import clsx from "clsx";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import * as userApi from "../../../api/apiService/authService";
+import Footer from "../../../layout/footer";
 
-const CourseCard = ({ title, thumbnail,status, time }) => (
-  <div className={Styles.courseCard}>
-    <div className={Styles.courseThumbnail}><img src={thumbnail}/></div>
-    <div className={Styles.courseTitle}>{title}</div>
-    <div className={Styles.courseStatus}>{status}</div>
-    <div className={Styles.courseTime}>{time}</div>
-  </div>
+function Badge({ children }) {
+    return (
+        <div className="flex justify-center px-2.5 py-1 bg-white rounded-md border border-gray-500 border-solid text-xs ">
+            {children}
+        </div>
+    );
+}
+export const CourseCard = memo(
+    ({ course, textBtn = "Go to learn", courseId = -1 }) => {
+        const user = useSelector((state) => state.login.user);
+        const navigate = useNavigate();
+        // const handleGoToCourse = () => {
+        //     if (user) {
+        //         const fetchApi = async () => {
+        //             try {
+        //                 const result = await userApi.getListCourse(user.email);
+        //                 let isEnroll = false;
+        //                 result.content.forEach((progress) => {
+        //                     if (progress.course.id === courseId) {
+        //                         isEnroll = true;
+        //                         navigate(`/course/detail/${courseId}`);
+        //                     }
+        //                 });
+        //                 if (!isEnroll) {
+        //                     navigate(`/course/${courseId}`);
+        //                 }
+        //             } catch (error) {
+        //                 console.log(error);
+        //             }
+        //         };
+        //         fetchApi();
+        //     }
+        // };
 
+        return (
+            <div className="course-card w-full col-lg-3 px-4 flex flex-col mb-7">
+                <div className="b-shadow bg-white rounded-xl border border-gray-100 p-6 flex flex-col">
+                    <div className="flex justify-center">
+                        <img
+                            loading="lazy"
+                            src={course.thumbnail}
+                            alt=""
+                            className="course-image w-full rounded-t-lg mb-4  object-cover"
+                        />
+                    </div>
+                    <div className="flex justify-start space-x-2 mb-2">
+                        {course.categories.map((category) => (
+                            <Badge key={category.id}>{category.name}</Badge>
+                        ))}
+                    </div>
+                    <h3 className="text-md sm:text-lg font-semibold text-neutral-800 mb-2  text-start">
+                        {course.title}
+                    </h3>
+
+                    <Link
+                        to={`/course/detail/${course.id}`}
+                        className="px-4 py-2 text-xs sm:text-sm font-medium text-center rounded-md border border-gray-100 bg-neutral-100 text-neutral-800"
+                    >
+                        {textBtn}
+                    </Link>
+                </div>
+            </div>
+        );
+    }
 );
 
 const MyCourses = () => {
-  const courses = [
-    {
-      title: 'HTML, CSS từ zero đến hero',
-      thumbnail:'https://picsum.photos/200/100',
-      status: 'Học xong cách đây 2 tháng trước',
-      time: '2 months ago'
-    },
-    {
-      title: 'Lập Trình JavaScript Cơ Bản',
-      thumbnail:'https://picsum.photos/200/100',
+    const user = useSelector((state) => state.login.user);
+    const [courses, setCourses] = useState([]);
+    useEffect(() => {
+        const fetchApi = async () => {
+            try {
+                const result = await userApi.getUserByEmail(user.email);
+                let listCourse = [];
+                result.content.progresses.forEach((pro) => {
+                    listCourse.push(pro.course);
+                });
+                setCourses(listCourse);
+            } catch (error) {
+                console.log(error);
+            }
+        };
 
-      status: 'Bắt chưa hoàn thành khóa này',
-      time: 'In progress'
-    },
-    {
-      title: 'Responsive Web Design',
-      thumbnail:'https://picsum.photos/200/100',
+        fetchApi();
+    }, []);
 
-      status: 'Bạn chưa hoàn thành khóa này',
-      time: 'Not started'
-    }
-  ];
-
-  return (
-    <div className={Styles.myCourses}>
-      <h2 className={Styles.myCoursesTitle}>Khóa học của tôi</h2>
-      <div className={Styles.courseList}>
-        {courses.map((course, index) => (
-          <CourseCard key={index} {...course} />
-        ))}
-      </div>
-      <button className={Styles.addCourseButton}>Thêm khóa học</button>
-    </div>
-  );
+    return (
+        <div className={clsx("bg-neutral-100")}>
+            <div className={clsx(styles.header)}>
+                <div className="container">
+                    <h1 className={clsx("uppercase font-extrabold")}>
+                        My courses
+                    </h1>
+                </div>
+            </div>
+            <div className={clsx(styles.wrapContent, "container mt-6")}>
+                <div>
+                    {courses &&
+                        courses.map((course, ind) => (
+                            <CourseCard
+                                key={ind}
+                                course={course}
+                                courseId={course.id}
+                            />
+                        ))}
+                </div>
+            </div>
+            <Footer />
+        </div>
+    );
 };
 
 export default MyCourses;

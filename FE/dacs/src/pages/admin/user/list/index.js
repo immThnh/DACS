@@ -6,7 +6,7 @@ import viewIcon from "../../../../assets/images/view.svg";
 import avatar from "../../../../assets/images/avatar_25.jpg";
 import noDataIcon from "../../../../assets/images/ic_noData.svg";
 import editIcon from "../../../../assets/images/edit.svg";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import * as authApi from "../../../../api/apiService/authService";
 import Select from "react-select";
 import { toast } from "sonner";
@@ -29,6 +29,7 @@ function ListUser() {
     const [deletedModalOpen, setDeletedModalOpen] = useState(false);
     const [deleteId, setDeleteId] = useState(null);
     const [update, setUpdate] = useState();
+    const firstRender = useRef(true);
 
     const handleRemoveUser = () => {
         const fetchApi = async () => {
@@ -37,10 +38,10 @@ function ListUser() {
                 success: () => {
                     setUpdate(!update);
                     setDeletedModalOpen(false);
-                    return "Remove successfully";
+                    return "Delete successfully";
                 },
                 error: (error) => {
-                    return error.content;
+                    return error.mess;
                 },
             });
         };
@@ -49,18 +50,18 @@ function ListUser() {
     };
 
     const handleSelectChange = (e) => {
-        const fetchApi = () => {
-            toast.promise(authApi.getUserByRole(e.name, page, selected), {
-                loading: "loading...",
-                success: (data) => {
-                    setUsers(data.content.content);
-                    setTotalData(data.content.totalElements);
-                    return "Get data successfully";
-                },
-                error: (error) => {
-                    return error;
-                },
-            });
+        const fetchApi = async () => {
+            try {
+                const result = await authApi.getUserByRole(
+                    e.name,
+                    page,
+                    selected
+                );
+                setUsers(result.content.content);
+            } catch (error) {
+                console.log(error);
+                toast.error(error.mess);
+            }
         };
 
         const debounceApi = debounce(fetchApi);
@@ -108,17 +109,16 @@ function ListUser() {
     useEffect(() => {
         const fetchApi = async () => {
             try {
-                const result = await authApi.getAllUser();
-                console.log(result);
                 let array = [];
-                const roles = await authApi.getAllRole();
-                roles.content.map((value, index) =>
+                const result = await authApi.getAllUserAndRole();
+                console.log(result.content);
+                result.content.roles.map((value, index) =>
                     array.push({ id: index, name: value })
                 );
                 array.push({ id: "-1", name: "All" });
-                setTotalData(result.content.totalElements);
+                setTotalData(result.content.users.totalElements);
                 setOptions(array);
-                setUsers(result.content.content);
+                setUsers(result.content.users.content);
             } catch (error) {
                 console.log(error);
             }
@@ -127,6 +127,10 @@ function ListUser() {
     }, [update]);
 
     useEffect(() => {
+        if (firstRender.current) {
+            firstRender.current = false;
+            return;
+        }
         const fetchApi = async () => {
             try {
                 const result = await authApi.getUserByPage(page, selected);
@@ -141,7 +145,6 @@ function ListUser() {
     const handlePageData = async (action) => {
         const currentTotalData = page * selected + selected;
         if (action === "next" && currentTotalData < totalData) {
-            console.log("a");
             setPage((prev) => prev + 1);
         }
         if (action === "previous" && page > 0) {
@@ -158,7 +161,6 @@ function ListUser() {
         setDeletedModalOpen(true);
     };
 
-    console.log("Render user/list");
     return (
         <div className="flex justify-center w-full ">
             <div className="container mt-5 mx-14">
@@ -370,18 +372,11 @@ function ListUser() {
                                                             to={`/admin/user/view/${element.email}`}
                                                         >
                                                             <img
-                                                                src={viewIcon}
-                                                                alt=""
-                                                            />
-                                                        </Link>
-                                                        <Link
-                                                            to={`/admin/user/edit/${element.id}`}
-                                                        >
-                                                            <img
                                                                 src={editIcon}
                                                                 alt=""
                                                             />
                                                         </Link>
+
                                                         <button
                                                             onClick={() =>
                                                                 openDeleteModal(

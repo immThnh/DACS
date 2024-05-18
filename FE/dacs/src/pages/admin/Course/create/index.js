@@ -234,11 +234,6 @@ function CreateCourse() {
                     },
                     error: (error) => {
                         console.log(error);
-                        if (error.status === "UNAUTHORIZED") {
-                            sessionStorage.removeItem("token");
-                            window.location.replace("/login");
-                        }
-                        return error.mess;
                     },
                 }
             );

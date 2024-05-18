@@ -25,6 +25,7 @@ public class UserController {
         var result = authService.adminUpdatePasswordForUser(passwordDTO, email);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
+
     @GetMapping("")
     public ResponseEntity<ResponseObject> greeting() {
         var res = ResponseObject.builder().status(HttpStatus.OK).mess("Welcome to admin dashboard").build();
@@ -32,33 +33,34 @@ public class UserController {
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<ResponseObject> getAllUsersByPage(@RequestParam(defaultValue = "0") int page , @RequestParam(defaultValue = "5") int size) {
+    public ResponseEntity<ResponseObject> getAllUsersByPage(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
         var result = userService.getAllByPage(page, size);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 
     @GetMapping("/getAllDeleted")
-    public ResponseEntity<ResponseObject> getAllDeleted(@RequestParam(defaultValue = "0") int page , @RequestParam(defaultValue = "5") int size) {
+    public ResponseEntity<ResponseObject> getAllDeleted(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
         var result = userService.getAllDeletedByPage(page, size);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 
-    @GetMapping("/getAllRole")
-    public ResponseEntity<ResponseObject> getAllRole() {
-        var result = userService.getAllRole();
+    @GetMapping("/getAllUserAndRole")
+    public ResponseEntity<ResponseObject> getAllRole(@RequestParam(defaultValue = "false") boolean isDeleted) {
+        var result = userService.getAllUserAndRole(isDeleted);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 
     @GetMapping("/filter")
     public ResponseEntity<ResponseObject> getUserByRole(@RequestParam(value = "role") String role,
-                                                        @RequestParam(defaultValue = "0") int page , @RequestParam(defaultValue = "5") int size){
+                                                        @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
         var result = userService.getUserByRole(role, page, size);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
+
     @GetMapping("/search")
-    public ResponseEntity<ResponseObject> getUserByName(@RequestParam(value = "name") String name,
-                                                        @RequestParam(defaultValue = "0") int page , @RequestParam(defaultValue = "5") int size){
-        var result = userService.getUserByName(name, page, size);
+    public ResponseEntity<ResponseObject> getUserByName(@RequestParam(value = "name") String name, @RequestParam(defaultValue = "false") boolean isDeleted,
+                                                        @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
+        var result = userService.getUserByName(name, isDeleted, page, size);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 
@@ -93,7 +95,7 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email không tồn tài!");
         }
         String code = authService.getVerifyCode();
-        if(!mailService.sendMailResetPassword(email.getEmail(), code)) {
+        if (!mailService.sendMailResetPassword(email.getEmail(), code)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Gửi mail thất bại!");
         }
         authService.saveCode(email, code);
@@ -108,7 +110,7 @@ public class UserController {
 
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
-        if(!authService.resetPassword(request))
+        if (!authService.resetPassword(request))
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Lỗi trong thay đổi mật khaẩu!");
         return ResponseEntity.ok("Thay đổi mật khẩu thành công!");
     }
@@ -137,7 +139,6 @@ public class UserController {
         var result = userService.restoreUserById(id);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
-
 
 
 }
