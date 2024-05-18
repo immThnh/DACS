@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styles from "../../../user/userprofile/userProfile.module.scss";
+import styles from "../../../user/userprofile/UserProfile.module.scss";
 import clsx from "clsx";
 import avatar from "../../../../assets/images/avatar_25.jpg";
 import ShowPassword from "../../../../component/auth/ShowPassword";
@@ -17,13 +17,11 @@ const AdminView = () => {
     });
     const [activeForm, setActiveForm] = useState("details");
     const [errors, setErrors] = useState({});
-    const [avatarSrc, setAvatarSrc] = useState(avatar);
     const [passwords, setPasswords] = useState({
         newPassword: "",
         confirmPassword: "",
     });
 
-    const navigate = useNavigate();
     const { email } = useParams();
     const [selectedBtn, setSelectedBtn] = useState("0");
 
@@ -76,7 +74,6 @@ const AdminView = () => {
             await userApi.resetPasswordByEmail(passwords.newPassword, email);
             toast.success("Password updated successfully");
         } catch (error) {
-            console.error("Error resetting password:", error);
             toast.error("Failed to update password");
         }
     };
@@ -123,7 +120,7 @@ const AdminView = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (!validateProfileForm()) {
-            console.error("Invalid input");
+            toast.error("Invalid input");
             return;
         }
         const { avatar, ...userData } = user;
@@ -208,8 +205,10 @@ const AdminView = () => {
                                             loading="lazy"
                                             src={
                                                 user.avatar
-                                                    ? (user.avatar instanceof File ||
-                                                      user.avatar instanceof Blob)
+                                                    ? user.avatar instanceof
+                                                          File ||
+                                                      user.avatar instanceof
+                                                          Blob
                                                         ? URL.createObjectURL(
                                                               user.avatar
                                                           )
@@ -228,9 +227,7 @@ const AdminView = () => {
                                         />
                                         <label
                                             htmlFor="avatar"
-                                            className={clsx(
-                                                styles.updatePhoto
-                                            )}
+                                            className={clsx(styles.updatePhoto)}
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -277,10 +274,9 @@ const AdminView = () => {
                                                         onChange={
                                                             handleInputChange
                                                         }
-                                                        value={
-                                                            user.firstName
-                                                        }
+                                                        value={user.firstName}
                                                         name="firstName"
+                                                        data-validate
                                                         className={clsx(
                                                             styles.formInput
                                                         )}
@@ -314,6 +310,7 @@ const AdminView = () => {
                                                         }
                                                         value={user.lastName}
                                                         name="lastName"
+                                                        data-validate
                                                         className={clsx(
                                                             styles.formInput
                                                         )}
@@ -362,7 +359,6 @@ const AdminView = () => {
                                                     Email
                                                 </label>
                                             </div>
-                                            </div>
                                             {errors.email && (
                                                 <div className="text-red-500 mt-1 text-sm ml-1">
                                                     {errors.email}
@@ -379,9 +375,7 @@ const AdminView = () => {
                                             <div className="relative">
                                                 <input
                                                     required
-                                                    onChange={
-                                                        handleInputChange
-                                                    }
+                                                    onChange={handleInputChange}
                                                     value={
                                                         user.phoneNumber || " "
                                                     }
@@ -431,7 +425,7 @@ const AdminView = () => {
                                             <div
                                                 className={clsx(
                                                     styles.formField,
-                                                    "w-full"
+                                                    "w-full "
                                                 )}
                                             >
                                                 <div className="px-2 w-full flex text-sm">
@@ -446,6 +440,7 @@ const AdminView = () => {
                                                             passwords.newPassword
                                                         }
                                                         name="newPassword"
+                                                        data-validate
                                                         className={clsx(
                                                             styles.formInput
                                                         )}
@@ -509,7 +504,7 @@ const AdminView = () => {
                                             </div>
                                         </div>
                                         {errors.confirmPassword && (
-                                            <div className="text-red-500 text-sm ml-1">
+                                            <div className="text-red-500  text-sm ml-1">
                                                 {errors.confirmPassword}
                                             </div>
                                         )}

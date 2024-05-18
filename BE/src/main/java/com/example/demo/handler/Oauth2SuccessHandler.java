@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 @Data
 @Component
@@ -30,24 +31,44 @@ public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
     private final CloudService cloudService;
     private final AuthService authService;
     private final JwtService jwtService;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
-        System.out.println();
-        String avatar = oauth2User.getAttribute("picture").toString();
-        String family_name = oauth2User.getAttribute("name");
-        String email = oauth2User.getAttribute("email");
+        String avatar = "";
+        if (oauth2User.getAttribute("picture") != null) {
+            avatar = Objects.requireNonNull(oauth2User.getAttribute("picture")).toString();
+        }
+        String email = "";
+        if(oauth2User.getAttribute("email") != null) {
+            email = oauth2User.getAttribute("email");
+        }
+        String family_name = "";
+        if(oauth2User.getAttribute("name") != null) {
+            family_name = oauth2User.getAttribute("name").toString();
+        }
+        if(oauth2User.getAttribute("login") != null && Objects.equals(email, "")) {
+            email = oauth2User.getAttribute("login");
+        }
         var user = authService.findUserByEmail(email);
         if(user == null) {
             user = User.builder()
-                    .email(email)
+                    .email(Objects.equals(email, "") ? null : email)
                     .lastName(family_name)
                     .role(Role.USER)
-                    .avatar(avatar)
+                    .avatar(Objects.equals(avatar, "") ? null : avatar)
                     .build();
-            userRepository.save(user);
+        }
+        String userAvatar = user.getAvatar();
+        if(userAvatar == null && !Objects.equals(avatar, "")) {
+            user.setAvatar(avatar);
         }
 
+        if(userAvatar != null && Objects.equals(avatar, "")) {
+            avatar = user.getAvatar();
+        }
+
+        userRepository.save(user);
         Token token = new Token(jwtService.generateToken(user));
         user.setToken(token);
 

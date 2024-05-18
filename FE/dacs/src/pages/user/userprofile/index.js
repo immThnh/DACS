@@ -1,61 +1,11 @@
-import React, { useState, useRef, useEffect } from "react";
-import styles from "./userProfile.module.scss";
+import React, { useState, useEffect } from "react";
+import styles from "./UserProfile.module.scss";
 import clsx from "clsx";
 import avatar from "../../../assets/images/avatar_25.jpg";
 import ShowPassword from "../../../component/auth/ShowPassword";
-import { useNavigate, useParams } from "react-router-dom";
 import * as userApi from "../../../api/apiService/authService";
 import { toast } from "sonner";
-
-const ImageWrapper = ({ src, alt, className }) => (
-    <img loading="lazy" src={src} alt={alt} className={className} />
-);
-
-const Button = ({ children, className, onClick, type }) => (
-    <button type={type} className={className} onClick={onClick}>
-        {children}
-    </button>
-);
-
-const SectionTitle = ({ children }) => (
-    <h2 className={styles.sectionTitle}>{children}</h2>
-);
-
-const SectionSubtitle = ({ children }) => (
-    <h3 className={styles.sectionSubtitle}>{children}</h3>
-);
-
-const InputField = ({ label, value, onChange, error }) => (
-    <>
-        <label className={styles.visuallyHidden}>{label}</label>
-        <input
-            type="text"
-            className={clsx(styles.inputField, error && styles.errorInput)}
-            value={value}
-            onChange={onChange}
-            aria-label={label}
-        />
-        {error && <div className={styles.errorText}>{error}</div>}
-    </>
-);
-
-const PasswordField = ({ label, value, onChange, inputRef, error }) => (
-    <div style={{ position: "relative", marginBottom: "10px" }}>
-        <label className={styles.visuallyHidden}>{label}</label>
-        <div className={styles.inputContainer}>
-            <input
-                type="password"
-                className={clsx(error && styles.errorInput)}
-                value={value}
-                onChange={onChange}
-                ref={inputRef}
-                style={{ paddingRight: "30px" }}
-            />
-            <ShowPassword passInput={inputRef.current} />
-        </div>
-        {error && <div className={styles.errorText}>{error}</div>}
-    </div>
-);
+import { useSelector } from "react-redux";
 
 function isValidEmail(email) {
     const emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
@@ -68,32 +18,19 @@ function isPasswordStrong(password) {
     return passwordRegex.test(password);
 }
 
-const Divider = () => <hr className={styles.divider} />;
-
 function UserProfile({ adminOpen = false }) {
-    const [user, setUser] = useState({
-        firstName: "",
-        lastName: "",
-        email: "",
-        avatar: "",
-        phoneNumber: "",
-    });
+    const userInfo = useSelector((user) => user.login.user);
+
+    const [user, setUser] = useState({ ...userInfo });
 
     const [activeForm, setActiveForm] = useState("details");
     const [errors, setErrors] = useState({});
-    const [avatarSrc, setAvatarSrc] = useState(avatar);
     const [passwords, setPasswords] = useState({
         oldPassword: "",
         newPassword: "",
         confirmPassword: "",
     });
 
-    const currentPasswordRef = useRef();
-    const newPasswordRef = useRef();
-    const confirmPasswordRef = useRef();
-
-    const navigate = useNavigate();
-    const dataSearch = useParams();
     const [selectedBtn, setSelectedBtn] = useState("0");
 
     const handleInputChange = (e) => {
@@ -117,29 +54,12 @@ function UserProfile({ adminOpen = false }) {
         }));
     };
 
-    const handleNavItemClick = (formType) => {
-        setActiveForm(formType);
-    };
-
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         if (file) {
             setUser({ ...user, avatar: file });
         }
     };
-
-    function isURL(str) {
-        const urlPattern = new RegExp(
-            "^(https?:\\/\\/)?" + // protocol
-                "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
-                "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
-                "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
-                "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
-                "(\\#[-a-z\\d_]*)?$",
-            "i"
-        ); // fragment locator
-        return urlPattern.test(str);
-    }
 
     const handleSwitchPage = (e) => {
         const newIndex = e.target.dataset.index;
@@ -178,12 +98,19 @@ function UserProfile({ adminOpen = false }) {
     const validateForm = () => {
         let valid = true;
         const newErrors = {};
-
-        if (!user.firstName.trim()) {
+        if (user.firstName === null) {
             newErrors.firstName = "First name cannot be empty";
             valid = false;
         }
-        if (!user.lastName.trim()) {
+        if (user.firstName !== null && !user.firstName.trim()) {
+            newErrors.firstName = "First name cannot be empty";
+            valid = false;
+        }
+        if (user.lastName === null) {
+            newErrors.lastName = "Last name cannot be empty";
+            valid = false;
+        }
+        if (user.lastName !== null && !user.lastName.trim()) {
             newErrors.lastName = "Last name cannot be empty";
             valid = false;
         }
@@ -201,7 +128,7 @@ function UserProfile({ adminOpen = false }) {
             if (!isPasswordStrong(passwords.newPassword)) {
                 newErrors.newPassword =
                     "Password must have at least 8 characters, including uppercase, lowercase, and special characters.";
-                
+
                 valid = false;
             }
             if (passwords.newPassword !== passwords.confirmPassword) {
@@ -223,11 +150,12 @@ function UserProfile({ adminOpen = false }) {
         toast.promise(userApi.updateProfile(userData, avatar), {
             loading: "Loading...",
             success: (data) => {
-                setUser(data.content);
+                console.log(data);
+                // setUser(data.content);
                 return "Update successfully";
             },
             error: (err) => {
-                return "Update Failed";
+                return err.mess;
             },
         });
     };
@@ -235,15 +163,18 @@ function UserProfile({ adminOpen = false }) {
     useEffect(() => {
         const fetchApi = async () => {
             try {
-                const result = await userApi.getUserByEmail(dataSearch.email);
+                const result = await userApi.getUserByEmail(userInfo.email);
+                // if (!result.content.email.includes("@")) {
+                //     result.content.email = null;
+                // }
                 setUser(result.content);
                 setPasswords({ ...passwords, email: result.content.email });
             } catch (error) {
-                console.log(error.mess);
+                console.log(error);
             }
         };
         fetchApi();
-    }, [dataSearch.email]);
+    }, [userInfo?.email]);
 
     return (
         <div className={styles.container}>
@@ -302,8 +233,10 @@ function UserProfile({ adminOpen = false }) {
                                             loading="lazy"
                                             src={
                                                 user.avatar
-                                                    ? (user.avatar instanceof File ||
-                                                      user.avatar instanceof Blob)
+                                                    ? user.avatar instanceof
+                                                          File ||
+                                                      user.avatar instanceof
+                                                          Blob
                                                         ? URL.createObjectURL(
                                                               user.avatar
                                                           )
@@ -322,9 +255,7 @@ function UserProfile({ adminOpen = false }) {
                                         />
                                         <label
                                             htmlFor="avatar"
-                                            className={clsx(
-                                                styles.updatePhoto
-                                            )}
+                                            className={clsx(styles.updatePhoto)}
                                         >
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
@@ -359,83 +290,90 @@ function UserProfile({ adminOpen = false }) {
                                                 "flex gap-3 w-full "
                                             )}
                                         >
-                                            <div>
-                                            <div
-                                                className={clsx(
-                                                    styles.formField,
-                                                    "flex-1"
-                                                )}
-                                            >
-                                                <input
-                                                    required
-                                                    onChange={
-                                                        handleInputChange
-                                                    }
-                                                    value={user.firstName}
-                                                    name="firstName"
-                                                    data-validate
+                                            <div className="flex-1">
+                                                <div
                                                     className={clsx(
-                                                        styles.formInput
-                                                    )}
-                                                    type="text"
-                                                />
-                                                <label
-                                                    className={clsx(
-                                                        styles.formLabel
+                                                        styles.formField,
+                                                        "flex-1"
                                                     )}
                                                 >
-                                                    First Name
-                                                </label>
-                                               
-                                            </div>
-                                            
-                                            {errors.firstName && (
+                                                    <input
+                                                        required
+                                                        onChange={
+                                                            handleInputChange
+                                                        }
+                                                        value={
+                                                            user.firstName || ""
+                                                        }
+                                                        name="firstName"
+                                                        data-validate
+                                                        className={clsx(
+                                                            styles.formInput
+                                                        )}
+                                                        type="text"
+                                                    />
+                                                    <label
+                                                        className={clsx(
+                                                            styles.formLabel
+                                                        )}
+                                                    >
+                                                        First Name
+                                                    </label>
+                                                </div>
+                                                {errors.firstName && (
                                                     <div className="text-red-500 mt-1 text-sm ml-1">
                                                         {errors.firstName}
                                                     </div>
                                                 )}
-                                                </div>
-                                                <div>
-                                            <div
-                                                className={clsx(
-                                                    styles.formField,
-                                                    "flex-1"
-                                                )}
-                                            >
-                                                <input
-                                                    required
-                                                    onChange={
-                                                        handleInputChange
-                                                    }
-                                                    value={user.lastName}
-                                                    name="lastName"
-                                                    data-validate
+                                            </div>
+                                            <div className="flex-1">
+                                                <div
                                                     className={clsx(
-                                                        styles.formInput
-                                                    )}
-                                                    type="text"
-                                                />
-                                                <label
-                                                    className={clsx(
-                                                        styles.formLabel
+                                                        styles.formField,
+                                                        "flex-1"
                                                     )}
                                                 >
-                                                    Last Name
-                                                </label>
-                                                
-                                            </div>
-                                            {errors.lastName && (
+                                                    <input
+                                                        required
+                                                        onChange={
+                                                            handleInputChange
+                                                        }
+                                                        value={
+                                                            user.lastName || ""
+                                                        }
+                                                        name="lastName"
+                                                        data-validate
+                                                        className={clsx(
+                                                            styles.formInput
+                                                        )}
+                                                        type="text"
+                                                    />
+                                                    <label
+                                                        className={clsx(
+                                                            styles.formLabel
+                                                        )}
+                                                    >
+                                                        Last Name
+                                                    </label>
+                                                </div>
+                                                {errors.lastName && (
                                                     <div className="text-red-500 mt-1 text-sm ml-1">
                                                         {errors.lastName}
                                                     </div>
                                                 )}
-                                                </div>
+                                            </div>
                                         </div>
                                         <div>
                                         <div
                                             className={clsx(
                                                 styles.formField,
-                                                "w-full "
+                                                "w-full disabled-field"
+                                                // {
+                                                //     "disabled-field":
+                                                //         userInfo.email.includes(
+                                                //             "@"
+                                                //         ) === null,
+                                                // }
                                             )}
                                         >
                                             <div className="relative">
@@ -451,7 +389,14 @@ function UserProfile({ adminOpen = false }) {
                                                     className={clsx(
                                                         styles.formInput
                                                     )}
+                                                    onChange={handleInputChange}
                                                     type="text"
+                                                    // disabled={
+                                                    //     userInfo.email.includes(
+                                                    //         "@"
+                                                    //     ) === null
+                                                    // }
+                                                    disabled
                                                 />
                                                 <label
                                                     className={clsx(
@@ -460,18 +405,14 @@ function UserProfile({ adminOpen = false }) {
                                                 >
                                                     Email
                                                 </label>
-                                                
                                             </div>
-                                            </div>
-
                                             {errors.email && (
-                                                    <div className="text-red-500 mt-1 text-sm ml-1">
-                                                        {errors.email}
-                                                    </div>
-                                                )}
+                                                <div className="text-red-500 mt-1 text-sm ml-1">
+                                                    {errors.email}
+                                                </div>
+                                            )}
                                         </div>
 
-                                       
                                         <div
                                             className={clsx(
                                                 styles.formField,
@@ -481,9 +422,7 @@ function UserProfile({ adminOpen = false }) {
                                             <div className="relative">
                                                 <input
                                                     required
-                                                    onChange={
-                                                        handleInputChange
-                                                    }
+                                                    onChange={handleInputChange}
                                                     value={
                                                         user.phoneNumber || " "
                                                     }
@@ -531,6 +470,54 @@ function UserProfile({ adminOpen = false }) {
                                         action=""
                                     >
                                         {!adminOpen && (
+                                            <div>
+                                                <div
+                                                    className={clsx(
+                                                        styles.formField,
+                                                        "w-full "
+                                                    )}
+                                                >
+                                                    <div className="px-2 w-full flex text-sm">
+                                                        <input
+                                                            id="oldPassword"
+                                                            autoComplete="off"
+                                                            required
+                                                            onChange={
+                                                                handleInputPasswordChange
+                                                            }
+                                                            name="oldPassword"
+                                                            value={
+                                                                passwords.oldPassword ||
+                                                                ""
+                                                            }
+                                                            data-validate
+                                                            className={clsx(
+                                                                styles.formInput
+                                                            )}
+                                                            type="password"
+                                                        ></input>
+                                                        <label
+                                                            className={clsx(
+                                                                styles.formLabel
+                                                            )}
+                                                        >
+                                                            Old Password
+                                                        </label>
+                                                        <ShowPassword
+                                                            passInput={document.getElementById(
+                                                                "oldPassword"
+                                                            )}
+                                                        ></ShowPassword>
+                                                    </div>
+                                                </div>
+                                                {errors.oldPassword && (
+                                                    <div className="text-red-500 mt-1 text-sm ml-1">
+                                                        {errors.oldPassword}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+                                        <div>
                                             <div
                                                 className={clsx(
                                                     styles.formField,
@@ -539,17 +526,16 @@ function UserProfile({ adminOpen = false }) {
                                             >
                                                 <div className="px-2 w-full flex text-sm">
                                                     <input
-                                                        id="oldPassword"
                                                         autoComplete="off"
+                                                        id="newPassword"
                                                         required
                                                         onChange={
                                                             handleInputPasswordChange
                                                         }
-                                                        name="oldPassword"
                                                         value={
-                                                            passwords.oldPassword ||
-                                                            ""
+                                                            passwords.newPassword
                                                         }
+                                                        name="newPassword"
                                                         data-validate
                                                         className={clsx(
                                                             styles.formInput
@@ -561,111 +547,66 @@ function UserProfile({ adminOpen = false }) {
                                                             styles.formLabel
                                                         )}
                                                     >
-                                                        Old Password
+                                                        New Password
                                                     </label>
                                                     <ShowPassword
                                                         passInput={document.getElementById(
-                                                            "oldPassword"
+                                                            "newPassword"
                                                         )}
                                                     ></ShowPassword>
-                                                    
                                                 </div>
-                                                {errors.oldPassword && (
-                                                    <div className="text-red-500 mt-1 text-sm ml-1">
-                                                        {errors.oldPassword}
-                                                    </div>
-                                                )}
                                             </div>
-                                            
-                                        )}
-                                        <div
-                                            className={clsx(
-                                                styles.formField,
-                                                "w-full "
-                                            )}
-                                        >
-                                            <div className="px-2 w-full flex text-sm">
-                                                <input
-                                                    autoComplete="off"
-                                                    id="newPassword"
-                                                    required
-                                                    onChange={
-                                                        handleInputPasswordChange
-                                                    }
-                                                    value={
-                                                        passwords.newPassword
-                                                    }
-                                                    name="newPassword"
-                                                    data-validate
-                                                    className={clsx(
-                                                        styles.formInput
-                                                    )}
-                                                    type="password"
-                                                ></input>
-                                                <label
-                                                    className={clsx(
-                                                        styles.formLabel
-                                                    )}
-                                                >
-                                                    New Password
-                                                </label>
-                                                <ShowPassword
-                                                    passInput={document.getElementById(
-                                                        "newPassword"
-                                                    )}
-                                                ></ShowPassword>
-                                            </div>
-                                            
-                                        </div>
-                                        {errors.newPassword && (
+                                            {errors.newPassword && (
                                                 <div className="text-red-500 text-sm ml-1">
                                                     {errors.newPassword}
                                                 </div>
                                             )}
-                                        <div
-                                            className={clsx(
-                                                styles.formField,
-                                                "w-full "
-                                            )}
-                                        >
-                                            <div className="px-2 w-full flex text-sm">
-                                                <input
-                                                    autoComplete="off"
-                                                    id="confirmPassword"
-                                                    required
-                                                    onChange={
-                                                        handleInputPasswordChange
-                                                    }
-                                                    value={
-                                                        passwords.confirmPassword
-                                                    }
-                                                    name="confirmPassword"
-                                                    data-validate
-                                                    className={clsx(
-                                                        styles.formInput
-                                                    )}
-                                                    type="password"
-                                                ></input>
-                                                <label
-                                                    className={clsx(
-                                                        styles.formLabel
-                                                    )}
-                                                >
-                                                    Confirm Password
-                                                </label>
-                                                <ShowPassword
-                                                    passInput={document.getElementById(
-                                                        "confirmPassword"
-                                                    )}
-                                                ></ShowPassword>
-                                            </div>
-                                            
                                         </div>
-                                        {errors.confirmPassword && (
-                                                <div className="text-red-500 text-sm ml-1">
+                                        <div>
+                                            <div
+                                                className={clsx(
+                                                    styles.formField,
+                                                    "w-full "
+                                                )}
+                                            >
+                                                <div className="px-2 w-full flex text-sm">
+                                                    <input
+                                                        autoComplete="off"
+                                                        id="confirmPassword"
+                                                        required
+                                                        onChange={
+                                                            handleInputPasswordChange
+                                                        }
+                                                        value={
+                                                            passwords.confirmPassword
+                                                        }
+                                                        name="confirmPassword"
+                                                        data-validate
+                                                        className={clsx(
+                                                            styles.formInput
+                                                        )}
+                                                        type="password"
+                                                    ></input>
+                                                    <label
+                                                        className={clsx(
+                                                            styles.formLabel
+                                                        )}
+                                                    >
+                                                        Confirm Password
+                                                    </label>
+                                                    <ShowPassword
+                                                        passInput={document.getElementById(
+                                                            "confirmPassword"
+                                                        )}
+                                                    ></ShowPassword>
+                                                </div>
+                                            </div>
+                                            {errors.confirmPassword && (
+                                                <div className="text-red-500 mt-1 text-sm ml-1">
                                                     {errors.confirmPassword}
                                                 </div>
                                             )}
+                                        </div>
                                         <button
                                             type="submit"
                                             className={clsx(styles.btn)}

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class PUserController {
     private final AuthService authService;
     private final MailService mailService;
+
     @PostMapping("/login")
     public ResponseEntity<ResponseObject> authenticate(@RequestBody AuthenticationRequest request) {
         var res = authService.authenticate(request);
@@ -62,10 +63,9 @@ public class PUserController {
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
-        if(!authService.resetPassword(request))
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Lỗi trong thay đổi mật khaẩu!");
-        return ResponseEntity.ok("Thay đổi mật khẩu thành công!");
+    public ResponseEntity<ResponseObject> resetPassword(@RequestBody ResetPasswordRequest request) {
+            var result = authService.resetPassword(request);
+        return ResponseEntity.status(result.getStatus()).body(result);
     }
 
 //    @PostMapping("/send-verify-otp")

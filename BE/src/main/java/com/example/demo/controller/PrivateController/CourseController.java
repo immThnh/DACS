@@ -15,6 +15,16 @@ import java.util.List;
 public class CourseController {
     private final CourseService courseService;
 
+    @GetMapping("")
+    public ResponseEntity<ResponseObject> getCourseByCourseTitle(@RequestParam("title") String title,
+                                                                 @RequestParam(defaultValue = "0") int page,
+                                                                 @RequestParam(defaultValue = "5") int size
+            , @RequestParam(defaultValue = "false") boolean isDeleted) {
+        System.out.println(title);
+        var result = courseService.getAllCourseByCourseTitle(title, isDeleted, page, size);
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
+
     @PostMapping("/create")
     public ResponseEntity<ResponseObject> create(@RequestPart CourseDTO course
             , @RequestPart(required = false) MultipartFile thumbnail

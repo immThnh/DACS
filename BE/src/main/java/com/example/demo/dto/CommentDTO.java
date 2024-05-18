@@ -16,4 +16,5 @@ public class CommentDTO {
     private String avatar;
     private int parentId;
     private String replyToUser;
+    private String replyToUserName;
 }

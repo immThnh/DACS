@@ -15,12 +15,9 @@ import SearchBar from "../../component/search";
 
 export default function Header() {
     const navigate = useNavigate();
-
     const [page, setPage] = React.useState("login");
     const [isAdmin, setIsAdmin] = React.useState(false);
-    const notifications = useSelector(
-        (state) => state.notification.notifications
-    );
+  
     const { user } = useSelector((state) => state.login);
     const dispatch = useDispatch();
 
@@ -33,6 +30,7 @@ export default function Header() {
     useNotificationWebSocket();
 
     useEffect(() => {
+        if (!user) return;
         const fetchApi = async () => {
             try {
                 const result = await userApi.getAllNotification(user.email);

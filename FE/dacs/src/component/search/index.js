@@ -132,7 +132,7 @@ const SearchBar = () => {
                 </div>
             </div>
             {showResult && (
-                <div className="absolute top-full bg-white border border-gray-300 rounded-md shadow-lg w-full z-20 mt-26px">
+                <div className="absolute top-full bg-white border border-gray-300 rounded-md shadow-lg w-full z-20 mt-3">
                     {searchResult.length > 0 ? (
                         <div>
                             {searchResult.map((course, index) => (
@@ -170,10 +170,10 @@ const SearchBar = () => {
                                 </div>
                             ))}
                             <hr className="cssHr" />
-                            <div className="cursor-pointer p-2.5 text-sm text-center text-gray-700 truncate">
+                            {/* <div className="cursor-pointer p-2.5 text-sm text-center text-gray-700 truncate">
                                 View more results for "
                                 <strong>{searchTerm}</strong>"
-                            </div>
+                            </div> */}
                         </div>
                     ) : (
                         <div className="p-4 flex items-center text-xs flex-col ">
@@ -185,7 +185,6 @@ const SearchBar = () => {
                                 <strong>{searchTerm}</strong>".
                             </span>
                             <span>
-                                {" "}
                                 Try checking for typos or using complete words.
                             </span>
                         </div>

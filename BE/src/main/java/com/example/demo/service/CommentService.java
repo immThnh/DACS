@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +24,25 @@ public class CommentService {
     private  final CommentRepository commentRepository;
     private  final LessonRepository lessonRepository;
 
+    public Comment getById(int id) {
+        return commentRepository.findById(id).orElse(null);
+    }
+
+    public void deleteById(int id) {
+        var comment = commentRepository.findById(id).orElse(null);
+        if (comment == null) {
+            return ;
+        }
+        List<Comment> subComments = commentRepository.findAllByParentId(id);
+
+        if(!subComments.isEmpty()) {
+            for (Comment subComment : subComments) {
+                subComment.getUser().getComments().remove(subComment);
+                commentRepository.delete(subComment);
+            }
+        }
+        commentRepository.delete(comment);
+    }
     public Notification saveNotification(CommentDTO commentDTO) {
         var sendToUser = userRepository.findByEmail(commentDTO.getReplyToUser()).orElse(null);
         if (sendToUser == null) {
@@ -64,6 +84,7 @@ public class CommentService {
                 .parentId(commentDTO.getParentId())
                 .date(LocalDateTime.now())
                 .replyToUser(commentDTO.getReplyToUser())
+                .replyToUserName(commentDTO.getReplyToUserName())
                 .build();
         return commentRepository.save(comment);
     }

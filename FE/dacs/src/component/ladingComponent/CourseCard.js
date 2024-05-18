@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import * as dataApi from "../../api/apiService/dataService.js";
 import { useSelector } from "react-redux";
 import * as userApi from "../../api/apiService/authService.js";
+import { toast } from "sonner";
 
 function Badge({ children }) {
     return (
@@ -35,6 +36,10 @@ export const CourseCard = memo(
                     }
                 };
                 fetchApi();
+            } else {
+                toast.info("Please login to enroll this course");
+                sessionStorage.setItem("prevPath", window.location.pathname);
+                navigate("/login");
             }
         };
 
@@ -78,7 +83,7 @@ const CoursesComponent = () => {
     useEffect(() => {
         const fetchApi = async () => {
             try {
-                const result = await dataApi.getAllCourse(0, 3);
+                const result = await dataApi.getAllCourse(0, 9999);
                 setCourses(result.content.content);
             } catch (error) {
                 console.log("error: " + error);

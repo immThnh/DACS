@@ -129,7 +129,16 @@ function Payment() {
                             )}
                         >
                             <div className="flex gap-2 flex-1">
-                                <img src={avatar} alt="Course images" />
+                                <img
+                                    loading="lazy"
+                                    src={
+                                        course.thumbnail
+                                            ? course.thumbnail
+                                            : avatar
+                                    }
+                                    alt="Course images"
+                                    className="object-cover"
+                                />
                                 <div className="text-sm font-bold mr-2">
                                     {course && course.title}
                                 </div>

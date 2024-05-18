@@ -1,6 +1,7 @@
 package com.example.demo.entity.data;
 
 import com.example.demo.entity.user.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jdk.jshell.spi.ExecutionControl;
 import lombok.AllArgsConstructor;
@@ -20,8 +21,10 @@ public class Progress {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  int id;
     private List<Integer> lessonIds;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     private Course course;
-    @ManyToOne
+
+    @ManyToOne (cascade = CascadeType.PERSIST)
+    @JsonIgnore
     private User user;
 }

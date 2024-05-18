@@ -2,21 +2,19 @@ package com.example.demo.dto;
 
 import com.example.demo.entity.data.Progress;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@RequiredArgsConstructor
 public class CourseDTO {
     private String title;
     private int price;
+    private String thumbnail;
     private int discount;
     private String description;
     private LocalDateTime date;
@@ -30,5 +28,9 @@ public class CourseDTO {
     private String actionVideo = "NONE";
     private Progress progress;
 
-    public CourseDTO(String temp) {}
+    public CourseDTO(String title, int price, String thumbnail) {
+        this.title = title;
+        this.price = price;
+        this.thumbnail = thumbnail;
+    }
 }

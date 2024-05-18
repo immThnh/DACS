@@ -16,12 +16,16 @@ import HistoryDeleted from "../pages/admin/Course/historyDeleted";
 import HistoryDeletedCategory from "../pages/admin/Category/historyDeleted";
 import ListUser from "../pages/admin/user/list";
 import ListDeletedUser from "../pages/admin/user/historyDeleted";
-import UserProfile from "../pages/user/userprofile";
+import UserProfile from "../pages/user/userprofile/index";
 import Payment from "../pages/payment";
 import SuccessPayment from "../pages/payment/success";
 import FailurePayment from "../pages/payment/failure";
 import AdminView from "../pages/admin/user/userProfileAdmin";
-import SearchResults from "../pages/searchResult";
+import MyCourses from "../pages/user/userCourse/index";
+import ListInvoice from "../pages/admin/invoice/list";
+import ListDeleteInvoice from "../pages/admin/invoice/historyDelete";
+import CreateUser from "../pages/admin/user/create";
+
 const publicRoutes = [
     { path: "/", component: LandingPage },
     { path: "/sign-up", component: SignUp },
@@ -38,6 +42,7 @@ const userRoutes = [
         path: "/course/detail/:id/openComment",
         component: DetailCourse,
     },
+    { path: "/me/my-courses", component: MyCourses },
     { path: "/course/payment/:id", component: Payment },
     { path: "/payment/success", component: SuccessPayment },
     { path: "/payment/failure", component: FailurePayment },
@@ -63,11 +68,15 @@ const adminRoutes = [
     },
 
     { path: "/admin/user/list", component: ListUser },
-    { path: "/admin/user/create", component: CreateCourse },
+    { path: "/admin/user/create", component: CreateUser },
     { path: "/admin/user/edit/:id", component: EditCourse },
     { path: "/admin/user/detail/:id", component: DetailCourseAdmin },
     { path: "/admin/user/historyDelete", component: ListDeletedUser },
-    {path:"/admin/user/view/:email",component:AdminView}
+    { path: "/admin/user/view/:email", component: AdminView },
+
+    { path: "/admin/invoice/list", component: ListInvoice },
+    { path: "/admin/invoice/create", component: CreateCourse },
+    { path: "/admin/invoice/historyDelete", component: ListDeleteInvoice },
 ];
 
 export { publicRoutes, adminRoutes, userRoutes };

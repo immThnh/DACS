@@ -1,14 +1,16 @@
 import axios from "axios";
-import loginSlice from "../redux/reducers/loginSlice";
-import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 let redirectPage = null;
 export const injectNavigate = (navigate) => {
     redirectPage = navigate;
 };
 
-const getToken = () => {
-    return sessionStorage.getItem("token");
+const sessionExpired = () => {
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("user");
+    sessionStorage.setItem("prevPath", window.location.pathname);
+    toast.error("Session expired, please login again");
+    redirectPage("/login");
 };
 
 const publicInstance = axios.create({
@@ -40,7 +42,9 @@ privateInstance.interceptors.response.use(
         if (error.response.status === 403) {
             toast.error("You don't have permission to access this page");
             redirectPage("/");
-            return Promise.reject(error.response.data);
+        } else if (error.response.status === 401) {
+            console.log(error);
+            sessionExpired();
         }
         return Promise.reject(error.response.data);
     }
@@ -62,12 +66,7 @@ userInstance.interceptors.response.use(
     },
     function (error) {
         if (error.response.status === 401) {
-            sessionStorage.removeItem("token");
-            sessionStorage.removeItem("user");
-            sessionStorage.setItem("prevPath", window.location.pathname);
-            toast.error("Session is expired, Please try logging in again");
-            redirectPage("/login");
-            return Promise.reject(error.response.data);
+            sessionExpired();
         }
         return Promise.reject(error.response.data);
     }
@@ -80,7 +79,3 @@ userInstance.interceptors.request.use(function (config) {
 });
 
 export default publicInstance;
-
-export function test({ children }) {
-    return <>{children}</>;
-}

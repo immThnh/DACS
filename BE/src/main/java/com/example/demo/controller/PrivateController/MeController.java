@@ -6,6 +6,8 @@ import com.example.demo.dto.EnrollDTO;
 import com.example.demo.dto.PasswordDTO;
 import com.example.demo.dto.ResponseObject;
 import com.example.demo.dto.UserDTO;
+import com.example.demo.entity.data.MethodPayment;
+import com.twilio.http.Response;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,6 +28,12 @@ public class MeController {
     @GetMapping("/")
     public String greeting() {
         return "Hello me";
+    }
+
+    @DeleteMapping("/{email}/comment/delete/{id}")
+    public ResponseEntity<ResponseObject> DeleteComment(@PathVariable String email, @PathVariable int id) {
+        var result = authService.deleteCommentById(email, id);
+        return ResponseEntity.status(result.getStatus()).body(result);
     }
 
     @GetMapping("/course/getAll/{email}")
@@ -113,17 +120,15 @@ public class MeController {
 
         switch (transactionStatus) {
             case "00" -> {
-                var result = authService.unLockCourse(email, courseId);
+                var result = authService.unLockCourse(email, courseId, MethodPayment.VNPAY);
                 if(result.getStatus() == HttpStatus.BAD_REQUEST) {
                     response.sendRedirect("http://localhost:3000/payment/failure?status="+ transactionStatus + "&email="+ email + "&courseId="+ courseId+"&content=" + result.getContent());
                 }
                 response.sendRedirect("http://localhost:3000/payment/success?status="+ transactionStatus + "&email="+ email + "&courseId="+ courseId);
             }
 
-            case "01", "02", "04", "05","06","07","09" -> {
+            case "01", "02", "04", "05","06","07","09" ->
                 response.sendRedirect("http://localhost:3000/payment/failure?status="+ transactionStatus + "&email="+ email + "&courseId="+ courseId);
-            }
-
         }
     }
 }

@@ -1,15 +1,16 @@
 package com.example.demo.dto;
 
+import com.example.demo.entity.data.Progress;
+import com.example.demo.entity.user.Role;
 import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.List;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@NoArgsConstructor
 public class UserDTO {
     private String email;
     private String password;
@@ -18,4 +19,9 @@ public class UserDTO {
     private String avatar;
     private String phoneNumber;
     private String token;
+    private List<Progress> progresses;
+    private Role role;
+
+    public void setAvatar(String avatar) {
+    }
 }

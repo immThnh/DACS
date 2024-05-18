@@ -112,7 +112,7 @@ export default function Footer() {
                         </div>
                     </div>
                 </div>
-                <hr className="shrink-0 mt-7 h-px bg-gray-100 border border-gray-100 border-solid max-md:max-w-full" />
+                {/* <hr className="shrink-0 mt-7 h-px bg-gray-100 border border-gray-100 border-solid max-md:max-w-full" /> */}
             </footer>
         )
     );
