@@ -17,13 +17,11 @@ const AdminView = () => {
     });
     const [activeForm, setActiveForm] = useState("details");
     const [errors, setErrors] = useState({});
-    const [avatarSrc, setAvatarSrc] = useState(avatar);
     const [passwords, setPasswords] = useState({
         newPassword: "",
         confirmPassword: "",
     });
 
-    const navigate = useNavigate();
     const { email } = useParams();
     const [selectedBtn, setSelectedBtn] = useState("0");
 
@@ -74,7 +72,6 @@ const AdminView = () => {
             await userApi.resetPasswordByEmail(passwords.newPassword, email);
             toast.success("Password updated successfully");
         } catch (error) {
-            console.error("Error resetting password:", error);
             toast.error("Failed to update password");
         }
     };
@@ -121,7 +118,7 @@ const AdminView = () => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         if (!validateProfileForm()) {
-            console.error("Invalid input");
+            toast.error("Invalid input");
             return;
         }
         const { avatar, ...userData } = user;

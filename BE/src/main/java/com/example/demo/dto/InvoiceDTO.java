@@ -19,7 +19,7 @@ public class InvoiceDTO {
     private final long total;
     private String content;
     private MethodPayment method;
-    private final UserDTO user;
+    private final UserStatisticDTO user;
     private Course course;
 
 }

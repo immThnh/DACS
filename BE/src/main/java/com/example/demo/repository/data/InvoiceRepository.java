@@ -15,22 +15,21 @@ import java.time.LocalDateTime;
 
 @Repository
 public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
-    @Query("SELECT new com.example.demo.dto.InvoiceDTO(i.id, i.date, i.total, i.content, i.method, new com.example.demo.dto.UserDTO(u.email, u.firstName, u.lastName, u.avatar)) FROM Invoice i JOIN i.user u WHERE i.isDelete = false")
+    @Query("SELECT new com.example.demo.dto.InvoiceDTO(i.id, i.date, i.total, i.content, i.method, new com.example.demo.dto.UserStatisticDTO(u.email, u.firstName, u.lastName, u.avatar)) FROM Invoice i JOIN i.user u WHERE i.isDelete = false")
     Page<InvoiceDTO> findAllInvoicesWithSelectedUserFields(Pageable pageable);
-
-    @Query("SELECT new com.example.demo.dto.InvoiceDTO(i.id, i.date, i.total, i.content, i.method, new com.example.demo.dto.UserDTO(u.email, u.firstName, u.lastName, u.avatar)) FROM Invoice i JOIN i.user u WHERE i.isDelete = true")
+    @Query("SELECT new com.example.demo.dto.InvoiceDTO(i.id, i.date, i.total, i.content, i.method, new com.example.demo.dto.UserStatisticDTO(u.email, u.firstName, u.lastName, u.avatar)) FROM Invoice i JOIN i.user u WHERE i.isDelete = true")
     Page<InvoiceDTO> findAllIDeleteInvoicesWithSelectedUserFields(Pageable pageable);
 
-    @Query("select new com.example.demo.dto.InvoiceDTO(i.id, i.date, i.total, i.content, i.method, new com.example.demo.dto.UserDTO(u.email, u.firstName, u.lastName, u.avatar)) from Invoice i JOIN i.user u WHERE function('YEAR', i.date) = ?3 and function('MONTH', i.date) = ?2 and function('DAY', i.date) = ?1")
+    @Query("select new com.example.demo.dto.InvoiceDTO(i.id, i.date, i.total, i.content, i.method, new com.example.demo.dto.UserStatisticDTO(u.email, u.firstName, u.lastName, u.avatar)) from Invoice i JOIN i.user u WHERE function('YEAR', i.date) = ?3 and function('MONTH', i.date) = ?2 and function('DAY', i.date) = ?1")
     Page<InvoiceDTO> findAllByDate(int day, int month, int year, Pageable pageable);
 
-    @Query("select new com.example.demo.dto.InvoiceDTO(i.id, i.date, i.total, i.content, i.method, new com.example.demo.dto.UserDTO(u.email, u.firstName, u.lastName, u.avatar)) from Invoice i JOIN i.user u WHERE i.date between ?1 and ?2")
+    @Query("select new com.example.demo.dto.InvoiceDTO(i.id, i.date, i.total, i.content, i.method, new com.example.demo.dto.UserStatisticDTO(u.email, u.firstName, u.lastName, u.avatar)) from Invoice i JOIN i.user u WHERE i.date between ?1 and ?2")
     Page<InvoiceDTO> findAllByDateBetween(LocalDateTime start, LocalDateTime end, Pageable pageable);
 
     @Override
     Page<Invoice> findAll(@NonNull Pageable pageable);
 
-    @Query("select new com.example.demo.dto.InvoiceDTO(i.id, i.date, i.total, i.content, i.method, new com.example.demo.dto.UserDTO(u.email, u.firstName, u.lastName, u.avatar)) from Invoice i JOIN i.user u WHERE (u.firstName like %?1% or u.lastName like %?1%) and i.isDelete = false")
+    @Query("select new com.example.demo.dto.InvoiceDTO(i.id, i.date, i.total, i.content, i.method, new com.example.demo.dto.UserStatisticDTO(u.email, u.firstName, u.lastName, u.avatar)) from Invoice i JOIN i.user u WHERE (u.firstName like %?1% or u.lastName like %?1%) and i.isDelete = false")
     Page<Invoice> findAllByUserFirstNameContainingOrLastNameContaining(String name, Pageable pageable);
 
     @Query("SELECT COUNT(i) FROM Invoice i WHERE MONTH(i.date) = :month AND YEAR(i.date) = :year")

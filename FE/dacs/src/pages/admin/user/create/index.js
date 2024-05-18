@@ -1,12 +1,8 @@
 import * as React from "react";
 import { useState, useEffect } from "react";
-import OAuth2Form from "../../../../component/auth/OAuth2Form.js";
 import * as authService from "../../../../api/apiService/authService.js";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import eyeSlash from "../../../../assets/images/eye-slash.png";
-import { useDispatch, useSelector } from "react-redux";
-import loginSlice from "../../../../redux/reducers/loginSlice.js";
 import styles from "../../../login/Login.module.scss";
 import clsx from "clsx";
 

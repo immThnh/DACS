@@ -12,11 +12,13 @@ const loginSlice = createSlice({
     },
     reducers: {
         setLogin: (state, action) => {
-            const { token, user } = action.payload;
-            state.user = user;
+            if (action) {
+                const { token, user } = action.payload;
+                state.user = user;
+                user && sessionStorage.setItem("user", JSON.stringify(user));
+                token && sessionStorage.setItem("token", token);
+            }
             state.isLogin = true;
-            user && sessionStorage.setItem("user", JSON.stringify(user));
-            token && sessionStorage.setItem("token", token);
         },
         setLogout: (state, action) => {
             sessionStorage.removeItem("token");

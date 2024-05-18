@@ -31,6 +31,7 @@ public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
     private final CloudService cloudService;
     private final AuthService authService;
     private final JwtService jwtService;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         OAuth2User oauth2User = (OAuth2User) authentication.getPrincipal();
@@ -44,9 +45,8 @@ public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
         }
         String family_name = "";
         if(oauth2User.getAttribute("name") != null) {
-            family_name = oauth2User.getAttribute("name");
+            family_name = oauth2User.getAttribute("name").toString();
         }
-        System.out.println(oauth2User.getAttributes());
         if(oauth2User.getAttribute("login") != null && Objects.equals(email, "")) {
             email = oauth2User.getAttribute("login");
         }
@@ -59,11 +59,16 @@ public class Oauth2SuccessHandler implements AuthenticationSuccessHandler {
                     .avatar(Objects.equals(avatar, "") ? null : avatar)
                     .build();
         }
-        if(user.getAvatar() == null && !Objects.equals(avatar, "")) {
+        String userAvatar = user.getAvatar();
+        if(userAvatar == null && !Objects.equals(avatar, "")) {
             user.setAvatar(avatar);
         }
-        userRepository.save(user);
 
+        if(userAvatar != null && Objects.equals(avatar, "")) {
+            avatar = user.getAvatar();
+        }
+
+        userRepository.save(user);
         Token token = new Token(jwtService.generateToken(user));
         user.setToken(token);
 

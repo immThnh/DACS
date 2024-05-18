@@ -48,7 +48,6 @@ export const login = async ({ email, password }) => {
 
         return res;
     } catch (error) {
-        console.log(error);
         return Promise.reject(error);
     }
 };
@@ -97,23 +96,15 @@ export const validateCode = async ({ email, code }) => {
 
 export const resetPassword = async ({ email, password }) => {
     try {
-        return await privateInstance.post(
-            `/user/reset-password/?email=${email}`,
-            {
-                password,
-                email,
-            },
-            {
-                "content-type": "application/json",
-            }
-        );
+        return await publicInstance.post(`/user/reset-password`, {
+            password,
+            email,
+        });
     } catch (error) {
         return Promise.reject(error);
     }
 };
 export const resetPasswordByEmail = async (password, email) => {
-    // ben nay gui len sai, gui 1 cai object len
-    console.log(password, email);
     try {
         return await privateInstance.put(
             `/user/resetPassword/${email}`,
@@ -126,8 +117,7 @@ export const resetPasswordByEmail = async (password, email) => {
             }
         );
     } catch (error) {
-        console.error("Error resetting password:", error);
-        throw error;
+        return Promise.reject(error);
     }
 };
 export const getAllUser = async () => {
@@ -249,7 +239,9 @@ export const updateProfile = async (user, avatar) => {
     formData.append("avatar", avatar);
     try {
         return await userInstance.putForm("/update", formData);
-    } catch (error) {}
+    } catch (error) {
+        return Promise.reject(error);
+    }
 };
 
 export const updatePassword = async (passwords) => {

@@ -73,30 +73,30 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
         if (!authService.register(request))
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email đã tồn tại!");
-        return ResponseEntity.ok("Đăng ký thành công!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email existed");
+        return ResponseEntity.ok("Register success!");
     }
 
     @PostMapping("/send-verify-email")
     public ResponseEntity<String> sendVerifyEmail(@RequestBody MailRequest email) {
         if (authService.isUsedEmail(email.getEmail())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email đã tồn tại!"); // 400
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email existed");
         }
         String code = authService.getVerifyCode();
         if (mailService.sendCode(email.getEmail(), code)) {
             return ResponseEntity.ok(code);
         }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Gửi không thành công!");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Send mail failed!");
     }
 
     @PostMapping("/send-reset-password-email")
     public ResponseEntity<String> sendResetPasswordEmail(@RequestBody MailRequest email) throws MessagingException {
         if (!authService.isUsedEmail(email.getEmail())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email không tồn tài!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email does not exist!");
         }
         String code = authService.getVerifyCode();
         if (!mailService.sendMailResetPassword(email.getEmail(), code)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Gửi mail thất bại!");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Send mail failed!");
         }
         authService.saveCode(email, code);
         return ResponseEntity.ok(code);
@@ -104,23 +104,15 @@ public class UserController {
 
     @PostMapping("/verify-reset-password-code")
     public ResponseEntity<String> verifyResetPassCode(@RequestBody MailRequest request) {
-        if (authService.isValidCode(request)) return ResponseEntity.ok("Mã xác thực đúng");
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Mã xác thực sai!");
+        if (authService.isValidCode(request)) return ResponseEntity.ok("Valid code");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid code");
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
-        if (!authService.resetPassword(request))
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Lỗi trong thay đổi mật khaẩu!");
-        return ResponseEntity.ok("Thay đổi mật khẩu thành công!");
+    public ResponseEntity<ResponseObject> resetPassword(@RequestBody ResetPasswordRequest request) {
+            var result = authService.resetPassword(request);
+        return ResponseEntity.status(result.getStatus()).body(result);
     }
-
-//    @PostMapping("/send-verify-otp")
-//    public ResponseEntity<String> sendOtp(@RequestBody OtpVerifyRequest request) {
-//        if(!authService.isValidPhoneNumber(request.getPhoneNumber())) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Số điện thoại chưa được đăng kí!");
-//        if(!authService.sendOtpVerification(request)) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Gửi OTP thất bại!");
-//        return ResponseEntity.ok("Gửi mã xác nhận thành công!");
-//    }
 
     @PutMapping("/delete/soft/{id}")
     public ResponseEntity<ResponseObject> softDelete(@PathVariable int id) {

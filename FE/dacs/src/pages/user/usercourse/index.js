@@ -2,7 +2,7 @@ import React, { memo, useEffect, useState } from "react";
 import styles from "./userCourses.module.scss";
 import clsx from "clsx";
 import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import * as userApi from "../../../api/apiService/authService";
 import Footer from "../../../layout/footer";
 
@@ -15,31 +15,6 @@ function Badge({ children }) {
 }
 export const CourseCard = memo(
     ({ course, textBtn = "Go to learn", courseId = -1 }) => {
-        const user = useSelector((state) => state.login.user);
-        const navigate = useNavigate();
-        // const handleGoToCourse = () => {
-        //     if (user) {
-        //         const fetchApi = async () => {
-        //             try {
-        //                 const result = await userApi.getListCourse(user.email);
-        //                 let isEnroll = false;
-        //                 result.content.forEach((progress) => {
-        //                     if (progress.course.id === courseId) {
-        //                         isEnroll = true;
-        //                         navigate(`/course/detail/${courseId}`);
-        //                     }
-        //                 });
-        //                 if (!isEnroll) {
-        //                     navigate(`/course/${courseId}`);
-        //                 }
-        //             } catch (error) {
-        //                 console.log(error);
-        //             }
-        //         };
-        //         fetchApi();
-        //     }
-        // };
-
         return (
             <div className="course-card w-full col-lg-3 px-4 flex flex-col mb-7">
                 <div className="b-shadow bg-white rounded-xl border border-gray-100 p-6 flex flex-col">
@@ -103,14 +78,19 @@ const MyCourses = () => {
             </div>
             <div className={clsx(styles.wrapContent, "container mt-6")}>
                 <div>
-                    {courses &&
+                    {courses?.length > 0 ? (
                         courses.map((course, ind) => (
                             <CourseCard
                                 key={ind}
                                 course={course}
                                 courseId={course.id}
                             />
-                        ))}
+                        ))
+                    ) : (
+                        <div className="font-base font-semibold">
+                            You have not enroll for any courses yet
+                        </div>
+                    )}
                 </div>
             </div>
             <Footer />

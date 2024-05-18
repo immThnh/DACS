@@ -220,11 +220,11 @@ public class AuthService {
     }
 
     public ResponseObject getUserByEmail(String email) {
-
         var user = userRepository.findByEmail(email).orElse(null);
         if(user == null) {
             return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Username not found").build();
         }
+        System.out.println("getUserByEmail: " + user);
         var userDTO = getUserDTOFromUser(user);
         return ResponseObject.builder().status(HttpStatus.OK).content(userDTO).mess("Successfully").build();
     }
@@ -268,12 +268,13 @@ public class AuthService {
             return user.getCode().get(request.getCode()).isAfter(LocalDateTime.now());
     }
 
-    public boolean resetPassword(ResetPasswordRequest request) {
+    public ResponseObject resetPassword(ResetPasswordRequest request) {
         var user = findUserByEmail(request.getEmail());
-        if(user == null) return false;
+        if(user == null) return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Reset password failed").build();
+        ;
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        userRepository.save(user);
-        return true;
+        user = userRepository.save(user);
+        return ResponseObject.builder().status(HttpStatus.OK).mess("Reset password successfully").content(user).build();
     }
 
     public ResponseObject adminUpdatePasswordForUser(PasswordDTO passwordDTO, String email) {
@@ -282,8 +283,8 @@ public class AuthService {
             return ResponseObject.builder().mess("User not found").status(HttpStatus.BAD_REQUEST).build();
         }
         user.setPassword(passwordEncoder.encode(passwordDTO.getNewPassword()));
-        userRepository.save(user);
-        return ResponseObject.builder().status(HttpStatus.OK).mess("Update password for user successfully").build();
+        user = userRepository.save(user);
+        return ResponseObject.builder().status(HttpStatus.OK).mess("Update password for user successfully").content(user).build();
     }
 
     public User findUserByEmail(String email) {
@@ -346,8 +347,8 @@ public class AuthService {
         user.setFirstName(userDTO.getFirstName());
         user.setLastName(userDTO.getLastName());
         user.setPhoneNumber(userDTO.getPhoneNumber());
-        userRepository.save(user);
-        return ResponseObject.builder().status(HttpStatus.OK).mess("Update successfully").content(userDTO).build();
+        user = userRepository.save(user);
+        return ResponseObject.builder().status(HttpStatus.OK).mess("Update successfully").content(user).build();
     }
 
     public ResponseObject updatePassword(PasswordDTO passwordDTO) {

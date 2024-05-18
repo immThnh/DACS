@@ -27,7 +27,7 @@ export default function SignUp() {
 
     const handleGoToLogin = () => {
         if (dangLogin) return;
-        dispatch(loginSlice.actions.setLogin());
+        dispatch(loginSlice.actions.setLogout());
         navigate("/login");
     };
 
@@ -52,7 +52,6 @@ export default function SignUp() {
         errors[name] = "";
         setErrors(errors);
     }
-    console.log("re-render");
 
     function handleOtpButtonClick() {
         const currentTime = new Date().getTime();

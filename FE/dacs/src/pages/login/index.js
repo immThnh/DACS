@@ -239,11 +239,15 @@ export default function Login() {
         const fetchApi = () => {
             toast.promise(authService.resetPassword(formForgotData), {
                 loading: "Processing...",
-                success: () => {
+                success: (data) => {
+                    console.log(data);
                     setEmailModalOpen(false);
                     return "Your password has been reset";
                 },
-                error: "Reset password is error, please try again",
+                error: (error) => {
+                    console.log(error);
+                    return "Reset password is error, please try again";
+                },
             });
         };
 

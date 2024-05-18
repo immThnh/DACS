@@ -19,17 +19,12 @@ function isPasswordStrong(password) {
 }
 
 function UserProfile({ adminOpen = false }) {
-    const [user, setUser] = useState({
-        firstName: "",
-        lastName: "",
-        email: "",
-        avatar: "",
-        phoneNumber: "",
-    });
+    const userInfo = useSelector((user) => user.login.user);
+
+    const [user, setUser] = useState({ ...userInfo });
 
     const [activeForm, setActiveForm] = useState();
     const [errors, setErrors] = useState({});
-    const userInfo = useSelector((user) => user.login.user);
     const [passwords, setPasswords] = useState({
         oldPassword: "",
         newPassword: "",
@@ -147,11 +142,12 @@ function UserProfile({ adminOpen = false }) {
         toast.promise(userApi.updateProfile(userData, avatar), {
             loading: "Loading...",
             success: (data) => {
-                setUser(data.content);
+                console.log(data);
+                // setUser(data.content);
                 return "Update successfully";
             },
             error: (err) => {
-                return "Update Failed";
+                return err.mess;
             },
         });
     };
@@ -160,13 +156,13 @@ function UserProfile({ adminOpen = false }) {
         const fetchApi = async () => {
             try {
                 const result = await userApi.getUserByEmail(userInfo.email);
-                if (!result.content.email.includes("@")) {
-                    result.content.email = null;
-                }
+                // if (!result.content.email.includes("@")) {
+                //     result.content.email = null;
+                // }
                 setUser(result.content);
                 setPasswords({ ...passwords, email: result.content.email });
             } catch (error) {
-                console.log(error.mess);
+                console.log(error);
             }
         };
         fetchApi();
@@ -335,7 +331,7 @@ function UserProfile({ adminOpen = false }) {
                                                             handleInputChange
                                                         }
                                                         value={
-                                                            user?.lastName || ""
+                                                            user.lastName || ""
                                                         }
                                                         name="lastName"
                                                         data-validate
@@ -362,11 +358,13 @@ function UserProfile({ adminOpen = false }) {
                                         <div
                                             className={clsx(
                                                 styles.formField,
-                                                "w-full",
-                                                {
-                                                    "disabled-field":
-                                                        !user.email === null,
-                                                }
+                                                "w-full disabled-field"
+                                                // {
+                                                //     "disabled-field":
+                                                //         userInfo.email.includes(
+                                                //             "@"
+                                                //         ) === null,
+                                                // }
                                             )}
                                         >
                                             <div className="relative">
@@ -378,10 +376,14 @@ function UserProfile({ adminOpen = false }) {
                                                     className={clsx(
                                                         styles.formInput
                                                     )}
+                                                    onChange={handleInputChange}
                                                     type="text"
-                                                    disabled={
-                                                        user.email !== null
-                                                    }
+                                                    // disabled={
+                                                    //     userInfo.email.includes(
+                                                    //         "@"
+                                                    //     ) === null
+                                                    // }
+                                                    disabled
                                                 />
                                                 <label
                                                     className={clsx(

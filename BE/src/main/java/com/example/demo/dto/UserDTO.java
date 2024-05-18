@@ -9,15 +9,14 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-@RequiredArgsConstructor
 @Builder
 @NoArgsConstructor
 public class UserDTO {
-    private final String email;
+    private String email;
     private String password;
-    private final String firstName;
-    private final String lastName;
-    private final String avatar;
+    private String firstName;
+    private String lastName;
+    private String avatar;
     private String phoneNumber;
     private String token;
     private List<Progress> progresses;
