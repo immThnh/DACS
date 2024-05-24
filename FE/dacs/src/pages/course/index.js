@@ -128,7 +128,7 @@ function Course() {
     const [totalLessons, setTotalLessons] = useState(0);
     const navigate = useNavigate();
     const userInfo = useSelector((state) => state.login.user);
-
+    
     useEffect(() => {
         const fetchApi = async () => {
             try {
@@ -158,7 +158,8 @@ function Course() {
             try {
                 const result = await userApi.getUserByEmail(userInfo.email);
                 let isEnrollCourse = false;
-                result.content.progresses.forEach((pro) => {
+                console.log(result);
+                result.content.progresses?.forEach((pro) => {
                     console.log(pro.course.title);
                     if (pro.course.title === course.title) {
                         isEnrollCourse = true;
@@ -169,6 +170,7 @@ function Course() {
                 } else {
                     navigate(`/course/detail/${course.id}`);
                 }
+                
             } catch (error) {
                 console.log(error);
             }

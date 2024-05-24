@@ -20,7 +20,6 @@ public class CourseController {
                                                                  @RequestParam(defaultValue = "0") int page,
                                                                  @RequestParam(defaultValue = "5") int size
             , @RequestParam(defaultValue = "false") boolean isDeleted) {
-        System.out.println(title);
         var result = courseService.getAllCourseByCourseTitle(title, isDeleted, page, size);
         return ResponseEntity.status(result.getStatus()).body(result);
     }

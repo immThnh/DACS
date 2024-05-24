@@ -21,8 +21,10 @@ import com.example.demo.repository.data.ProgressRepository;
 import com.example.demo.service.CommentService;
 import com.example.demo.service.InvoiceService;
 import com.example.demo.service.NotificationService;
+import com.example.demo.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -57,6 +59,19 @@ public class AuthService {
     private  final NotificationService notificationService;
     private final InvoiceService invoiceService;
     private  final CommentService commentService;
+    @Autowired
+    private PostService postService;
+
+   public ResponseObject savePost(PostDTO postDTO) {
+       var user = userRepository.findByEmail(postDTO.getEmail()).orElse(null);
+       if (user == null) {
+           return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("User not found").build();
+       }
+
+       postService.savePost(user, postDTO);
+       userRepository.save(user);
+       return ResponseObject.builder().status(HttpStatus.OK).mess("Create post successfully").build();
+   }
 
     public ResponseObject deleteCommentById(String email, int id) {
         var comment = commentService.getById(id);
@@ -131,7 +146,6 @@ public class AuthService {
 
     public ResponseObject updateLessonsIds(String alias, int courseId, List<Integer> lessonIds) {
         var email = alias + "@gmail.com";
-        System.out.println(alias + courseId + lessonIds);
         var user = userRepository.findByEmail(email).orElse(null);
         if(user == null) {
             return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("User not found").build();
@@ -224,7 +238,6 @@ public class AuthService {
         if(user == null) {
             return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Username not found").build();
         }
-        System.out.println("getUserByEmail: " + user);
         var userDTO = getUserDTOFromUser(user);
         return ResponseObject.builder().status(HttpStatus.OK).content(userDTO).mess("Successfully").build();
     }
@@ -243,7 +256,6 @@ public class AuthService {
 
     public boolean isUsedEmail(String email) {
         var user = userRepository.findByEmail(email).orElse(null);
-        System.out.println(user);
         return user != null;
     }
 

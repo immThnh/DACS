@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import styles from "./searchResult.module.scss";
-import { getCourseByName } from "../../api/apiService/dataService"; 
+import { getCourseByName } from "../../api/apiService/dataService";
 
 const SearchResults = () => {
     const { query } = useParams();
     const [results, setResults] = useState([]);
-
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -36,7 +35,9 @@ const SearchResults = () => {
                         </div>
                         <div className={styles.contentWrapper}>
                             <h3>
-                                <Link to={`/courses/${result.id}`}>{result.title}</Link>
+                                <Link to={`/courses/${result.id}`}>
+                                    {result.title}
+                                </Link>
                             </h3>
                             <p>{result.description}</p>
                         </div>

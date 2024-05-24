@@ -7,7 +7,6 @@ import Select from "react-select";
 import * as DataApi from "../../../../api/apiService/dataService";
 import { toast } from "sonner";
 import btnClose from "../../../../assets/images/btnClose.svg";
-import { redirect } from "react-router-dom";
 
 const initFormData = {
     title: "",
@@ -174,18 +173,35 @@ function CreateCourse() {
     const validateForm = (formData) => {
         const errors = {};
         if (!formData.title) errors.title = "Course Name is required.";
-        if (!formData.description) errors.description = "Description is required.";
+        if (!formData.description)
+            errors.description = "Description is required.";
         if (!formData.price) errors.price = "Price is required.";
         if (!formData.thumbnail) errors.thumbnail = "Thumbnail is required.";
-        if (formData.categories.length === 0) errors.categories = "At least one category is required.";
-
-        formData.sections.forEach((section, sectionIndex) => {
-            if (!section.title) errors[`section-${sectionIndex}`] = `Section ${sectionIndex + 1} Name is required.`;
-            section.lessons.forEach((lesson, lessonIndex) => {
-                if (!lesson.title) errors[`lesson-${sectionIndex}-${lessonIndex}`] = `Lesson ${lessonIndex + 1} Name is required in Section ${sectionIndex + 1}.`;
-                if (!lesson.description) errors[`lesson-desc-${sectionIndex}-${lessonIndex}`] = `Lesson ${lessonIndex + 1} Description is required in Section ${sectionIndex + 1}.`;
+        if (formData.categories.length === 0)
+            errors.categories = "At least one category is required.";
+        if (formData.section)
+            formData.sections.forEach((section, sectionIndex) => {
+                if (!section.title)
+                    errors[`section-${sectionIndex}`] = `Section ${
+                        sectionIndex + 1
+                    } Name is required.`;
+                section.lessons.forEach((lesson, lessonIndex) => {
+                    if (!lesson.title)
+                        errors[
+                            `lesson-${sectionIndex}-${lessonIndex}`
+                        ] = `Lesson ${
+                            lessonIndex + 1
+                        } Name is required in Section ${sectionIndex + 1}.`;
+                    if (!lesson.description)
+                        errors[
+                            `lesson-desc-${sectionIndex}-${lessonIndex}`
+                        ] = `Lesson ${
+                            lessonIndex + 1
+                        } Description is required in Section ${
+                            sectionIndex + 1
+                        }.`;
+                });
             });
-        });
 
         return errors;
     };
@@ -196,11 +212,10 @@ function CreateCourse() {
         setErrors(validationErrors);
 
         if (Object.keys(validationErrors).length > 0) {
-                toast.error("You need to fill in the empty field");
+            toast.error("You need to fill in the empty field");
             return;
         }
 
-        // ...rest of your submission logic
         const thumbnail = formData.thumbnail;
         const courseVideo = formData.video;
         formData.video = "";
@@ -224,6 +239,7 @@ function CreateCourse() {
                 ...formData,
                 categories: newCategories,
             };
+            console.log(newCourse);
             toast.promise(
                 DataApi.createCourse(newCourse, thumbnail, courseVideo, videos),
                 {
@@ -234,6 +250,7 @@ function CreateCourse() {
                     },
                     error: (error) => {
                         console.log(error);
+                        return error;
                     },
                 }
             );
@@ -358,7 +375,12 @@ function CreateCourse() {
                             </div>
                         </div>
                         <div className="flex overflow-hidden">
-                            <div className={clsx(styles.formField, "w-1/2")}>
+                            <div
+                                className={clsx(
+                                    styles.formField,
+                                    "w-1/2 overflow-hidden"
+                                )}
+                            >
                                 <span className={clsx(styles.formLabel2)}>
                                     Thumbnail
                                 </span>
@@ -378,7 +400,6 @@ function CreateCourse() {
                                         {errors.thumbnail}
                                     </div>
                                 )}
-
                                 <input
                                     name="thumbnail"
                                     onChange={handleFileChange}
@@ -420,7 +441,12 @@ function CreateCourse() {
                             </div>
                         </div>
                         <div className="flex  overflow-hidden">
-                            <div className={clsx(styles.formField, "w-1/2")}>
+                            <div
+                                className={clsx(
+                                    styles.formField,
+                                    "w-1/2 overflow-hidden"
+                                )}
+                            >
                                 <span className={clsx(styles.formLabel2)}>
                                     Video
                                 </span>
@@ -428,7 +454,8 @@ function CreateCourse() {
                                     htmlFor={`courseVideo`}
                                     className={clsx(
                                         styles.formLabel2,
-                                        styles.labelFile
+                                        styles.labelFile,
+                                        "h-full"
                                     )}
                                 >
                                     <div className={clsx(styles.iconFile)}>

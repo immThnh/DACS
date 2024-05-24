@@ -25,6 +25,10 @@ import MyCourses from "../pages/user/userCourse/index";
 import ListInvoice from "../pages/admin/invoice/list";
 import ListDeleteInvoice from "../pages/admin/invoice/historyDelete";
 import CreateUser from "../pages/admin/user/create";
+import AdminDetailCourse from "../pages/admin/Course/detail";
+import Post from "../pages/Post";
+import SubContent from "../pages/Post/create/subContent";
+import CreatePost from "../pages/Post/create";
 
 const publicRoutes = [
     { path: "/", component: LandingPage },
@@ -32,8 +36,8 @@ const publicRoutes = [
     { path: "/login", component: Login },
     { path: "*", component: NotFoundPage },
     { path: "/course/:id", component: Course },
-    { path: "/search/:query", component: SearchResults },
-
+    { path: "/posts/", component: Post },
+    // { path: "/search/:query", component: SearchResults },
 ];
 
 const userRoutes = [
@@ -47,6 +51,8 @@ const userRoutes = [
     { path: "/payment/success", component: SuccessPayment },
     { path: "/payment/failure", component: FailurePayment },
     { path: "me/profile/:email", component: UserProfile },
+    { path: "me/post/create", component: CreatePost },
+    { path: "me/post/create/sub", component: SubContent },
 ];
 
 const adminRoutes = [
@@ -56,7 +62,7 @@ const adminRoutes = [
     { path: "/admin/course/edit/:id", component: EditCourse },
     {
         path: "/admin/course/detail/:id",
-        component: DetailCourseAdmin,
+        component: AdminDetailCourse,
     },
     { path: "/admin/course/historyDelete", component: HistoryDeleted },
     { path: "/admin/category/list", component: ListCategory },

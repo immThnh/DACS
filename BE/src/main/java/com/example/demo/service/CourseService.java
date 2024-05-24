@@ -280,11 +280,11 @@ public class CourseService {
     public ResponseObject softDelete(int id) {
         var course = courseRepository.findById(id).orElse(null);
         if (course == null) {
-            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).content(courseRepository.findAll(PageRequest.of(0, 5))).mess("Course is not exist!").build();
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).content(courseRepository.findAllByIsDeleted(false, PageRequest.of(0, 5))).mess("Course is not exist!").build();
         }
         course.setDeleted(true);
         courseRepository.save(course);
-        return ResponseObject.builder().mess("Delete course successfully!").content(courseRepository.findAll(PageRequest.of(0, 5))).status(HttpStatus.OK).build();
+        return ResponseObject.builder().mess("Delete course successfully!").content(courseRepository.findAllByIsDeleted(false, PageRequest.of(0, 5))).status(HttpStatus.OK).build();
     }
 
     public ResponseObject hardDelete(int id) {
@@ -307,7 +307,7 @@ public class CourseService {
     }
 
     public ResponseObject getAllCourseByCategoryId(int id, int page, int size) {
-        if(id == -1) {
+        if (id == -1) {
             return ResponseObject.builder().status(HttpStatus.OK).content(courseRepository.findAll(PageRequest.of(page, size))).mess("Get data successfully").build();
         }
         var result = courseRepository.findByCategoryId(id, PageRequest.of(page, size));
@@ -315,7 +315,7 @@ public class CourseService {
     }
 
     public ResponseObject getAllCourseDeletedByCategoryId(int id, int page, int size) {
-        if(id == -1) {
+        if (id == -1) {
             return ResponseObject.builder().status(HttpStatus.OK).content(courseRepository.findAllByIsDeleted(true, PageRequest.of(page, size))).mess("Get data successfully").build();
         }
         var result = courseRepository.findByCategoryIdAndIsDeleted(id, PageRequest.of(page, size));
@@ -323,7 +323,7 @@ public class CourseService {
     }
 
     public ResponseObject getAllCourseByCourseTitle(String title, boolean isDeleted, int page, int size) {
-        var result = courseRepository.findByTitleContainingAndIsDeleted(title,isDeleted, PageRequest.of(page, size));
+        var result = courseRepository.findByTitleContainingAndIsDeleted(title, isDeleted, PageRequest.of(page, size));
         return ResponseObject.builder().status(HttpStatus.OK).content(result).mess("Get data successfully").build();
     }
 

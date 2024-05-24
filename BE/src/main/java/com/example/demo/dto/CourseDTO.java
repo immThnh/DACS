@@ -9,12 +9,27 @@ import java.util.List;
 
 @Data
 @Builder
+
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class CourseDTO {
-    private String title;
+//    private String title;
+//    private int price;
+//    private String thumbnail;
+//    private int discount;
+//    private String description;
+//    private LocalDateTime date;
+//    private List<Integer> categories;
+//    private List<SectionDTO> sections;
+//    @JsonProperty("isEditThumbnail")
+//    private int isEditedThumbnail;
+//    private String video;
+//    private int isEditedCategories;
+//    private int isEdited;
+//    private String actionVideo = "NONE";
+//    private Progress progress;
+private String title;
     private int price;
-    private String thumbnail;
     private int discount;
     private String description;
     private LocalDateTime date;
@@ -28,9 +43,10 @@ public class CourseDTO {
     private String actionVideo = "NONE";
     private Progress progress;
 
-    public CourseDTO(String title, int price, String thumbnail) {
-        this.title = title;
-        this.price = price;
-        this.thumbnail = thumbnail;
-    }
+
+//    public CourseDTO(String title, int price, String thumbnail) {
+//        this.title = title;
+//        this.price = price;
+//        this.thumbnail = thumbnail;
+//    }
 }

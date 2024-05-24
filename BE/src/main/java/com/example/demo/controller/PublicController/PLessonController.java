@@ -28,7 +28,6 @@ public class PLessonController {
     @GetMapping("/{id}/comments")
     public ResponseEntity<ResponseObject> getComments(@PathVariable  int id) {
         var result = commentService.getCommentByLessonId(id);
-        System.out.println(result);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 }
