@@ -219,7 +219,7 @@ function EditCourse() {
                 section.lessons.forEach((less) => {
                     if (less.video instanceof File) {
                         videos.push(less.video);
-                        less.video = "";
+                        // less.video = "";
                     }
                 });
         });
@@ -249,11 +249,13 @@ function EditCourse() {
                 DataApi.updateCourse(id, newCourse, thumbnail, video, videos),
                 {
                     loading: "Loading...",
-                    success: () => {
+                    success: (result) => {
                         window.location.reload();
+                        console.log(result);
                         return "Update successfully";
                     },
                     error: (error) => {
+                        console.log(error);
                         return error;
                     },
                 }
@@ -762,6 +764,7 @@ function EditCourse() {
                                                                 </label>
                                                                 <input
                                                                     name="video"
+                                                                    accept=".mp4"
                                                                     onChange={(
                                                                         e
                                                                     ) =>

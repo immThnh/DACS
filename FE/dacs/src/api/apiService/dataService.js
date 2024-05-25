@@ -50,7 +50,11 @@ export const createCourse = async (
     }
 };
 
-export const updateCourse = async (id, course, thumbnail, video, videos) => {
+export const updateCourse = async (id, course
+    , thumbnail
+    , video
+    , videos) => {
+        
     const formData = new FormData();
     console.log(course);
     const json = JSON.stringify(course);

@@ -28,9 +28,6 @@ public class Lesson {
 
     @ManyToOne()
     @JsonBackReference
-//    @JsonIgnore
     private Section section;
 
-    @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Exercise> exercises = new ArrayList<>();
 }
