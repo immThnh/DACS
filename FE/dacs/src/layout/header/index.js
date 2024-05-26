@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import logo from "../../assets/images/logo.png";
 import avatar from "../../assets/images/avatar_25.jpg";
@@ -17,7 +17,7 @@ export default function Header() {
     const navigate = useNavigate();
     const [page, setPage] = React.useState("login");
     const [isAdmin, setIsAdmin] = React.useState(false);
-  
+
     const { user } = useSelector((state) => state.login);
     const dispatch = useDispatch();
 
@@ -74,6 +74,7 @@ export default function Header() {
                                 className="shrink-0 w-10 aspect-square"
                             />
                         </Link>
+
                         <nav className="flex gap-4 justify-between my-auto">
                             <Link
                                 className={`nav-header ${
@@ -84,6 +85,18 @@ export default function Header() {
                                 to="/"
                             >
                                 Home
+                            </Link>
+                        </nav>
+                        <nav className="flex gap-4 justify-between my-auto">
+                            <Link
+                                className={`nav-header ${
+                                    window.location.pathname === "/"
+                                        ? "nav-header-active"
+                                        : ""
+                                }`}
+                                to="/posts"
+                            >
+                                Post
                             </Link>
                         </nav>
                         <div className="flex items-center">

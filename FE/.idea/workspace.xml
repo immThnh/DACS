@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="63615101-f363-4e46-9c50-fa799adcf22e" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/auth/AuthService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/auth/AuthService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/config/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/config/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/controller/PrivateController/MeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/controller/PrivateController/MeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/controller/PublicController/CommentController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/controller/PublicController/CommentController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/dto/CommentDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/dto/CommentDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/dto/UserDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/dto/UserDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/entity/data/Comment.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/entity/data/Comment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/entity/data/Invoice.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/entity/data/Invoice.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/entity/user/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/entity/user/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/repository/data/CommentRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/repository/data/CommentRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/repository/data/InvoiceRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/repository/data/InvoiceRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/service/CommentService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/service/CommentService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/service/InvoiceService.java" beforeDir="false" afterPath="$PROJECT_DIR$/../BE/src/main/java/com/example/demo/service/InvoiceService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/api/apiService/authService.js" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/api/apiService/authService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/api/apiService/dataService.js" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/api/apiService/dataService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/api/instance.js" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/api/instance.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/component/comment/Comment.module.scss" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/component/comment/Comment.module.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/component/comment/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/component/comment/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/component/dashboard/NavigationTopBar.js" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/component/dashboard/NavigationTopBar.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/component/dashboard/leftNavDash/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/component/dashboard/leftNavDash/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/component/dropDown/Menu.module.scss" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/component/dropDown/Menu.module.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/component/dropDown/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/component/dropDown/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/component/globalStyles/GlobalStyles.scss" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/component/globalStyles/GlobalStyles.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/component/ladingComponent/CourseSection.js" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/component/ladingComponent/CourseSection.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/component/search/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/component/search/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/layout/footer/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/layout/footer/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/layout/header/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/layout/header/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/pages/admin/Course/list/List.module.scss" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/pages/admin/Course/list/List.module.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/pages/admin/Course/list/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/pages/admin/Course/list/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/pages/admin/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/pages/admin/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/pages/admin/user/userProfileAdmin/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/pages/admin/user/userProfileAdmin/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/pages/course/detail/DetailCourse.module.scss" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/pages/course/detail/DetailCourse.module.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/pages/course/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/pages/course/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/pages/payment/success/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/pages/payment/success/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/pages/user/usercourse/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/pages/user/usercourse/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/pages/user/usercourse/userCourses.module.scss" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/pages/user/usercourse/userCourses.module.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/pages/user/userprofile/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/pages/user/userprofile/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/src/router/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dacs/tailwind.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/dacs/tailwind.config.js" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 1
+}</component>
+  <component name="ProjectId" id="2gaHvfujC00SV8vaKVmrUF8glBW" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "authConnectBE",
+    "last_opened_file_path": "D:/DACS/Code/BE"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="63615101-f363-4e46-9c50-fa799adcf22e" name="Changes" comment="" />
+      <created>1715929000852</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1715929000852</updated>
+    </task>
+    <servers />
+  </component>
+</project>

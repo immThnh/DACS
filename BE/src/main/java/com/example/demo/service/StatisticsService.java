@@ -37,8 +37,8 @@ public class StatisticsService {
                 .invoicesCreated(invoiceRepository.findInvoicesCreatedInMonth(month, year, PageRequest.of(0, Integer.MAX_VALUE)))
                 .usersRegistered(userRepository.findUsersRegisteredInMonth(month, year, PageRequest.of(0, Integer.MAX_VALUE)))
                 .build();
-        long invoiceTotal = invoiceRepository.sumInvoiceTotalInMonth(month, year);
-        statistics.setInvoiceTotal(invoiceTotal);
+        Long invoiceTotal = invoiceRepository.sumInvoiceTotalInMonth(month, year);
+        statistics.setInvoiceTotal(invoiceTotal != null ? invoiceTotal : 0);
         return statistics;
     }
 }

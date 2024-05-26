@@ -9,8 +9,6 @@ import { toast } from "sonner";
 import btnClose from "../../../../assets/images/btnClose.svg";
 import { useParams } from "react-router-dom";
 import makeAnimated from "react-select/animated";
-import { clear } from "@testing-library/user-event/dist/clear";
-import { isEditable } from "@testing-library/user-event/dist/utils";
 import validateForm from "../../../../component/validation";
 const animatedComponents = makeAnimated();
 
@@ -20,6 +18,7 @@ const initFormData = {
     description: "",
     price: "",
     thumbnail: "",
+    video: "",
     date: "",
     sections: [],
     categories: [],
@@ -29,6 +28,7 @@ function EditCourse() {
     const [formData, setFormData] = useState(initFormData);
     const [options, setOptions] = useState([]);
     const [errors, setErrors] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
     const { id } = useParams();
 
     let timerId;
@@ -47,36 +47,59 @@ function EditCourse() {
 
     const handleFileChange = (e, index, indexSection) => {
         const file = e.target.files[0];
-        if (file.type === "video/mp4") {
-            let updateSection = { ...formData.sections[indexSection] };
-            updateSection = {
-                ...updateSection,
-                isEdited: 1,
-            };
-            updateSection.lessons[index] = {
-                ...updateSection.lessons[index],
-                video: file,
-                actionVideo: "UPDATE",
-            };
-            const updateSections = [...formData.sections];
-            updateSections[indexSection] = updateSection;
+        setIsLoading((prev) => true);
+        toast.promise(DataApi.uploadImg(file), {
+            loading: "Loading file...",
+            success: (result) => {
+                setIsLoading((prev) => false);
+                if (file.type === "video/mp4") {
+                    const updateSection = {
+                        ...formData.sections[indexSection],
+                    };
+                    updateSection.lessons[index] = {
+                        ...updateSection.lessons[index],
+                        video: result.content,
+                    };
+                    const updateSections = [...formData.sections];
+                    updateSections[indexSection] = updateSection;
 
-            setFormData({ ...formData, sections: [...updateSections] });
-        } else {
-            setFormData({
-                ...formData,
-                thumbnail: file,
-                isEditThumbnail: 1,
-            });
-        }
+                    setFormData({
+                        ...formData,
+                        sections: [...updateSections],
+                    });
+                } else {
+                    setFormData({
+                        ...formData,
+                        thumbnail: result.content,
+                    });
+                }
+                return "Uploading successfully...";
+            },
+            error: (error) => {
+                console.log(error);
+                return "Upload file failed";
+            },
+        });
         e.target.value = "";
         errors[e.target.name] = "";
         setErrors(errors);
     };
 
     const handleUpdateVideoCourse = (e) => {
-        const file = e.target.files[0];
-        setFormData({ ...formData, video: file, actionVideo: "UPDATE" });
+        setIsLoading((prev) => true);
+        toast.promise(DataApi.uploadImg(e.target.files[0]), {
+            loading: "Loading video...",
+            success: (result) => {
+                setIsLoading((prev) => false);
+
+                setFormData({ ...formData, video: result.content });
+                return "Upload video successfully";
+            },
+            error: (error) => {
+                console.log(error);
+                return "Upload video failed";
+            },
+        });
     };
 
     const handleSelectChange = (e) => {
@@ -171,20 +194,21 @@ function EditCourse() {
     const handleRemoveSection = (index) => {
         const updateSections = [...formData.sections];
         updateSections.splice(index, 1);
-        setFormData({ ...formData, sections: [...updateSections] });
+        setFormData({
+            ...formData,
+            sections: updateSections,
+        });
     };
 
     const handleRemoveLesson = (index, sectionId) => {
         var newSection = { ...formData.sections[sectionId] };
-        newSection.lessons.splice(index, 1);
         var newSections = [...formData.sections];
 
-        newSections[sectionId] = newSections;
+        newSections[sectionId].lesson = newSection.lessons.splice(index, 1);
         setFormData({ ...formData, sections: newSections });
     };
-
     const handleRemoveVideoCourse = (e) => {
-        setFormData({ ...formData, video: null, actionVideo: "REMOVE" });
+        setFormData({ ...formData, video: "" });
     };
 
     //!NOTE: ========================END HANDLE ====================================
@@ -205,26 +229,14 @@ function EditCourse() {
     //!======================================NOTE SUBMIT ========================
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (isLoading) return toast.error("Please wait for the file to upload");
         const validationErrors = validateForm(formData);
         setErrors(validationErrors);
-        if (Object.keys(validationErrors).length > 0) {       
-                toast.error("You need to fill in the empty field");
+
+        if (Object.keys(validationErrors).length > 0) {
+            toast.error("You need to fill in the empty field");
             return;
         }
-
-        const thumbnail = formData.thumbnail;
-        const video = formData.video;
-        formData.video = null;
-        const videos = [];
-        formData.sections.forEach((section) => {
-            if (section.lessons)
-                section.lessons.forEach((less) => {
-                    if (less.video instanceof File) {
-                        videos.push(less.video);
-                        less.video = "";
-                    }
-                });
-        });
 
         const featchApi = async () => {
             let newCategories = [];
@@ -234,32 +246,16 @@ function EditCourse() {
                 categories: newCategories,
             };
 
-            if (newCourse.sections !== null) {
-                for (var i = 0; i < newCourse.sections.length; i++) {
-                    var section = newCourse.sections[i];
-                    if (section.lessons) {
-                        for (var j = 0; j < section.lessons.length; j++) {
-                            var lesson = section.lessons[j];
-                            if (lesson.video !== "") {
-                                lesson.actionVideo = "KEEP";
-                            }
-                        }
-                    }
-                }
-            }
-            toast.promise(
-                DataApi.updateCourse(id, newCourse, thumbnail, video, videos),
-                {
-                    loading: "Loading...",
-                    success: () => {
-                        window.location.reload();
-                        return "Update successfully";
-                    },
-                    error: (error) => {
-                        return error;
-                    },
-                }
-            );
+            toast.promise(DataApi.updateCourse(id, newCourse), {
+                loading: "Loading...",
+                success: (result) => {
+                    return "Update successfully";
+                },
+                error: (error) => {
+                    console.log(error);
+                    return error;
+                },
+            });
         };
 
         const debounceApi = debounce(featchApi);
@@ -282,26 +278,15 @@ function EditCourse() {
             try {
                 const result = await DataApi.getAllCategories();
                 setOptions(result.content.content);
-
-                toast.promise(DataApi.getCourseById(id), {
-                    loading: "Loading...",
-                    success: (data) => {
-                        setFormData(data.content);
-                        return "Get data successfully";
-                    },
-                    error: (error) => {
-                        return error.content;
-                    },
-                });
+                const data = await DataApi.getCourseById(id);
+                console.log(data);
+                setFormData(data.content);
             } catch (error) {
-                console.log("Error while get categories");
+                console.log(error);
             }
         };
-
         fetchApi();
     }, [id]);
-
-    console.log("render");
 
     return (
         <div className="flex justify-center w-full ">
@@ -398,7 +383,12 @@ function EditCourse() {
                     </div>
 
                     <div className="flex">
-                        <div className={clsx(styles.formField, "w-1/2")}>
+                        <div
+                            className={clsx(
+                                styles.formField,
+                                "w-1/2 overflow-hidden"
+                            )}
+                        >
                             <span className={clsx(styles.formLabel2)}>
                                 Thumbnail
                             </span>
@@ -410,7 +400,11 @@ function EditCourse() {
                                 )}
                             >
                                 <div className={clsx(styles.iconFile)}>
-                                    <img src={fileSelect} alt="" />
+                                    <img
+                                        loading="lazy"
+                                        src={fileSelect}
+                                        alt=""
+                                    />
                                 </div>
                             </label>
 
@@ -431,24 +425,23 @@ function EditCourse() {
                             {formData.thumbnail && (
                                 <div className={clsx(styles.imgField)}>
                                     <img
+                                        loading="lazy"
                                         className={clsx(styles.thumbnailImg)}
-                                        src={
-                                            !isURL(formData.thumbnail)
-                                                ? URL.createObjectURL(
-                                                      formData.thumbnail
-                                                  )
-                                                : formData.thumbnail
-                                        }
+                                        src={formData.thumbnail}
                                         alt=""
                                     />
                                     <button
                                         onClick={(e) =>
                                             handleRemoveItemPrevivew(e)
                                         }
-                                        className={clsx(styles.btnClose)}
+                                        className={clsx(styles.btnClosePreview)}
                                     >
                                         {" "}
-                                        <img src={btnClose} alt="" />{" "}
+                                        <img
+                                            loading="lazy"
+                                            src={btnClose}
+                                            alt=""
+                                        />{" "}
                                     </button>
                                 </div>
                             )}
@@ -456,7 +449,12 @@ function EditCourse() {
                     </div>
 
                     <div className="flex">
-                        <div className={clsx(styles.formField, "w-1/2")}>
+                        <div
+                            className={clsx(
+                                styles.formField,
+                                "w-1/2 overflow-hidden"
+                            )}
+                        >
                             <span className={clsx(styles.formLabel2)}>
                                 Video
                             </span>
@@ -464,11 +462,16 @@ function EditCourse() {
                                 htmlFor={`courseVideo`}
                                 className={clsx(
                                     styles.formLabel2,
-                                    styles.labelFile
+                                    styles.labelFile,
+                                    "h-full"
                                 )}
                             >
                                 <div className={clsx(styles.iconFile)}>
-                                    <img src={fileSelect} alt="" />
+                                    <img
+                                        loading="lazy"
+                                        src={fileSelect}
+                                        alt=""
+                                    />
                                 </div>
                             </label>
                             <input
@@ -494,13 +497,7 @@ function EditCourse() {
                                         className="rounded-lg"
                                     >
                                         <source
-                                            src={
-                                                !isURL(formData.video)
-                                                    ? URL.createObjectURL(
-                                                          formData.video
-                                                      )
-                                                    : formData.video
-                                            }
+                                            src={formData.video}
                                             type="video/mp4"
                                         />
                                     </video>
@@ -511,7 +508,11 @@ function EditCourse() {
                                         }
                                     >
                                         {" "}
-                                        <img src={btnClose} alt="" />{" "}
+                                        <img
+                                            loading="lazy"
+                                            src={btnClose}
+                                            alt=""
+                                        />{" "}
                                     </button>
                                 </div>
                             )}
@@ -519,8 +520,6 @@ function EditCourse() {
                     </div>
 
                     {/*NOTE Lesson */}
-
-                    <h5 className="text-center">Lesson</h5>
 
                     <div className={clsx(styles.lessonArea)}>
                         {formData.sections &&
@@ -578,9 +577,15 @@ function EditCourse() {
                                             >
                                                 Section Name
                                             </label>
-                                            {errors[`section-${sectionIndex}`] && (
+                                            {errors[
+                                                `section-${sectionIndex}`
+                                            ] && (
                                                 <div className="text-red-500 mt-1 text-sm ml-1">
-                                                    {errors[`section-${sectionIndex}`]}
+                                                    {
+                                                        errors[
+                                                            `section-${sectionIndex}`
+                                                        ]
+                                                    }
                                                 </div>
                                             )}
                                         </div>
@@ -650,9 +655,15 @@ function EditCourse() {
                                                             >
                                                                 Lesson Name
                                                             </label>
-                                                            {errors[`lesson-${sectionIndex}-${index}`] && (
+                                                            {errors[
+                                                                `lesson-${sectionIndex}-${index}`
+                                                            ] && (
                                                                 <div className="text-red-500 mt-1 text-sm ml-1">
-                                                                    {errors[`lesson-${sectionIndex}-${index}`]}
+                                                                    {
+                                                                        errors[
+                                                                            `lesson-${sectionIndex}-${index}`
+                                                                        ]
+                                                                    }
                                                                 </div>
                                                             )}
                                                         </div>
@@ -689,9 +700,15 @@ function EditCourse() {
                                                             >
                                                                 Description
                                                             </label>
-                                                            {errors[`lesson-desc-${sectionIndex}-${index}`] && (
+                                                            {errors[
+                                                                `lesson-desc-${sectionIndex}-${index}`
+                                                            ] && (
                                                                 <div className="text-red-500 mt-1 text-sm ml-1">
-                                                                    {errors[`lesson-desc-${sectionIndex}-${index}`]}
+                                                                    {
+                                                                        errors[
+                                                                            `lesson-desc-${sectionIndex}-${index}`
+                                                                        ]
+                                                                    }
                                                                 </div>
                                                             )}
                                                         </div>
@@ -722,6 +739,7 @@ function EditCourse() {
                                                                         )}
                                                                     >
                                                                         <img
+                                                                            loading="lazy"
                                                                             src={
                                                                                 fileSelect
                                                                             }
@@ -731,6 +749,7 @@ function EditCourse() {
                                                                 </label>
                                                                 <input
                                                                     name="video"
+                                                                    accept=".mp4"
                                                                     onChange={(
                                                                         e
                                                                     ) =>
@@ -766,13 +785,7 @@ function EditCourse() {
                                                                         >
                                                                             <source
                                                                                 src={
-                                                                                    !isURL(
-                                                                                        lesson.video
-                                                                                    )
-                                                                                        ? URL.createObjectURL(
-                                                                                              lesson.video
-                                                                                          )
-                                                                                        : lesson.video
+                                                                                    lesson.video
                                                                                 }
                                                                                 type="video/mp4"
                                                                             />
@@ -794,6 +807,7 @@ function EditCourse() {
                                                                         >
                                                                             {" "}
                                                                             <img
+                                                                                loading="lazy"
                                                                                 src={
                                                                                     btnClose
                                                                                 }

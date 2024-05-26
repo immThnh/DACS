@@ -21,56 +21,33 @@ export const getAllCategoryDeleted = async (page, size) => {
     }
 };
 
-export const createCourse = async (
-    course,
-    thumbnail = "",
-    courseVideo = "",
-    videos = ""
-) => {
+export const createCourse = async (course) => {
     const formData = new FormData();
     const json = JSON.stringify(course);
     const courseBlob = new Blob([json], {
         type: "application/json",
     });
-
-    for (let i = 0; i < videos.length; i++) {
-        formData.append("videos", videos[i]);
-    }
     formData.append("course", courseBlob);
-    formData.append("thumbnail", thumbnail);
-    formData.append("courseVideo", courseVideo);
-
     try {
-        const response = await privateInstance.post(
+        const response = await privateInstance.postForm(
             "/course/create",
-            formData,
-            {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            }
+            formData
         );
-        console.log("Response:", response);
+        return response;
     } catch (error) {
         return Promise.reject(error);
     }
 };
 
-export const updateCourse = async (id, course, thumbnail, video, videos) => {
-    const formData = new FormData();
+export const updateCourse = async (id, course) => {
     console.log(course);
+    const formData = new FormData();
     const json = JSON.stringify(course);
     const courseBlob = new Blob([json], {
         type: "application/json",
     });
 
-    for (let i = 0; i < videos.length; i++) {
-        formData.append("videos", videos[i]);
-    }
-
     formData.append("course", courseBlob);
-    formData.append("thumbnail", thumbnail);
-    formData.append("courseVideo", video);
     try {
         const result = await privateInstance.putForm(
             `/course/edit/${id}`,
@@ -81,6 +58,7 @@ export const updateCourse = async (id, course, thumbnail, video, videos) => {
         return Promise.reject(error);
     }
 };
+// coursvideo dang text
 
 export const getAllCourse = async (page = 0, size = 5) => {
     try {
@@ -115,11 +93,11 @@ export const getAllCourseDeleted = async (page, size) => {
     }
 };
 
-export const getCourseById = async (id) => {
+export const getCourseById = async (id, isDeleted = "false") => {
     try {
-        return await publicInstance.get(`/course/${id}`);
+        return await publicInstance.get(`/course/${id}?isDeleted=${isDeleted}`);
     } catch (error) {
-        return Promise.reject(error.response.data);
+        return Promise.reject(error);
     }
 };
 
@@ -324,6 +302,24 @@ export const getMonthlyStatistic = async (month, year, page = 0, size = 5) => {
         return await privateInstance.get(
             `/statistic?month=${month}&year=${year}&page=${page}&size=${size}`
         );
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const uploadImg = async (img) => {
+    try {
+        const formData = new FormData();
+        formData.append("file", img);
+        return await publicInstance.postForm("/upload/img", formData);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getPosts = async (page = "0", size = "5") => {
+    try {
+        return await publicInstance.get(`/post?page=${page}&size=${size}`);
     } catch (error) {
         return Promise.reject(error);
     }

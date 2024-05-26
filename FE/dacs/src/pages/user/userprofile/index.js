@@ -23,7 +23,7 @@ function UserProfile({ adminOpen = false }) {
 
     const [user, setUser] = useState({ ...userInfo });
 
-    const [activeForm, setActiveForm] = useState();
+    const [activeForm, setActiveForm] = useState("details");
     const [errors, setErrors] = useState({});
     const [passwords, setPasswords] = useState({
         oldPassword: "",
@@ -39,11 +39,19 @@ function UserProfile({ adminOpen = false }) {
             ...user,
             [name]: value,
         });
+        setErrors((prevErrors) => ({
+            ...prevErrors,
+            [name]: "",
+        }));
     };
 
     const handleInputPasswordChange = (e) => {
         const { name, value } = e.target;
         setPasswords({ ...passwords, [name]: value });
+        setErrors((prevErrors) => ({
+            ...prevErrors,
+            [name]: "",
+        }));
     };
 
     const handleFileChange = (event) => {
@@ -355,90 +363,100 @@ function UserProfile({ adminOpen = false }) {
                                                 )}
                                             </div>
                                         </div>
-                                        <div
-                                            className={clsx(
-                                                styles.formField,
-                                                "w-full disabled-field"
-                                                // {
-                                                //     "disabled-field":
-                                                //         userInfo.email.includes(
-                                                //             "@"
-                                                //         ) === null,
-                                                // }
-                                            )}
-                                        >
-                                            <div className="relative">
-                                                <input
-                                                    required
-                                                    value={user.email || " "}
-                                                    name="email"
-                                                    data-validate
-                                                    className={clsx(
-                                                        styles.formInput
-                                                    )}
-                                                    onChange={handleInputChange}
-                                                    type="text"
-                                                    // disabled={
-                                                    //     userInfo.email.includes(
-                                                    //         "@"
-                                                    //     ) === null
+                                        <div>
+                                            <div
+                                                className={clsx(
+                                                    styles.formField,
+                                                    "w-full disabled-field"
+                                                    // {
+                                                    //     "disabled-field":
+                                                    //         userInfo.email.includes(
+                                                    //             "@"
+                                                    //         ) === null,
                                                     // }
-                                                    disabled
-                                                />
-                                                <label
-                                                    className={clsx(
-                                                        styles.formLabel
-                                                    )}
-                                                >
-                                                    Email
-                                                </label>
-                                            </div>
-                                            {errors.email && (
-                                                <div className="text-red-500 mt-1 text-sm ml-1">
-                                                    {errors.email}
+                                                )}
+                                            >
+                                                <div className="relative">
+                                                    <input
+                                                        required
+                                                        onChange={
+                                                            handleInputChange
+                                                        }
+                                                        value={user.email}
+                                                        name="email"
+                                                        data-validate
+                                                        className={clsx(
+                                                            styles.formInput
+                                                        )}
+                                                        onChange={
+                                                            handleInputChange
+                                                        }
+                                                        type="text"
+                                                        // disabled={
+                                                        //     userInfo.email.includes(
+                                                        //         "@"
+                                                        //     ) === null
+                                                        // }
+                                                        disabled
+                                                    />
+                                                    <label
+                                                        className={clsx(
+                                                            styles.formLabel
+                                                        )}
+                                                    >
+                                                        Email
+                                                    </label>
                                                 </div>
-                                            )}
-                                        </div>
-
-                                        <div
-                                            className={clsx(
-                                                styles.formField,
-                                                "w-full "
-                                            )}
-                                        >
-                                            <div className="relative">
-                                                <input
-                                                    required
-                                                    onChange={handleInputChange}
-                                                    value={
-                                                        user.phoneNumber || " "
-                                                    }
-                                                    name="phoneNumber"
-                                                    data-validate
-                                                    className={clsx(
-                                                        styles.formInput
-                                                    )}
-                                                    type="text"
-                                                />
-                                                <label
-                                                    className={clsx(
-                                                        styles.formLabel
-                                                    )}
-                                                >
-                                                    Phone Number
-                                                </label>
-                                                {errors.phoneNumber && (
+                                                {errors.email && (
                                                     <div className="text-red-500 mt-1 text-sm ml-1">
-                                                        {errors.phoneNumber}
+                                                        {errors.email}
                                                     </div>
                                                 )}
                                             </div>
-                                        </div>
-                                        <div
-                                            className={clsx(styles.btn)}
-                                            onClick={handleSubmit}
-                                        >
-                                            Save changes
+
+                                            <div
+                                                className={clsx(
+                                                    styles.formField,
+                                                    "w-full "
+                                                )}
+                                            >
+                                                <div className="relative">
+                                                    <input
+                                                        required
+                                                        onChange={
+                                                            handleInputChange
+                                                        }
+                                                        value={
+                                                            user.phoneNumber ||
+                                                            " "
+                                                        }
+                                                        name="phoneNumber"
+                                                        data-validate
+                                                        className={clsx(
+                                                            styles.formInput
+                                                        )}
+                                                        type="text"
+                                                    />
+                                                    <label
+                                                        className={clsx(
+                                                            styles.formLabel
+                                                        )}
+                                                    >
+                                                        Phone Number
+                                                    </label>
+                                                    {errors.phoneNumber && (
+                                                        <div className="text-red-500 mt-1 text-sm ml-1">
+                                                            {errors.phoneNumber}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            <div
+                                                className={clsx(styles.btn)}
+                                                onClick={handleSubmit}
+                                            >
+                                                Save changes
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

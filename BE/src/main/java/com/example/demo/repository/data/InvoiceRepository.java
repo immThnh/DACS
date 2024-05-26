@@ -36,7 +36,7 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
     int countInvoicesCreatedInMonth(@Param("month") int month, @Param("year") int year);
 
     @Query("SELECT SUM(i.total) FROM Invoice i WHERE MONTH(i.date) = :month AND YEAR(i.date) = :year")
-    long sumInvoiceTotalInMonth(@Param("month") int month, @Param("year") int year);
+    Long sumInvoiceTotalInMonth(@Param("month") int month, @Param("year") int year);
 
     @Query("SELECT NEW com.example.demo.dto.InvoiceStatisticDTO(i.id, i.date, i.method, i.total, i.content, new com.example.demo.dto.UserStatisticDTO(u.id, u.email, u.firstName, u.lastName, u.avatar)) FROM Invoice i JOIN i.user u WHERE MONTH(i.date) = :month AND YEAR(i.date) = :year")
     Page<InvoiceStatisticDTO> findInvoicesCreatedInMonth(@Param("month") int month, @Param("year") int year, Pageable pageable);

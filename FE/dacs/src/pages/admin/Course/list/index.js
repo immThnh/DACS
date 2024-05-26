@@ -28,14 +28,13 @@ function ListCourse() {
     const [deleteId, setDeleteId] = useState(null);
     const [selected, setSelected] = useState(selectes[0]);
     const [page, setPage] = useState(0);
-    const [reRender, setReRender] = useState();
-    const navigator = useNavigate();
 
     const handleRemoveCourse = () => {
         const fetchApi = async () => {
             toast.promise(dataApi.softDeleteCourse(deleteId), {
                 loading: "Removing...",
                 success: (data) => {
+                    console.log(data);
                     setCourses(data.content.content);
                     setTotalData(data.content.totalElements);
                     setDeletedModalOpen(false);

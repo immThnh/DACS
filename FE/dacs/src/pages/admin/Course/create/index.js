@@ -7,7 +7,6 @@ import Select from "react-select";
 import * as DataApi from "../../../../api/apiService/dataService";
 import { toast } from "sonner";
 import btnClose from "../../../../assets/images/btnClose.svg";
-import { redirect } from "react-router-dom";
 
 const initFormData = {
     title: "",
@@ -23,6 +22,7 @@ function CreateCourse() {
     const [formData, setFormData] = useState(initFormData);
     const [options, setOptions] = useState([]);
     const [errors, setErrors] = useState({});
+    const [isUploading, setIsUploading] = useState(false);
     let timerId;
 
     const handleInputChange = (e) => {
@@ -37,23 +37,39 @@ function CreateCourse() {
 
     const handleFileChange = (e, index, indexSection) => {
         const file = e.target.files[0];
-        if (file.type === "video/mp4") {
-            const updateSection = { ...formData.sections[indexSection] };
-            updateSection.lessons[index] = {
-                ...updateSection.lessons[index],
-                video: file,
-                actionVideo: "UPDATE",
-            };
-            const updateSections = [...formData.sections];
-            updateSections[indexSection] = updateSection;
+        setIsUploading(true);
+        toast.promise(DataApi.uploadImg(file), {
+            loading: "Loading file...",
+            success: (result) => {
+                setIsUploading(false);
+                if (file.type === "video/mp4") {
+                    const updateSection = {
+                        ...formData.sections[indexSection],
+                    };
+                    updateSection.lessons[index] = {
+                        ...updateSection.lessons[index],
+                        video: result.content,
+                    };
+                    const updateSections = [...formData.sections];
+                    updateSections[indexSection] = updateSection;
 
-            setFormData({ ...formData, sections: [...updateSections] });
-        } else {
-            setFormData({
-                ...formData,
-                thumbnail: file,
-            });
-        }
+                    setFormData({
+                        ...formData,
+                        sections: [...updateSections],
+                    });
+                } else {
+                    setFormData({
+                        ...formData,
+                        thumbnail: result.content,
+                    });
+                }
+                return "Uploading successfully...";
+            },
+            error: (error) => {
+                console.log(error);
+                return "Upload thumbnail failed";
+            },
+        });
         e.target.value = "";
         errors[e.target.name] = "";
         setErrors(errors);
@@ -67,8 +83,21 @@ function CreateCourse() {
     };
 
     const handleUpdateVideoCourse = (e) => {
-        const file = e.target.files[0];
-        setFormData({ ...formData, video: file });
+        setIsUploading((prev) => true);
+        toast.promise(DataApi.uploadImg(e.target.files[0]), {
+            loading: "Loading video...",
+            success: (result) => {
+                setIsUploading((prev) => false);
+                setFormData((prev) => {
+                    return { ...prev, video: result.content };
+                });
+                return "Upload video successfully";
+            },
+            error: (error) => {
+                console.log(error);
+                return "Upload video failed";
+            },
+        });
     };
 
     const handleRemoveItemPrevivew = (e, type, index, sectionIndex) => {
@@ -174,48 +203,50 @@ function CreateCourse() {
     const validateForm = (formData) => {
         const errors = {};
         if (!formData.title) errors.title = "Course Name is required.";
-        if (!formData.description) errors.description = "Description is required.";
+        if (!formData.description)
+            errors.description = "Description is required.";
         if (!formData.price) errors.price = "Price is required.";
         if (!formData.thumbnail) errors.thumbnail = "Thumbnail is required.";
-        if (formData.categories.length === 0) errors.categories = "At least one category is required.";
-
-        formData.sections.forEach((section, sectionIndex) => {
-            if (!section.title) errors[`section-${sectionIndex}`] = `Section ${sectionIndex + 1} Name is required.`;
-            section.lessons.forEach((lesson, lessonIndex) => {
-                if (!lesson.title) errors[`lesson-${sectionIndex}-${lessonIndex}`] = `Lesson ${lessonIndex + 1} Name is required in Section ${sectionIndex + 1}.`;
-                if (!lesson.description) errors[`lesson-desc-${sectionIndex}-${lessonIndex}`] = `Lesson ${lessonIndex + 1} Description is required in Section ${sectionIndex + 1}.`;
+        if (formData.categories.length === 0)
+            errors.categories = "At least one category is required.";
+        if (formData.section)
+            formData.sections.forEach((section, sectionIndex) => {
+                if (!section.title)
+                    errors[`section-${sectionIndex}`] = `Section ${
+                        sectionIndex + 1
+                    } Name is required.`;
+                section.lessons.forEach((lesson, lessonIndex) => {
+                    if (!lesson.title)
+                        errors[
+                            `lesson-${sectionIndex}-${lessonIndex}`
+                        ] = `Lesson ${
+                            lessonIndex + 1
+                        } Name is required in Section ${sectionIndex + 1}.`;
+                    if (!lesson.description)
+                        errors[
+                            `lesson-desc-${sectionIndex}-${lessonIndex}`
+                        ] = `Lesson ${
+                            lessonIndex + 1
+                        } Description is required in Section ${
+                            sectionIndex + 1
+                        }.`;
+                });
             });
-        });
 
         return errors;
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (isUploading)
+            return toast.error("Please wait for the file to finish uploading");
         const validationErrors = validateForm(formData);
         setErrors(validationErrors);
 
         if (Object.keys(validationErrors).length > 0) {
-                toast.error("You need to fill in the empty field");
+            toast.error("You need to fill in the empty field");
             return;
         }
-
-        // ...rest of your submission logic
-        const thumbnail = formData.thumbnail;
-        const courseVideo = formData.video;
-        formData.video = "";
-
-        const videos = [];
-        formData.sections.forEach((section) => {
-            if (section.lessons) {
-                section.lessons.forEach((less) => {
-                    if (less.video instanceof File) {
-                        videos.push(less.video);
-                        less.video = "";
-                    }
-                });
-            }
-        });
 
         const featchApi = async () => {
             let newCategories = [];
@@ -224,19 +255,17 @@ function CreateCourse() {
                 ...formData,
                 categories: newCategories,
             };
-            toast.promise(
-                DataApi.createCourse(newCourse, thumbnail, courseVideo, videos),
-                {
-                    loading: "Loading...",
-                    success: () => {
-                        window.location.reload();
-                        return "Create successfully";
-                    },
-                    error: (error) => {
-                        console.log(error);
-                    },
-                }
-            );
+            toast.promise(DataApi.createCourse(newCourse), {
+                loading: "Loading...",
+                success: () => {
+                    setFormData(initFormData);
+                    return "Create successfully";
+                },
+                error: (error) => {
+                    console.log(error);
+                    return error;
+                },
+            });
         };
 
         const debounceApi = debounce(featchApi);
@@ -358,7 +387,12 @@ function CreateCourse() {
                             </div>
                         </div>
                         <div className="flex overflow-hidden">
-                            <div className={clsx(styles.formField, "w-1/2")}>
+                            <div
+                                className={clsx(
+                                    styles.formField,
+                                    "w-1/2 overflow-hidden"
+                                )}
+                            >
                                 <span className={clsx(styles.formLabel2)}>
                                     Thumbnail
                                 </span>
@@ -378,7 +412,6 @@ function CreateCourse() {
                                         {errors.thumbnail}
                                     </div>
                                 )}
-
                                 <input
                                     name="thumbnail"
                                     onChange={handleFileChange}
@@ -400,9 +433,7 @@ function CreateCourse() {
                                             className={clsx(
                                                 styles.thumbnailImg
                                             )}
-                                            src={URL.createObjectURL(
-                                                formData.thumbnail
-                                            )}
+                                            src={formData.thumbnail}
                                             alt=""
                                         />
                                         <button
@@ -420,7 +451,12 @@ function CreateCourse() {
                             </div>
                         </div>
                         <div className="flex  overflow-hidden">
-                            <div className={clsx(styles.formField, "w-1/2")}>
+                            <div
+                                className={clsx(
+                                    styles.formField,
+                                    "w-1/2 overflow-hidden"
+                                )}
+                            >
                                 <span className={clsx(styles.formLabel2)}>
                                     Video
                                 </span>
@@ -428,7 +464,8 @@ function CreateCourse() {
                                     htmlFor={`courseVideo`}
                                     className={clsx(
                                         styles.formLabel2,
-                                        styles.labelFile
+                                        styles.labelFile,
+                                        "h-full"
                                     )}
                                 >
                                     <div className={clsx(styles.iconFile)}>
@@ -458,9 +495,7 @@ function CreateCourse() {
                                             className="rounded-lg"
                                         >
                                             <source
-                                                src={URL.createObjectURL(
-                                                    formData.video
-                                                )}
+                                                src={formData.video}
                                                 type="video/mp4"
                                             />
                                         </video>
@@ -718,9 +753,9 @@ function CreateCourse() {
                                                                                         className="rounded-lg"
                                                                                     >
                                                                                         <source
-                                                                                            src={URL.createObjectURL(
+                                                                                            src={
                                                                                                 lesson.video
-                                                                                            )}
+                                                                                            }
                                                                                             type="video/mp4"
                                                                                         />
                                                                                     </video>

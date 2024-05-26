@@ -349,3 +349,11 @@ export const getAllUserAndRole = async (isDelete = "false") => {
         return Promise.reject(error);
     }
 };
+
+export const createPost = async (post) => {
+    try {
+        return await userInstance.post("/post/create", post);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};

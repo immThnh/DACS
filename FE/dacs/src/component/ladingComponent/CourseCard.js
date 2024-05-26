@@ -5,9 +5,12 @@ import { useSelector } from "react-redux";
 import * as userApi from "../../api/apiService/authService.js";
 import { toast } from "sonner";
 
-function Badge({ children }) {
+function Badge({ keyData, children }) {
     return (
-        <div className="flex justify-center px-2.5 py-1 bg-white rounded-md border border-gray-500 border-solid text-xs ">
+        <div
+            key={keyData}
+            className="flex justify-center px-2.5 py-1 bg-white rounded-md border border-gray-500 border-solid text-xs "
+        >
             {children}
         </div>
     );
@@ -54,9 +57,9 @@ export const CourseCard = memo(
                             style={{ height: "120px", objectFit: "contain" }}
                         />
                     </div>
-                    <div className="flex justify-start space-x-2 mb-2">
+                    <div className="flex justify-start mb-2 flex-wrap gap-1.5">
                         {course.categories.map((category) => (
-                            <Badge key={category.id}>{category.name}</Badge>
+                            <Badge keyData={category.id}>{category.name}</Badge>
                         ))}
                     </div>
                     <h3 className="text-md sm:text-lg font-semibold text-neutral-800 mb-2 truncate text-start">

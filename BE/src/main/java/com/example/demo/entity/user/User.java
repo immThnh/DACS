@@ -1,9 +1,6 @@
 package com.example.demo.entity.user;
 
-import com.example.demo.entity.data.Comment;
-import com.example.demo.entity.data.Course;
-import com.example.demo.entity.data.Notification;
-import com.example.demo.entity.data.Progress;
+import com.example.demo.entity.data.*;
 import com.example.demo.jwt.Token;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,7 +14,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -56,6 +54,9 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     List<Progress> progresses = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.ALL)
+    List<Post> posts = new ArrayList<>();
 
     @PrePersist
     protected  void onCreate() {
