@@ -41,13 +41,11 @@ public class CourseService {
 
     public ResponseObject getCourseById(int id, boolean isDeleted) {
         Course course = courseRepository.findById(id).orElse(null);
-
         if (course == null) {
             return ResponseObject.builder().mess("Course is not exist!").status(HttpStatus.BAD_REQUEST).build();
         }
         var sections = sectionService.getSectionsByCourse(course, isDeleted);
         course.setSections(sections);
-        System.out.println(course);
         return ResponseObject.builder().content(course).status(HttpStatus.OK).build();
     }
 

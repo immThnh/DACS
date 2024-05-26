@@ -10,10 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface SectionRepository extends JpaRepository<Section, Integer> {
-    @Query(value = "SELECT s.* FROM section s " +
-            "left join course c on s.course_id = c.id " +
-            "where s.is_deleted = :isDeleted and c.id = :courseId" , nativeQuery = true)
+    @Query(value = "select s.* from section s where s.course_id = :courseId and s.is_deleted = :isDeleted", nativeQuery = true)
     Optional<List<Section>> findSectionsByCourse(int courseId, boolean isDeleted);
-
-
 }

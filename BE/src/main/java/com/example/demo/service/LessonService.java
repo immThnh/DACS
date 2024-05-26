@@ -32,8 +32,8 @@ public class LessonService {
         return  ResponseObject.builder().status(HttpStatus.OK).content(lesson).build();
     }
 
-    public List<Lesson> getLessonsBySection(Section section, boolean isDeleted) {
-        return lessonRepository.findLessonsBySection(section.getId(), isDeleted).orElse(null);
+    public List<Lesson> getLessonsBySections(List<Integer> list) {
+        return lessonRepository.findLessonsBySections(list);
     }
 
     public List<Lesson> updateLessonsOfSection(Section oldSection, SectionDTO newSection) {
@@ -66,7 +66,6 @@ public class LessonService {
                         .video(newLesson.getVideo())
                         .title(newLesson.getTitle())
                         .linkVideo(newLesson.getLinkVideo())
-                        .section(oldSection)
                         .build();
                 oldSection.getLessons().add(currentLesson);
                 lessonsUpdate.add(currentLesson);

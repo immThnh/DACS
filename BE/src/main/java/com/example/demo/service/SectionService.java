@@ -46,20 +46,12 @@ public class SectionService {
     }
 
     public List<Section> getSectionsByCourse(Course course, boolean isDeleted) {
-        var sections = sectionRepository.findSectionsByCourse(course.getId(), isDeleted).orElse(null);
-        if (sections == null) {
-            return null;
-        }
-
-        for (var section : sections) {
-            var lessons = lessonService.getLessonsBySection(section, isDeleted);
-            section.setLessons(lessons);
-        }
-        return sections;
+        return sectionRepository.findSectionsByCourse(course.getId(), isDeleted).orElse(null);
     }
 
     public void updateSection(SectionDTO sectionDTO) {
         var section = sectionRepository.findById(sectionDTO.getId()).orElse(null);
+
         if (section != null) {
             section.setTitle(sectionDTO.getTitle());
             var lesson = lessonService.updateLessonsOfSection(section, sectionDTO);
@@ -73,6 +65,7 @@ public class SectionService {
         for (var sectionDTO : sectionDTOs) {
             var section = Section.builder()
                     .title(sectionDTO.getTitle())
+                    .lessons(sectionDTO.getLessons())
                     .course(course)
                     .build();
             course.getSections().add(section);
@@ -94,25 +87,29 @@ public class SectionService {
 
         var updateSections = new ArrayList<Section>();
         for(var sectionDTO : courseDTO.getSections()) {
+            Section section;
             if(sectionDTO.getId() == 0) {
-                var section = Section.builder()
-                        .course(course)
-                        .title(sectionDTO.getTitle())
-                        .build();
+                 section = Section.builder()
+                         .title(sectionDTO.getTitle())
+                         .lessons(sectionDTO.getLessons())
+                         .course(course)
+                         .build();
                 course.getSections().add(section);
-                sectionRepository.save(section);
                 updateSections.add(section);
             }
             else {
-                var section = sectionRepository.findById(sectionDTO.getId()).orElse(null);
+                 section = sectionRepository.findById(sectionDTO.getId()).orElse(null);
                 if(section != null) {
                     section.setTitle(sectionDTO.getTitle());
                     var lessons = lessonService.updateLessonsOfSection(section, sectionDTO);
                     section.setLessons(lessons);
-                    sectionRepository.save(section);
                     updateSections.add(section);
                 }
             }
+
+            assert section != null;
+            sectionRepository.save(section);
+
         }
 
         course.getSections().forEach(section -> {

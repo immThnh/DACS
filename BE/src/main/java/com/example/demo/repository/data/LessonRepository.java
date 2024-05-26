@@ -12,6 +12,8 @@ import java.util.Set;
 
 @Repository
 public interface LessonRepository extends JpaRepository<Lesson, Integer> {
-    @Query(value = "select l.* from lesson l where l.is_deleted = :isDeleted and l.section_id = :sectionId", nativeQuery = true)
-    Optional<List<Lesson>> findLessonsBySection(int sectionId, boolean isDeleted);
+//    @Query(value = "select l.* from lesson l where l.is_deleted = :isDeleted and l.section_id = :sectionId", nativeQuery = true)
+//    Optional<List<Lesson>> findLessonsBySection(int sectionId, boolean isDeleted);
+    @Query(value = "select * from lesson l where l.section_id in :list ", nativeQuery = true)
+    List<Lesson> findLessonsBySections(List<Integer> list);
 }

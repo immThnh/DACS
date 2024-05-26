@@ -11,8 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
+//@Data
 @NoArgsConstructor
+@Getter
+@Setter
 @AllArgsConstructor
 @Builder
 public class Lesson {
@@ -27,8 +29,8 @@ public class Lesson {
     private int duration;
     private boolean isDeleted = false;
 
-    @ManyToOne()
-    @JsonBackReference
-    private Section section;
+//    @ManyToOne()
+//    @JsonIgnore
+//    private Section section;
 
 }

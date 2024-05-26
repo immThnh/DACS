@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Where;
 
 import java.util.List;
 import java.util.Set;
@@ -24,12 +25,10 @@ public class Section {
 
     private String title;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "section", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Lesson> lessons;
-
-    @ManyToOne
-    @JsonBackReference
-    private Course course;
     private boolean isDeleted = false;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Course course;
 }

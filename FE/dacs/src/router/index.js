@@ -16,12 +16,12 @@ import HistoryDeleted from "../pages/admin/Course/historyDeleted";
 import HistoryDeletedCategory from "../pages/admin/Category/historyDeleted";
 import ListUser from "../pages/admin/user/list";
 import ListDeletedUser from "../pages/admin/user/historyDeleted";
-import UserProfile from "../pages/user/userprofile/index";
+import userProfile from "../pages/user/userProfile/index";
 import Payment from "../pages/payment";
 import SuccessPayment from "../pages/payment/success";
 import FailurePayment from "../pages/payment/failure";
 import AdminView from "../pages/admin/user/userProfileAdmin";
-import MyCourses from "../pages/user/userCourse/index";
+import MyCourses from "../pages/user/userCourse";
 import ListInvoice from "../pages/admin/invoice/list";
 import ListDeleteInvoice from "../pages/admin/invoice/historyDelete";
 import CreateUser from "../pages/admin/user/create";
@@ -50,7 +50,7 @@ const userRoutes = [
     { path: "/course/payment/:id", component: Payment },
     { path: "/payment/success", component: SuccessPayment },
     { path: "/payment/failure", component: FailurePayment },
-    { path: "me/profile/:email", component: UserProfile },
+    { path: "me/profile/:email", component: userProfile },
     { path: "me/post/create", component: CreatePost },
     { path: "me/post/create/sub", component: SubContent },
 ];

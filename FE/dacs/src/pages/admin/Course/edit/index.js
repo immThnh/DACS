@@ -279,7 +279,6 @@ function EditCourse() {
                 const result = await DataApi.getAllCategories();
                 setOptions(result.content.content);
                 const data = await DataApi.getCourseById(id);
-                console.log(data);
                 setFormData(data.content);
             } catch (error) {
                 console.log(error);

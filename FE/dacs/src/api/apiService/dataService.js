@@ -40,7 +40,7 @@ export const createCourse = async (course) => {
 };
 
 export const updateCourse = async (id, course) => {
-    console.log(course);
+    console.table(course);
     const formData = new FormData();
     const json = JSON.stringify(course);
     const courseBlob = new Blob([json], {
