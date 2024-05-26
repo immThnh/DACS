@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styles from "../../../user/userprofile/UserProfile.module.scss";
+import styles from "../../../user/userprofile/userProfile.module.scss";
 import clsx from "clsx";
 import avatar from "../../../../assets/images/avatar_25.jpg";
 import ShowPassword from "../../../../component/auth/ShowPassword";

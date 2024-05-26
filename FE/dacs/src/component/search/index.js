@@ -15,7 +15,7 @@ const SearchBar = () => {
     const inputRef = useRef();
     const fetchApi = async (title) => {
         try {
-            const result = await dataApi.getCourseByName(title);
+            const result = await dataApi.searchCourseByName(title);
             setloading(false);
             setShowResult(true);
             setSearchResult(result.content.content);

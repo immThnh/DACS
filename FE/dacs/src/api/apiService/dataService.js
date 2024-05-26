@@ -139,7 +139,22 @@ export const getCoursesByCategory = async (id, page, size) => {
         Promise.reject(error);
     }
 };
-
+export const searchCourseByName = async (
+    title,
+    page = 0,
+    selected = 5,
+    isDeleted = "false"
+) => {
+    try {
+        return await publicInstance.get(
+            `/course?title=${encodeURIComponent(
+                title
+            )}&isDeleted=${isDeleted}&page=${page}&selected=${selected}`
+        );
+    } catch (error) {
+        Promise.reject(error.mess);
+    }
+};
 export const getCourseByName = async (
     title,
     page = 0,

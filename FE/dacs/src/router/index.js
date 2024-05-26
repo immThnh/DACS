@@ -21,7 +21,7 @@ import Payment from "../pages/payment";
 import SuccessPayment from "../pages/payment/success";
 import FailurePayment from "../pages/payment/failure";
 import AdminView from "../pages/admin/user/userProfileAdmin";
-import MyCourses from "../pages/user/userCourse/index";
+import MyCourses from "../pages/user/usercourse";
 import ListInvoice from "../pages/admin/invoice/list";
 import ListDeleteInvoice from "../pages/admin/invoice/historyDelete";
 import CreateUser from "../pages/admin/user/create";
@@ -29,7 +29,7 @@ import AdminDetailCourse from "../pages/admin/Course/detail";
 import Post from "../pages/Post";
 import SubContent from "../pages/Post/create/subContent";
 import CreatePost from "../pages/Post/create";
-
+import AllCourses from "../pages/allCourse/"
 const publicRoutes = [
     { path: "/", component: LandingPage },
     { path: "/sign-up", component: SignUp },
@@ -37,6 +37,8 @@ const publicRoutes = [
     { path: "*", component: NotFoundPage },
     { path: "/course/:id", component: Course },
     { path: "/posts/", component: Post },
+    {path:"/allcourse",component:AllCourses}
+
     // { path: "/search/:query", component: SearchResults },
 ];
 

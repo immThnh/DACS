@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styles from "./UserProfile.module.scss";
+import styles from "./userProfile.module.scss";
 import clsx from "clsx";
 import avatar from "../../../assets/images/avatar_25.jpg";
 import ShowPassword from "../../../component/auth/ShowPassword";
@@ -388,9 +388,9 @@ function UserProfile({ adminOpen = false }) {
                                                         className={clsx(
                                                             styles.formInput
                                                         )}
-                                                        onChange={
-                                                            handleInputChange
-                                                        }
+                                                        // onChange={
+                                                        //     handleInputChange
+                                                        // }
                                                         type="text"
                                                         // disabled={
                                                         //     userInfo.email.includes(

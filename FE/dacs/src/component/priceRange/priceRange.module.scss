@@ -1,0 +1,89 @@
+.cardConteiner {
+    margin-top: 5px;
+    cursor: default;
+    --color-primary: #000000;
+    --color-headline: #3f4656;
+    --color-text: #99a3ba;
+  }
+  
+  .cardContent {
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 4px rgba(18, 22, 33, .12);
+  }
+  
+  .cardTitle {
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--color-headline);
+  }
+  
+  .slider {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .inputRange {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 2px;
+    background: transparent;
+    outline: none;
+    z-index: 2;
+    position: absolute;
+  }
+  
+  .inputRange::-webkit-slider-runnable-track {
+    height: 2px;
+  }
+  
+  .inputRange::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #fff;
+    border: 1px solid var(--color-headline);
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    z-index: 3;
+    transition: background 0.3s ease;
+  }
+  
+  .inputRange::-webkit-slider-thumb:hover {
+    background: var(--color-primary);
+  }
+  
+  .track {
+    position: absolute;
+    height: 2px;
+    width: 100%;
+    background: var(--color-text);
+    z-index: 1;
+  }
+  
+  .values {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 500;
+    color: var(--color-primary);
+  }
+  
+  .valueInput {
+    width: 120px;
+    padding: 5px;
+    margin: 0 10px;
+    text-align: center;
+    border: 1px solid var(--color-headline);
+    border-radius: 5px;
+  }
+  

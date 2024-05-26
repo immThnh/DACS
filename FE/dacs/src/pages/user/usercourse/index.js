@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useState } from "react";
-import styles from "./UserCourses.module.scss";
+import styles from "./userCourses.module.scss";
 import clsx from "clsx";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
