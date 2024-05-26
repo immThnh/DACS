@@ -23,7 +23,7 @@ public class LogoutHandler implements org.springframework.security.web.authentic
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         String jwt= request.getHeader("Authorization");
-        if(jwt != null || jwt.startsWith("Bearer ")) {
+        if(jwt != null && jwt.startsWith("Bearer ")) {
             jwt = jwt.substring(7);
             Token token = tokenRepository.findByToken(jwt).orElse(null);
             if(token != null) {
@@ -32,7 +32,6 @@ public class LogoutHandler implements org.springframework.security.web.authentic
                 if(user != null) {
                     user.setToken(null);
                     SecurityContextHolder.clearContext();
-                    System.out.println("xóa jwt thành công");
                     tokenRepository.delete(token);
                     return;
                 }

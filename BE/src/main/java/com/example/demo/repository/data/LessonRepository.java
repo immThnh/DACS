@@ -6,9 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface LessonRepository extends JpaRepository<Lesson, Integer> {
-//    @Query(value = "select * from lesson join  where course_id  = :courseId", nativeQuery = true)
+    @Query(value = "select l.* from lesson l where l.is_deleted = :isDeleted and l.section_id = :sectionId", nativeQuery = true)
+    Optional<List<Lesson>> findLessonsBySection(int sectionId, boolean isDeleted);
 }

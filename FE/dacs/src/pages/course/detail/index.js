@@ -1,56 +1,21 @@
-import React, { useEffect, useState } from "react"; // This imports the useState hook
+import React, { Fragment, useEffect, useState } from "react"; // This imports the useState hook
 import styles from "./DetailCourse.module.scss";
-import { useParams } from "react-router-dom";
-import { toast } from "sonner";
+import { Link, useParams } from "react-router-dom";
 import clsx from "clsx";
-import * as dataApi from "../../../api/apiService/dataService.js";
+import * as userApi from "../../../api/apiService/authService.js";
+import logoPage from "../../../assets/images/logo.png";
+import { useSelector } from "react-redux";
+import Comment from "../../../component/comment/index.js";
 
-const PlayIcon = () => (
-    <div className={styles.playIcon}>
-        <img
-            src="https://cdn.builder.io/api/v1/image/assets/TEMP/91b4c2d063585c32b868da3584ddb0514cbf2955902271549e68b7c3ffeb1802?apiKey=9349475655ee4a448868f824f5feb11d&"
-            alt="Play icon"
-        />
-    </div>
-);
-
-const TimeInfo = ({ icon, time }) => (
-    <div className={styles.timeInfo}>
-        <img src={icon} alt="Clock icon" className={styles.clockIcon} />
-        <div className={styles.time}>{time} Minutes</div>
-    </div>
-);
-const LessonItem = ({
-    id,
-    title,
-    lesson,
-    time,
-    isHighlighted,
-    videoUrl,
-    onVideoSelect,
-}) => (
-    <div
-        className={`${styles.lessonItem} ${
-            isHighlighted ? styles.highlighted : ""
-        }`}
-        onClick={() => onVideoSelect(id, videoUrl)}
-    >
-        <div className={styles.lessonInfo}>
-            <div className={styles.lessonTitle}>{title}</div>
-            <div className={styles.lessonNumber}>{lesson}</div>
-        </div>
-        <div className={styles.timeInfo}>
-            <TimeInfo
-                icon={
-                    isHighlighted
-                        ? "https://cdn.builder.io/api/v1/image/assets/TEMP/23214151b02736ebba19b562aabfd0bc3fc955a52ce1a15c8b59fd722461241d?apiKey=9349475655ee4a448868f824f5feb11d&"
-                        : "https://cdn.builder.io/api/v1/image/assets/TEMP/23214151b02736ebba19b562aabfd0bc3fc955a52ce1a15c8b59fd722461241d?apiKey=9349475655ee4a448868f824f5feb11d&"
-                }
-                time={time}
-            />
-        </div>
-    </div>
-);
+let timerId = null;
+const debounce = (func, delay = 1000) => {
+    return () => {
+        clearTimeout(timerId);
+        timerId = setTimeout(() => {
+            func();
+        }, delay);
+    };
+};
 
 const CourseHero = ({ video = "", thumbnail }) => {
     if (!video.startsWith("https://res.cloudinary.com")) {
@@ -67,7 +32,7 @@ const CourseHero = ({ video = "", thumbnail }) => {
                     controls
                     className={clsx(
                         styles.videoPlayer,
-                        "rounded-lg cursor-pointer h-full w-full object-contain bg-black"
+                        "cursor-pointer h-full w-full object-contain bg-black"
                     )}
                 >
                     <source src={video} type="video/mp4" />
@@ -90,30 +55,75 @@ const CourseHero = ({ video = "", thumbnail }) => {
 };
 
 const initFormData = {
-    title: "",
-    desc: "",
-    price: "",
-    thumbnail: "",
-    date: "",
-    categories: [],
+    course: {
+        title: "",
+        desc: "",
+        price: "",
+        thumbnail: "",
+        date: "",
+        categories: [],
+    },
 };
-const CurriculumItem = ({ item, index, isHighlighted, handleVideoSelect }) => {
-    const handleOpenSubLesson = () => {
-        const sub = document.getElementById(index);
+const CurriculumItem = ({
+    active,
+    section,
+    aliasEmail,
+    sectionId,
+    courseId,
+    isHighlighted,
+    currentProgress,
+    handleVideoSelect,
+    setCurrentProgress,
+}) => {
+    const handleOpenSubLesson = (e) => {
+        const sub = document.getElementById(`section${sectionId}`);
         sub.classList.toggle("disabled");
+        e.currentTarget.classList.toggle(styles.active);
+    };
+    let newUpdate = currentProgress;
+
+    const handleChecked = (e) => {
+        const id = parseInt(e.target.id, 10);
+        if (e.target.checked && !currentProgress.includes(id)) {
+            newUpdate = [...newUpdate, id];
+        } else {
+            newUpdate = [...newUpdate.filter((item) => item !== id)];
+        }
+
+        setCurrentProgress((prev) => newUpdate);
+
+        const fetchUpdateLessonIds = async () => {
+            try {
+                const result = await userApi.updateLessonIds(
+                    aliasEmail,
+                    courseId,
+                    newUpdate
+                );
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        const debounceAPi = debounce(fetchUpdateLessonIds, 500);
+        debounceAPi();
     };
 
     return (
         <div className={clsx(styles.curriculumItem, {})}>
             <div
-                className={clsx(styles.title, "flex cursor-pointer p-2 w-full")}
-                onClick={handleOpenSubLesson}
+                className={clsx(
+                    styles.title,
+                    "flex cursor-pointer p-2 w-full",
+                    {
+                        [styles.active]: active === 0,
+                    }
+                )}
+                onClick={(e) => handleOpenSubLesson(e)}
             >
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 16 16"
                     fill="currentColor"
-                    className="w-6 h-6 mt-1.5"
+                    className={clsx(styles.transfrom, "w-6 h-6 mt-1.5")}
                 >
                     <path
                         fillRule="evenodd"
@@ -128,51 +138,47 @@ const CurriculumItem = ({ item, index, isHighlighted, handleVideoSelect }) => {
                     )}
                 >
                     <div className="w-3/4 line-clamp-2 flex-1">
-                        {item.title}
+                        {section.title}
                     </div>
                 </div>
             </div>
 
             <div
-                id={index}
-                className={clsx(styles.wrapLesson, "w-full disabled")}
+                id={`section${sectionId}`}
+                className={clsx(styles.wrapLesson, "w-full ", {
+                    disabled: active !== 0,
+                })}
             >
-                {item.lessons &&
-                    item.lessons.map((lesson, ind) => {
+                {section.lessons &&
+                    section.lessons.map((lesson, ind) => {
                         return (
                             <div
                                 key={ind}
-                                onClick={() =>
-                                    handleVideoSelect(
-                                        ind,
-                                        lesson.video,
-                                        lesson.linkVideo
-                                    )
-                                }
+                                onClick={() => handleVideoSelect(lesson)}
                                 className={clsx(
                                     styles.lessonItem,
 
-                                    "flex ml-6 gap-6",
+                                    "flex items-center ml-6 gap-3.5",
                                     {
                                         [styles.highlighted]:
-                                            ind === isHighlighted,
+                                            lesson.id === isHighlighted,
                                     }
                                 )}
                             >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    strokeWidth="1.5"
-                                    stroke="currentColor"
-                                    className="w-5 h-6"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 0 1-1.125-1.125M3.375 19.5h1.5C5.496 19.5 6 18.996 6 18.375m-3.75 0V5.625m0 12.75v-1.5c0-.621.504-1.125 1.125-1.125m18.375 2.625V5.625m0 12.75c0 .621-.504 1.125-1.125 1.125m1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125m0 3.75h-1.5A1.125 1.125 0 0 1 18 18.375M20.625 4.5H3.375m17.25 0c.621 0 1.125.504 1.125 1.125M20.625 4.5h-1.5C18.504 4.5 18 5.004 18 5.625m3.75 0v1.5c0 .621-.504 1.125-1.125 1.125M3.375 4.5c-.621 0-1.125.504-1.125 1.125M3.375 4.5h1.5C5.496 4.5 6 5.004 6 5.625m-3.75 0v1.5c0 .621.504 1.125 1.125 1.125m0 0h1.5m-1.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125m1.5-3.75C5.496 8.25 6 7.746 6 7.125v-1.5M4.875 8.25C5.496 8.25 6 8.754 6 9.375v1.5m0-5.25v5.25m0-5.25C6 5.004 6.504 4.5 7.125 4.5h9.75c.621 0 1.125.504 1.125 1.125m1.125 2.625h1.5m-1.5 0A1.125 1.125 0 0 1 18 7.125v-1.5m1.125 2.625c-.621 0-1.125.504-1.125 1.125v1.5m2.625-2.625c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125M18 5.625v5.25M7.125 12h9.75m-9.75 0A1.125 1.125 0 0 1 6 10.875M7.125 12C6.504 12 6 12.504 6 13.125m0-2.25C6 11.496 5.496 12 4.875 12M18 10.875c0 .621-.504 1.125-1.125 1.125M18 10.875c0 .621.504 1.125 1.125 1.125m-2.25 0c.621 0 1.125.504 1.125 1.125m-12 5.25v-5.25m0 5.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125m-12 0v-1.5c0-.621-.504-1.125-1.125-1.125M18 18.375v-5.25m0 5.25v-1.5c0-.621.504-1.125 1.125-1.125M18 13.125v1.5c0 .621.504 1.125 1.125 1.125M18 13.125c0-.621.504-1.125 1.125-1.125M6 13.125v1.5c0 .621-.504 1.125-1.125 1.125M6 13.125C6 12.504 5.496 12 4.875 12m-1.5 0h1.5m-1.5 0c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125M19.125 12h1.5m0 0c.621 0 1.125.504 1.125 1.125v1.5c0 .621-.504 1.125-1.125 1.125m-17.25 0h1.5m14.25 0h1.5"
-                                    />
-                                </svg>
+                                <div className="checkbox-wrapper ml-3">
+                                    <label>
+                                        <input
+                                            checked={currentProgress.includes(
+                                                lesson.id
+                                            )}
+                                            id={lesson.id}
+                                            type="checkbox"
+                                            onChange={handleChecked}
+                                        />
+                                        <span className="checkbox"></span>
+                                    </label>
+                                </div>
+
                                 <span>{lesson.title}</span>
                             </div>
                         );
@@ -182,50 +188,125 @@ const CurriculumItem = ({ item, index, isHighlighted, handleVideoSelect }) => {
     );
 };
 function DetailCourse() {
+    const userInfo = useSelector((state) => state.login.user);
+    const alias = userInfo.email.split("@")[0];
     const [currentVideoUrl, setCurrentVideoUrl] = useState("");
-    const [highlightedId, setHighlightedId] = useState(null);
-    const [course, setCourse] = useState(initFormData);
+    const [lessonSelected, setLessonSelected] = useState({
+        id: "",
+    });
+    const [totalLesson, setTotalLesson] = useState(0);
+    const [currentProgress, setCurrentProgress] = useState([]);
+    const [progressObject, setProgressObject] = useState(initFormData);
+    const [openModal, setOpenModal] = useState(false);
     const { id } = useParams();
 
-    const handleVideoSelect = (id, video, linkVideo) => {
-        if (video !== "" && linkVideo === "") {
-            setCurrentVideoUrl(video);
+    const handleCloseComment = () => {
+        setOpenModal(false);
+    };
+
+    const handleOpenComment = () => {
+        setOpenModal(true);
+    };
+
+    const handleVideoSelect = (lesson) => {
+        if (lesson.video !== "" && lesson.linkVideo === "") {
+            setCurrentVideoUrl(lesson.video);
         } else {
-            setCurrentVideoUrl(linkVideo);
+            setCurrentVideoUrl(lesson.linkVideo);
         }
-        setHighlightedId(id);
+        setLessonSelected(lesson);
     };
 
     useEffect(() => {
-        const fetchApi = () => {
-            toast.promise(dataApi.getCourseById(id), {
-                loading: "Loading...",
-                success: (data) => {
-                    setCurrentVideoUrl(data.content.video);
-                    setCourse(data.content);
-                    return "Get data is successful";
-                },
-                error: (error) => {
-                    return error.content;
-                },
-            });
+        const fetchApi = async () => {
+            try {
+                const data = await userApi.getProgress(alias, id);
+                let total = 0;
+                const lessonFirst = data.content.course.sections[0].lessons[0];
+                const video = lessonFirst.video;
+                const linkVideo = lessonFirst.linkVideo;
+
+                data.content.course.sections.map(
+                    (section) => (total += section.lessons.length)
+                );
+                if (data.content.lessonIds !== null) {
+                    setCurrentProgress(data.content.lessonIds);
+                }
+
+                setLessonSelected(lessonFirst);
+                setCurrentVideoUrl(video ? video : linkVideo);
+                setProgressObject(data.content);
+                setTotalLesson(total);
+            } catch (error) {}
         };
 
         fetchApi();
-    }, []);
+        if (window.location.pathname.includes("openComment")) {
+            setOpenModal(true);
+        }
+    }, [id, alias]);
 
     return (
-        <>
+        <div className={clsx(styles.wrapperPage)}>
+            <div
+                className={clsx(
+                    styles.headerPage,
+                    "flex items-center justify-between b-shadow"
+                )}
+            >
+                <Link to={"/"} className={clsx(styles.logoPage)}>
+                    <img src={logoPage} alt="" />
+                </Link>
+                <h5 className="mb-0 text-center">
+                    {progressObject.course.title}
+                </h5>
+                <div className={clsx(styles.progress)}>
+                    Progress: {currentProgress.length}/{totalLesson}
+                </div>
+            </div>
             <main className={clsx(styles.uiUxCourse)}>
-                <div className={clsx("w-full")}>
+                <div className={clsx(styles.sectionVideo, "w-full")}>
                     <div className={clsx("row")}>
                         <div
                             className={clsx(styles.videoContainer, "col-lg-9")}
                         >
                             <CourseHero
                                 video={currentVideoUrl}
-                                thumbnail={course.thumbnail}
+                                thumbnail={progressObject.course.thumbnail}
                             />
+
+                            {/* //!------------ NOTE ----------------*/}
+                            <button
+                                className={clsx(
+                                    styles.sectionComment,
+                                    "btnLGBT"
+                                )}
+                                onClick={handleOpenComment}
+                            >
+                                <div className="flex gap-2">
+                                    Discussion
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        strokeWidth={1.5}
+                                        stroke="currentColor"
+                                        className="w-5 h-5"
+                                    >
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            d="M2.25 12.76c0 1.6 1.123 2.994 2.707 3.227 1.068.157 2.148.279 3.238.364.466.037.893.281 1.153.671L12 21l2.652-3.978c.26-.39.687-.634 1.153-.67 1.09-.086 2.17-.208 3.238-.365 1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"
+                                        />
+                                    </svg>
+                                </div>
+                            </button>
+
+                            <div
+                                className={clsx(styles.sectionComment)}
+                                onClick={handleOpenComment}
+                            ></div>
+                            {/* //!------------ NOTE ----------------*/}
                         </div>
                         <div
                             className={clsx(
@@ -234,31 +315,52 @@ function DetailCourse() {
                             )}
                         >
                             <section className={styles.courseSection}>
-                                <div className={styles.sectionHeader}>
+                                <div className={clsx(styles.sectionHeader)}>
                                     <div className={styles.sectionNumber}>
                                         Curriculum
                                     </div>
                                 </div>
                                 <div className={styles.courseCurriculum}>
-                                    {course.sections &&
-                                        course.sections.map((item, index) => (
-                                            <CurriculumItem
-                                                isHighlighted={highlightedId}
-                                                handleVideoSelect={
-                                                    handleVideoSelect
-                                                }
-                                                key={index}
-                                                index={index}
-                                                item={item}
-                                            />
-                                        ))}
+                                    {progressObject.course.sections &&
+                                        progressObject.course.sections.map(
+                                            (section, index) => (
+                                                <CurriculumItem
+                                                    active={index}
+                                                    setCurrentProgress={
+                                                        setCurrentProgress
+                                                    }
+                                                    courseId={id}
+                                                    currentProgress={
+                                                        currentProgress
+                                                    }
+                                                    aliasEmail={alias}
+                                                    isHighlighted={
+                                                        lessonSelected.id
+                                                    }
+                                                    handleVideoSelect={
+                                                        handleVideoSelect
+                                                    }
+                                                    sectionId={index}
+                                                    key={index}
+                                                    section={section}
+                                                />
+                                            )
+                                        )}
                                 </div>
                             </section>
                         </div>
                     </div>
                 </div>
+                {openModal && (
+                    <Comment
+                        courseId={id}
+                        lessonId={lessonSelected.id}
+                        openModal={openModal}
+                        funcCloseModal={handleCloseComment}
+                    ></Comment>
+                )}
             </main>
-        </>
+        </div>
     );
 }
 

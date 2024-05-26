@@ -1,6 +1,5 @@
 import styles from "../list/List.module.scss";
 import clsx from "clsx";
-import deleteIcon from "../../../../assets/images/delete.svg";
 import restoreIcon from "../../../../assets/images/restore.svg";
 import noDataIcon from "../../../../assets/images/ic_noData.svg";
 import { Fragment, useEffect, useState } from "react";
@@ -14,7 +13,7 @@ import {
     ChevronRightIcon,
     ChevronUpDownIcon,
 } from "@heroicons/react/20/solid";
-import Modal from "../../../../component/modal";
+import { useNavigate } from "react-router-dom";
 
 const selectes = [5, 10, 25];
 
@@ -24,43 +23,20 @@ function HistoryDeleted() {
     const [totalData, setTotalData] = useState(0);
     const [selected, setSelected] = useState(selectes[0]);
     const [page, setPage] = useState(0);
-    const [render, setRender] = useState();
-    const [deleteId, setDeleteId] = useState(null);
-    const [deletedModalOpen, setDeletedModalOpen] = useState(false);
-
-    const handleRemoveCourse = () => {
-        console.log(deleteId);
-        const fetchApi = async () => {
-            toast.promise(dataApi.hardDeleteCourse(deleteId), {
-                loading: "Removing...",
-                success: () => {
-                    setDeletedModalOpen(false);
-                    setRender(!render);
-                    return "Remove successfully";
-                },
-                error: (error) => {
-                    return error.content;
-                },
-            });
-        };
-
-        fetchApi();
-    };
 
     const handleSelectChange = (e) => {
-        const fetchApi = () => {
-            toast.promise(dataApi.getCoursesDeletedByCategory(e.id), {
-                loading: "loading...",
-                success: (data) => {
-                    setCourses(data.content.content);
-                    setTotalData(data.content.totalElements);
-
-                    return "Get data successfully";
-                },
-                error: (error) => {
-                    return error;
-                },
-            });
+        const fetchApi = async () => {
+            try {
+                const result = await dataApi.getCoursesDeletedByCategory(
+                    e.id,
+                    page,
+                    selected
+                );
+                setCourses(result.content.content);
+                setTotalData(result.content.totalElements);
+            } catch (error) {
+                console.log(error);
+            }
         };
 
         const debounceApi = debounce(fetchApi);
@@ -71,35 +47,33 @@ function HistoryDeleted() {
         toast.promise(dataApi.restoreCourseById(id), {
             loading: "loading...",
             success: (data) => {
-                setRender(!render);
+                console.log(data);
+                setCourses(data.content.content);
                 return data.mess;
             },
             error: (error) => {
+                console.log(error);
                 return error.mess;
             },
         });
     };
 
-    const openDeleteModal = (id) => {
-        setDeleteId(id);
-        setDeletedModalOpen(true);
-    };
-
     const handleSearchInputChange = (e) => {
-        const fetchApi = () => {
-            toast.promise(dataApi.getCourseByName(e.target.value), {
-                loading: "loading...",
-                success: (data) => {
-                    setCourses(data.content);
-                    return "Get data successfully";
-                },
-                error: (error) => {
-                    console.log(error);
-                    return error;
-                },
-            });
+        const fetchApi = async () => {
+            try {
+                const result = await dataApi.getCourseByName(
+                    e.target.value,
+                    page,
+                    selected,
+                    true
+                );
+                setCourses(result.content.content);
+                setTotalData(result.content.totalElements);
+            } catch (error) {
+                console.log(error);
+            }
         };
-        const debounceApi = debounce(fetchApi, 1000);
+        const debounceApi = debounce(fetchApi, 300);
         debounceApi();
     };
 
@@ -112,10 +86,6 @@ function HistoryDeleted() {
                 func();
             }, delay);
         };
-    };
-
-    const handleCloseModal = () => {
-        setDeletedModalOpen(false);
     };
 
     useEffect(() => {
@@ -136,7 +106,7 @@ function HistoryDeleted() {
             }
         };
         fetchApi();
-    }, [render]);
+    }, []);
 
     const handlePageData = async (action) => {
         const currentTotalData = page * selected + selected;
@@ -239,127 +209,126 @@ function HistoryDeleted() {
                                             dateTime.toLocaleTimeString();
 
                                         return (
-                                            <>
+                                            <div
+                                                key={index}
+                                                className={clsx(
+                                                    styles.item,
+                                                    "row rounded-lg"
+                                                )}
+                                            >
                                                 <div
-                                                    key={index}
                                                     className={clsx(
-                                                        styles.item,
-                                                        "row rounded-lg"
+                                                        styles.field,
+                                                        "col-lg-1"
                                                     )}
                                                 >
                                                     <div
                                                         className={clsx(
-                                                            styles.field,
-                                                            "col-lg-1"
+                                                            styles.name
                                                         )}
                                                     >
+                                                        {course.id}
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    className={clsx(
+                                                        styles.field,
+                                                        "col-lg-5 flex "
+                                                    )}
+                                                >
+                                                    <div
+                                                        className={clsx(
+                                                            styles.cssImg
+                                                        )}
+                                                    >
+                                                        <img
+                                                            src={
+                                                                course.thumbnail
+                                                            }
+                                                            alt=""
+                                                        />
+                                                    </div>
+                                                    <div className="overflow-hidden">
                                                         <div
                                                             className={clsx(
                                                                 styles.name
                                                             )}
                                                         >
-                                                            {course.id}
+                                                            {course.title}
                                                         </div>
-                                                    </div>
-                                                    <div
-                                                        className={clsx(
-                                                            styles.field,
-                                                            "col-lg-5 flex "
-                                                        )}
-                                                    >
                                                         <div
                                                             className={clsx(
-                                                                styles.cssImg
+                                                                styles.categories
                                                             )}
+                                                        >
+                                                            {course.category &&
+                                                                course.category.join(
+                                                                    ", "
+                                                                )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    className={clsx(
+                                                        styles.field,
+                                                        "col-lg-2"
+                                                    )}
+                                                >
+                                                    <div
+                                                        className={clsx(
+                                                            styles.name
+                                                        )}
+                                                    >
+                                                        {date}
+                                                        <br />
+                                                        {time}
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    className={clsx(
+                                                        styles.field,
+                                                        "col-lg-2"
+                                                    )}
+                                                >
+                                                    <div
+                                                        className={clsx(
+                                                            styles.name
+                                                        )}
+                                                    >
+                                                        {course.price === 0
+                                                            ? "Free"
+                                                            : `${course.price} VND`}
+                                                    </div>
+                                                </div>
+
+                                                <div
+                                                    className={clsx(
+                                                        styles.field,
+                                                        "col-lg-2"
+                                                    )}
+                                                >
+                                                    <div
+                                                        className={clsx(
+                                                            styles.name,
+                                                            "flex gap-4"
+                                                        )}
+                                                    >
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                handleRestoreCourse(
+                                                                    course.id
+                                                                )
+                                                            }
                                                         >
                                                             <img
                                                                 src={
-                                                                    course.thumbnail
+                                                                    restoreIcon
                                                                 }
                                                                 alt=""
                                                             />
-                                                        </div>
-                                                        <div className="overflow-hidden">
-                                                            <div
-                                                                className={clsx(
-                                                                    styles.name
-                                                                )}
-                                                            >
-                                                                {course.title}
-                                                            </div>
-                                                            <div
-                                                                className={clsx(
-                                                                    styles.categories
-                                                                )}
-                                                            >
-                                                                {course.category &&
-                                                                    course.category.join(
-                                                                        ", "
-                                                                    )}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <div
-                                                        className={clsx(
-                                                            styles.field,
-                                                            "col-lg-2"
-                                                        )}
-                                                    >
-                                                        <div
-                                                            className={clsx(
-                                                                styles.name
-                                                            )}
-                                                        >
-                                                            {date}
-                                                            <br />
-                                                            {time}
-                                                        </div>
-                                                    </div>
-                                                    <div
-                                                        className={clsx(
-                                                            styles.field,
-                                                            "col-lg-2"
-                                                        )}
-                                                    >
-                                                        <div
-                                                            className={clsx(
-                                                                styles.name
-                                                            )}
-                                                        >
-                                                            {course.price === 0
-                                                                ? "Free"
-                                                                : `${course.price} VND`}
-                                                        </div>
-                                                    </div>
-
-                                                    <div
-                                                        className={clsx(
-                                                            styles.field,
-                                                            "col-lg-2"
-                                                        )}
-                                                    >
-                                                        <div
-                                                            className={clsx(
-                                                                styles.name,
-                                                                "flex gap-4"
-                                                            )}
-                                                        >
-                                                            <button
-                                                                type="button"
-                                                                onClick={() =>
-                                                                    handleRestoreCourse(
-                                                                        course.id
-                                                                    )
-                                                                }
-                                                            >
-                                                                <img
-                                                                    src={
-                                                                        restoreIcon
-                                                                    }
-                                                                    alt=""
-                                                                />
-                                                            </button>
-                                                            <button
+                                                        </button>
+                                                        {/* <button
                                                                 onClick={() =>
                                                                     openDeleteModal(
                                                                         course.id
@@ -373,11 +342,10 @@ function HistoryDeleted() {
                                                                     alt=""
                                                                     className="cursor-pointer"
                                                                 />
-                                                            </button>
-                                                        </div>
+                                                            </button> */}
                                                     </div>
                                                 </div>
-                                            </>
+                                            </div>
                                         );
                                     })}
 
@@ -527,13 +495,6 @@ function HistoryDeleted() {
                     </div>
                 </div>
             </div>
-            <Modal
-                isOpen={deletedModalOpen}
-                closeModal={handleCloseModal}
-                title={"Delete"}
-                description={"Are you sure want to delete?"}
-                handleRemove={handleRemoveCourse}
-            ></Modal>
         </div>
     );
 }

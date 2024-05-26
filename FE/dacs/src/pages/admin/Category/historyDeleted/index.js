@@ -1,13 +1,10 @@
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "../../Course/list/List.module.scss";
 import clsx from "clsx";
 import { toast } from "sonner";
 import * as dataApi from "../../../../api/apiService/dataService";
-import deleteIcon from "../../../../assets/images/delete.svg";
 import noDataIcon from "../../../../assets/images/ic_noData.svg";
 import restoreIcon from "../../../../assets/images/restore.svg";
-import { Dialog, Transition } from "@headlessui/react";
-import { useNavigate } from "react-router-dom";
 import Modal from "../../../../component/modal";
 import FooterDataAdmin from "../../../../component/footerDataAdmin";
 
@@ -15,30 +12,11 @@ const selectes = [5, 10, 25];
 
 function HistoryDeletedCategory() {
     const [categories, setCategories] = useState([]);
-    const [deletedModalOpen, setDeletedModalOpen] = useState(false);
-    const [deleteId, setDeleteId] = useState(null);
     const [totalData, setTotalData] = useState(0);
     const [selected, setSelected] = useState(selectes[0]);
     const [page, setPage] = useState(0);
     const [render, setRender] = useState();
-
-    const handleRemoveCategory = () => {
-        const fetchApi = async () => {
-            toast.promise(dataApi.hardDeleteCategoryById(deleteId), {
-                loading: "Removing...",
-                success: () => {
-                    setRender(!render);
-                    setDeletedModalOpen(false);
-                    return "Remove successfully";
-                },
-                error: (error) => {
-                    return error.content;
-                },
-            });
-        };
-
-        fetchApi();
-    };
+    const firstRender = useRef(true);
 
     useEffect(() => {
         const fetchApi = async () => {
@@ -102,14 +80,6 @@ function HistoryDeletedCategory() {
         };
     };
 
-    const handleCloseModal = () => {
-        setDeletedModalOpen(false);
-    };
-    const openDeleteModal = (id) => {
-        setDeleteId(id);
-        setDeletedModalOpen(true);
-    };
-
     const handleRestoreCategory = (id) => {
         toast.promise(dataApi.restoreCategoryById(id), {
             loading: "loading...",
@@ -125,12 +95,17 @@ function HistoryDeletedCategory() {
     };
 
     useEffect(() => {
+        if (firstRender.current) {
+            firstRender.current = false;
+            return;
+        }
         const fetchApi = async () => {
             try {
                 const result = await dataApi.getAllCategoryDeleted(
                     page,
                     selected
                 );
+                console.log(result);
                 setCategories(result.content.content);
             } catch (error) {
                 console.log(error);
@@ -278,7 +253,7 @@ function HistoryDeletedCategory() {
                                                             />
                                                         </button>
 
-                                                        <button
+                                                        {/* <button
                                                             data-micromodal-trigger="modal-1"
                                                             type="button"
                                                             onClick={() =>
@@ -292,7 +267,7 @@ function HistoryDeletedCategory() {
                                                                 alt=""
                                                                 className="cursor-pointer"
                                                             />
-                                                        </button>
+                                                        </button> */}
                                                     </div>
                                                 </div>
                                             </div>
@@ -330,14 +305,6 @@ function HistoryDeletedCategory() {
                     </div>
                 </div>
             </div>
-
-            <Modal
-                isOpen={deletedModalOpen}
-                closeModal={handleCloseModal}
-                title={"Delete"}
-                description={"Are you sure want to delete?"}
-                handleRemove={handleRemoveCategory}
-            ></Modal>
         </div>
     );
 }

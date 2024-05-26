@@ -16,5 +16,5 @@ public class SectionDTO {
     private int id;
     private String title;
     private int isEdited;
-    private List<LessonDTO> lessons;
+    private List<Lesson> lessons;
 }

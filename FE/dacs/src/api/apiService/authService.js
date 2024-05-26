@@ -1,4 +1,14 @@
-import instance, { setToken } from "../instance";
+import publicInstance, { userInstance } from "../instance";
+import axios from "axios";
+import instance, { privateInstance } from "../instance";
+
+export const enrollCourse = async (enrollDTO) => {
+    try {
+        return await userInstance.post("/enroll/course", enrollDTO);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
 export const register = async ({
     firstName,
     lastName,
@@ -43,7 +53,6 @@ export const login = async ({ email, password }) => {
 };
 
 export const sendMail = async (email) => {
-    console.log(email);
     try {
         const res = await instance.post(
             "/user/send-verify-email",
@@ -56,7 +65,6 @@ export const sendMail = async (email) => {
         );
         return res;
     } catch (error) {
-        console.log(error);
         return Promise.reject(error);
     }
 };
@@ -88,11 +96,21 @@ export const validateCode = async ({ email, code }) => {
 
 export const resetPassword = async ({ email, password }) => {
     try {
-        return await instance.post(
-            "/user/reset-password",
+        return await publicInstance.post(`/user/reset-password`, {
+            password,
+            email,
+        });
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+export const resetPasswordByEmail = async (password, email) => {
+    try {
+        return await privateInstance.put(
+            `/user/resetPassword/${email}`,
             {
-                email,
-                password,
+                newPassword: password,
+                email: email,
             },
             {
                 "content-type": "application/json",
@@ -102,10 +120,9 @@ export const resetPassword = async ({ email, password }) => {
         return Promise.reject(error);
     }
 };
-
 export const getAllUser = async () => {
     try {
-        return await instance.get("/user/getAll?page=0&size=5");
+        return await privateInstance.get("/user/getAll?page=0&size=5");
     } catch (error) {
         return Promise.reject(error);
     }
@@ -113,7 +130,7 @@ export const getAllUser = async () => {
 
 export const getAllDeletedUser = async () => {
     try {
-        return await instance.get("/user/getAllDeleted?page=0&size=5");
+        return await privateInstance.get("/user/getAllDeleted?page=0&size=5");
     } catch (error) {
         return Promise.reject(error);
     }
@@ -121,16 +138,16 @@ export const getAllDeletedUser = async () => {
 
 export const getAllRole = async () => {
     try {
-        return await instance.get("/user/getAllRole");
+        return await privateInstance.get("/user/getAllRole");
     } catch (error) {
         return Promise.reject(error);
     }
 };
 
-export const getUserByName = async (userName, page, size) => {
+export const getUserByName = async (userName, page, size, isDelete = false) => {
     try {
-        return instance.get(
-            `/user/search?name=${userName}&page=${page}&size=${size}`
+        return privateInstance.get(
+            `/user/search?name=${userName}&isDeleted=${isDelete}&page=${page}&size=${size}`
         );
     } catch (error) {
         Promise.reject(error);
@@ -139,7 +156,7 @@ export const getUserByName = async (userName, page, size) => {
 
 export const getUserByRole = (role, page, size) => {
     try {
-        return instance.get(
+        return privateInstance.get(
             `/user/filter?role=${role}&page=${page}&size=${size}`
         );
     } catch (error) {
@@ -149,16 +166,15 @@ export const getUserByRole = (role, page, size) => {
 
 export const getUserByPage = async (page, size) => {
     try {
-        return instance.get(`/user/getAll?page=${page}&size=${size}`);
+        return privateInstance.get(`/user/getAll?page=${page}&size=${size}`);
     } catch (error) {
         Promise.reject(error);
     }
 };
 
-
 export const softDeleteUser = async (id) => {
     try {
-        const result = await instance.put(`/user/delete/soft/${id}`);
+        const result = await privateInstance.put(`/user/delete/soft/${id}`);
         return result;
     } catch (error) {
         return Promise.reject(error);
@@ -166,7 +182,7 @@ export const softDeleteUser = async (id) => {
 };
 export const hardDeleteUser = async (id) => {
     try {
-        const result = await instance.delete(`/user/delete/hard/${id}`);
+        const result = await privateInstance.delete(`/user/delete/hard/${id}`);
         return result;
     } catch (error) {
         return Promise.reject(error);
@@ -175,8 +191,169 @@ export const hardDeleteUser = async (id) => {
 
 export const restoreUserById = async (id) => {
     try {
-        return instance.put(`/user/restore/${id}`);
+        return privateInstance.put(`/user/restore/${id}`);
     } catch (error) {
         Promise.reject(error);
+    }
+};
+
+export const getAdminDashBoard = async () => {
+    try {
+        return privateInstance.get("/user");
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getUserInfo = async () => {
+    try {
+        return userInstance.get("/username");
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const logout = async () => {
+    try {
+        return userInstance.post("/logout");
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getUserByEmail = async (email) => {
+    try {
+        return userInstance.get(`${email}`);
+    } catch (error) {
+        Promise.reject(error);
+    }
+};
+
+export const updateProfile = async (user, avatar) => {
+    const formData = new FormData();
+    const json = JSON.stringify(user);
+    const userBlob = new Blob([json], {
+        type: "application/json",
+    });
+    formData.append("user", userBlob);
+    formData.append("avatar", avatar);
+    try {
+        return await userInstance.putForm("/update", formData);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const updatePassword = async (passwords) => {
+    try {
+        return await userInstance.put("/update/password", passwords);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getProgress = async (alias, courseId) => {
+    try {
+        return await userInstance.get(`/${alias}/progress/${courseId}`);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const updateLessonIds = async (alias, courseId, lessonIds) => {
+    try {
+        return await userInstance.put(
+            `/${alias}/progress/${courseId}/updateLessonIds`,
+            lessonIds
+        );
+    } catch (error) {
+        return Promise.reject(error.response.data);
+    }
+};
+
+export const getAllNotification = async (email) => {
+    try {
+        return await userInstance.get(
+            `/${encodeURIComponent(email)}/notification/getAll`
+        );
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const readNotification = async (email, id) => {
+    if (email.includes("@")) {
+        email = email.substring(0, email.lastIndexOf("@"));
+    }
+    try {
+        return await userInstance.put(`${email}/notification/read/${id}`);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+export const readAllNotifications = async (email) => {
+    if (email.includes("@")) {
+        email = email.substring(0, email.lastIndexOf("@"));
+    }
+    try {
+        return await userInstance.put(`${email}/notification/readAll`);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+export const removeAllNotifications = async (email) => {
+    if (email.includes("@")) {
+        email = email.substring(0, email.lastIndexOf("@"));
+    }
+    try {
+        return await userInstance.delete(`${email}/notification/removeAll`);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getPaymentVNPAY = async ({ method, email, courseId }) => {
+    try {
+        return await userInstance.get(
+            `create_payment/${method}/${email}/${courseId}`
+        );
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getListCourse = async (email) => {
+    try {
+        return await userInstance.get(`/course/getAll/${email}`);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const removeCommentById = async (email, cmtId) => {
+    try {
+        return await userInstance.delete(
+            `/${encodeURIComponent(email)}/comment/delete/${cmtId}`
+        );
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getAllUserAndRole = async (isDelete = "false") => {
+    try {
+        return await privateInstance.get(
+            `/user/getAllUserAndRole?isDeleted=${isDelete}`
+        );
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const createPost = async (post) => {
+    try {
+        return await userInstance.post("/post/create", post);
+    } catch (error) {
+        return Promise.reject(error);
     }
 };

@@ -1,8 +1,9 @@
-import instance, { setToken } from "../instance";
+import publicInstance, { privateInstance } from "../instance";
+
 export const getAllCategories = async (page = 0, size = 9999999) => {
     try {
-        const res = await instance.get(
-            `/data/category/getAll?page=${page}&size=${size}`
+        const res = await publicInstance.get(
+            `/category/getAll?page=${page}&size=${size}`
         );
         return res;
     } catch (error) {
@@ -11,8 +12,8 @@ export const getAllCategories = async (page = 0, size = 9999999) => {
 };
 export const getAllCategoryDeleted = async (page, size) => {
     try {
-        const res = await instance.get(
-            `/data/category/getAllDeleted?page=${page}&size=${size}`
+        const res = await privateInstance.get(
+            `/category/getAllDeleted?page=${page}&size=${size}`
         );
         return res;
     } catch (error) {
@@ -20,55 +21,36 @@ export const getAllCategoryDeleted = async (page, size) => {
     }
 };
 
-export const createCourse = async (
-    course,
-    thumbnail = "",
-    courseVideo = "",
-    videos = ""
-) => {
+export const createCourse = async (course) => {
     const formData = new FormData();
     const json = JSON.stringify(course);
     const courseBlob = new Blob([json], {
         type: "application/json",
     });
-
-    for (let i = 0; i < videos.length; i++) {
-        formData.append("videos", videos[i]);
-    }
     formData.append("course", courseBlob);
-    formData.append("thumbnail", thumbnail);
-    formData.append("courseVideo", courseVideo);
-
     try {
-        const response = await instance.post("/data/course/create", formData, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        });
-        console.log("Response:", response);
+        const response = await privateInstance.postForm(
+            "/course/create",
+            formData
+        );
+        return response;
     } catch (error) {
-        return Promise.reject(error.response.data);
+        return Promise.reject(error);
     }
 };
 
-export const updateCourse = async (id, course, thumbnail, video, videos) => {
-    const formData = new FormData();
+export const updateCourse = async (id, course) => {
     console.log(course);
+    const formData = new FormData();
     const json = JSON.stringify(course);
     const courseBlob = new Blob([json], {
         type: "application/json",
     });
 
-    for (let i = 0; i < videos.length; i++) {
-        formData.append("videos", videos[i]);
-    }
-
     formData.append("course", courseBlob);
-    formData.append("thumbnail", thumbnail);
-    formData.append("courseVideo", video);
     try {
-        const result = await instance.putForm(
-            `/data/course/edit/${id}`,
+        const result = await privateInstance.putForm(
+            `/course/edit/${id}`,
             formData
         );
         return result;
@@ -76,11 +58,23 @@ export const updateCourse = async (id, course, thumbnail, video, videos) => {
         return Promise.reject(error);
     }
 };
+// coursvideo dang text
 
 export const getAllCourse = async (page = 0, size = 5) => {
     try {
-        const result = await instance.get(
-            `/data/course/getAll?page=${page}&size=${size}`
+        const result = await publicInstance.get(
+            `/course/getAll?page=${page}&size=${size}`
+        );
+        return result;
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getAllCourseAdmin = async (page = 0, size = 5) => {
+    try {
+        const result = await privateInstance.get(
+            `/course/getAll?page=${page}&size=${size}`
         );
         return result;
     } catch (error) {
@@ -89,8 +83,8 @@ export const getAllCourse = async (page = 0, size = 5) => {
 };
 export const getAllCourseDeleted = async (page, size) => {
     try {
-        const result = await instance.get(
-            `/data/course/getAllDeleted?page=${page}&size=${size}`
+        const result = await privateInstance.get(
+            `/course/getAllDeleted?page=${page}&size=${size}`
         );
         return result;
     } catch (error) {
@@ -99,17 +93,17 @@ export const getAllCourseDeleted = async (page, size) => {
     }
 };
 
-export const getCourseById = async (id) => {
+export const getCourseById = async (id, isDeleted = "false") => {
     try {
-        return await instance.get(`/data/course/${id}`);
+        return await publicInstance.get(`/course/${id}?isDeleted=${isDeleted}`);
     } catch (error) {
-        return Promise.reject(error.response.data);
+        return Promise.reject(error);
     }
 };
 
 export const softDeleteCourse = async (id) => {
     try {
-        const result = await instance.put(`/data/course/delete/soft/${id}`);
+        const result = await privateInstance.put(`/course/delete/soft/${id}`);
         return result;
     } catch (error) {
         return Promise.reject(error);
@@ -117,7 +111,9 @@ export const softDeleteCourse = async (id) => {
 };
 export const hardDeleteCourse = async (id) => {
     try {
-        const result = await instance.delete(`/data/course/delete/hard/${id}`);
+        const result = await privateInstance.delete(
+            `/course/delete/hard/${id}`
+        );
         return result;
     } catch (error) {
         return Promise.reject(error);
@@ -126,18 +122,17 @@ export const hardDeleteCourse = async (id) => {
 
 export const getCoursesDeletedByCategory = (id, page, size) => {
     try {
-        return instance.get(
-            `/data/course/deleted/category?id=${id}&page=${page}&size=${size}`
+        return privateInstance.get(
+            `/course/deleted/category?id=${id}&page=${page}&size=${size}`
         );
     } catch (error) {
-        console.log(error.mess);
         Promise.reject(error);
     }
 };
-export const getCoursesByCategory = (id, page, size) => {
+export const getCoursesByCategory = async (id, page, size) => {
     try {
-        return instance.get(
-            `/data/course/category?id=${id}&page=${page}&size=${size}`
+        return await publicInstance.get(
+            `/course/category?id=${id}&page=${page}&size=${size}`
         );
     } catch (error) {
         console.log(error.mess);
@@ -145,10 +140,17 @@ export const getCoursesByCategory = (id, page, size) => {
     }
 };
 
-export const getCourseByName = (title, page, selected) => {
+export const getCourseByName = async (
+    title,
+    page = 0,
+    selected = 5,
+    isDeleted = "false"
+) => {
     try {
-        return instance.get(
-            `/data/course?title=${title}&page=${page}&selected=${selected}`
+        return await privateInstance.get(
+            `/course?title=${encodeURIComponent(
+                title
+            )}&isDeleted=${isDeleted}&page=${page}&selected=${selected}`
         );
     } catch (error) {
         Promise.reject(error.mess);
@@ -157,7 +159,7 @@ export const getCourseByName = (title, page, selected) => {
 
 export const softDeleteCategoryById = (id) => {
     try {
-        return instance.put(`/data/category/delete/soft/${id}`);
+        return privateInstance.put(`/category/delete/soft/${id}`);
     } catch (error) {
         Promise.reject(error);
     }
@@ -165,24 +167,24 @@ export const softDeleteCategoryById = (id) => {
 
 export const hardDeleteCategoryById = (id) => {
     try {
-        return instance.delete(`/data/category/delete/hard/${id}`);
+        return privateInstance.delete(`/category/delete/hard/${id}`);
     } catch (error) {
         Promise.reject(error);
     }
 };
 export const restoreCategoryById = (id) => {
     try {
-        return instance.put(`/data/category/restore/${id}`);
+        return privateInstance.put(`/category/restore/${id}`);
     } catch (error) {
         Promise.reject(error);
     }
 };
 
-export const getCategoryByTitle = (name, page, selected) => {
+export const getCategoryByTitle = (name, page = 0, selected = 5) => {
     console.log(name);
     try {
-        return instance.get(
-            `/data/category?name=${name}&page=${page}&selected`
+        return publicInstance.get(
+            `/category?name=${name}&page=${page}&selected`
         );
     } catch (error) {
         Promise.reject(error);
@@ -191,7 +193,7 @@ export const getCategoryByTitle = (name, page, selected) => {
 
 export const editCategory = (id, category) => {
     try {
-        return instance.put(`/data/category/${id}`, category);
+        return privateInstance.put(`/category/${id}`, category);
     } catch (error) {
         Promise.reject(error);
     }
@@ -199,7 +201,7 @@ export const editCategory = (id, category) => {
 
 export const getCategoryById = (id) => {
     try {
-        return instance.get(`/data/category/${id}`);
+        return publicInstance.get(`/category/${id}`);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -207,7 +209,7 @@ export const getCategoryById = (id) => {
 
 export const createCategory = (category) => {
     try {
-        return instance.post(`/data/category/create`, category);
+        return privateInstance.post(`/category/create`, category);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -215,8 +217,110 @@ export const createCategory = (category) => {
 
 export const restoreCourseById = (id) => {
     try {
-        return instance.put(`data/course/restore/${id}`);
+        return privateInstance.put(`/course/restore/${id}`);
     } catch (error) {
         Promise.reject(error);
+    }
+};
+
+export const getComments = async (lessonId) => {
+    try {
+        return await publicInstance.get(`/lesson/${lessonId}/comments`);
+    } catch (error) {
+        console.log(error.status);
+        return Promise.reject(error);
+    }
+};
+
+export const getAllInvoice = async (page = 0, size = 5) => {
+    try {
+        return await privateInstance.get(
+            `/invoice/getAll?page=${page}&size=${size}`
+        );
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getInvoicesByDate = async (startDate, endDate, page, size) => {
+    try {
+        return await privateInstance.get(
+            `/invoice/getByDate?start=${encodeURIComponent(
+                startDate
+            )}&end=${encodeURIComponent(endDate)}&page=${page}&size=${size}`
+        );
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const softDeleteInvoice = async (id) => {
+    try {
+        return await privateInstance.put(`/invoice/delete/soft/${id}`);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+export const getAllInvoiceByPage = async (page, size) => {
+    try {
+        return await privateInstance.get(
+            `/invoice/getAll?page=${page}&size=${size}`
+        );
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const searchInvoice = async (search, page, size) => {
+    try {
+        return await privateInstance.get(
+            `/invoice/search?name=${search}&page=${page}&size=${size}`
+        );
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getAllInvoiceDelete = async (page = 0, size = 5) => {
+    try {
+        return await privateInstance.get(`/invoice/getAllDeleted`);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const restoreInvoieById = async (id) => {
+    try {
+        return await privateInstance.put(`/invoice/restore/${id}`);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getMonthlyStatistic = async (month, year, page = 0, size = 5) => {
+    try {
+        return await privateInstance.get(
+            `/statistic?month=${month}&year=${year}&page=${page}&size=${size}`
+        );
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const uploadImg = async (img) => {
+    try {
+        const formData = new FormData();
+        formData.append("file", img);
+        return await publicInstance.postForm("/upload/img", formData);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getPosts = async (page = "0", size = "5") => {
+    try {
+        return await publicInstance.get(`/post?page=${page}&size=${size}`);
+    } catch (error) {
+        return Promise.reject(error);
     }
 };

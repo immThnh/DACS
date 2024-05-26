@@ -4,8 +4,6 @@
     display: flex;
     flex-direction: column;
     padding: 50px;
-    margin: 102px;
-    margin-top: 40px;
 }
 
 @media (max-width: 1366px) {
@@ -30,6 +28,7 @@
     display: flex;
     flex-direction: column;
     flex: 1;
+    width: 500px;
     max-width: 900px;
 }
 
@@ -41,7 +40,7 @@
     text-overflow: ellipsis;
     text-align: start;
     color: var(--Grey-15, #262626);
-    font: 600 24px/150% "Be Vietnam Pro", sans-serif;
+    font: 600 26px/150% "Be Vietnam Pro", sans-serif;
     max-width: 983px;
 }
 
@@ -93,12 +92,6 @@
     }
 }
 
-@media (max-width: 1366px) {
-    .courseImageWrapper {
-        width: 100%;
-    }
-}
-
 .courseImage {
     aspect-ratio: 0.89;
     object-fit: fill;
@@ -118,7 +111,7 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 30px;
-    width: 100%;
+    width: 70%;
     gap: 20px;
 }
 
@@ -129,6 +122,7 @@
     justify-content: center;
     align-items: center;
     font-size: 16px;
+    padding-bottom: 10px;
 }
 
 .courseDetails {
@@ -179,7 +173,6 @@
 
 .curriculumItem {
     display: flex;
-    // border-bottom: 1px solid #ffffff;
     align-items: start;
     background-color: #f2f5f7;
     border: 1px solid #ccc;
@@ -197,13 +190,14 @@
 }
 
 .curriculumTitle {
+    margin-top: 5%;
     font-size: 24px;
     text-align: start;
 }
 
 .curriculumItemNumber {
-    font-size: 32px; /* Adjust font size as needed */
-    font-weight: bold; /* Make the number bold */
+    font-size: 32px;
+    font-weight: bold;
     margin-right: 10px;
     text-align: start;
     color: var(--Grey-15, #262626);
@@ -216,6 +210,7 @@
     border-radius: 8px;
     display: flex;
 }
+
 .coursePrice {
     height: 48px;
     color: #1a1a1a;
@@ -256,4 +251,45 @@
 .sticky {
     position: sticky;
     top: 132px;
+    overflow: hidden;
+}
+
+@media (max-width: 992px) {
+    .courseHeader{
+        padding-left: 10px;
+    }
+    .detailsContainer {
+        display: flex;
+        flex-direction: column;
+    }
+    .courseTitle{
+        display: block;
+        margin-top: 10px;
+        max-width: 350px;
+        height: 40px;
+    }
+    .courseDetailsWrapper {
+        order: 1;
+    }
+
+    .courseCurriculumWrapper {
+        order: 3;
+    }
+    .courseDetails{
+        width: 100%;
+    }
+    .col-lg-8 {
+        width: 100%;
+    }
+
+    .col-lg-4 {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    .sticky {
+        position: relative;
+        top: auto;
+        width: 100%;
+    }
 }
