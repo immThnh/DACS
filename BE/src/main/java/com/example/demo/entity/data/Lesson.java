@@ -25,6 +25,7 @@ public class Lesson {
     private String video;
     private LocalDateTime date;
     private int duration;
+    private boolean isDeleted = false;
 
     @ManyToOne()
     @JsonBackReference

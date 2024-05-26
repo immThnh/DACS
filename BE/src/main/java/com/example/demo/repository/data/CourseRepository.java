@@ -3,6 +3,7 @@ package com.example.demo.repository.data;
 import com.example.demo.dto.CourseDTO;
 import com.example.demo.dto.CourseStatisticDTO;
 import com.example.demo.entity.data.Course;
+import com.example.demo.entity.data.Section;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,7 +18,10 @@ import java.util.Optional;
 public interface CourseRepository extends JpaRepository<Course, Integer> {
      Optional<Course> findByTitle(String title);
 
-     Optional<Course> findById(int id);
+    @Query(value = "SELECT * FROM section s " +
+            "left join course c on s.course_id = c.id " +
+            "where s.is_deleted = :isDeleted and c.id = :id " , nativeQuery = true)
+    Optional<List<Section>> findSectionsById(int id, boolean isDeleted);
 
      Page<Course> findAllByIsDeleted(boolean isDeleted, Pageable pageable);
 
@@ -32,8 +36,6 @@ public interface CourseRepository extends JpaRepository<Course, Integer> {
 
     Page<Course> findByTitleContainingAndIsDeleted(String title, boolean isDeleted, Pageable pageable);
 
-    @Query(value = "select * from course", nativeQuery = true)
-    Optional<List<Course>> getAll();
 
     Page<Course> findAll(Pageable pageable);
 

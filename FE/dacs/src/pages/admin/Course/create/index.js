@@ -22,6 +22,7 @@ function CreateCourse() {
     const [formData, setFormData] = useState(initFormData);
     const [options, setOptions] = useState([]);
     const [errors, setErrors] = useState({});
+    const [isUploading, setIsUploading] = useState(false);
     let timerId;
 
     const handleInputChange = (e) => {
@@ -36,23 +37,39 @@ function CreateCourse() {
 
     const handleFileChange = (e, index, indexSection) => {
         const file = e.target.files[0];
-        if (file.type === "video/mp4") {
-            const updateSection = { ...formData.sections[indexSection] };
-            updateSection.lessons[index] = {
-                ...updateSection.lessons[index],
-                video: file,
-                actionVideo: "UPDATE",
-            };
-            const updateSections = [...formData.sections];
-            updateSections[indexSection] = updateSection;
+        setIsUploading(true);
+        toast.promise(DataApi.uploadImg(file), {
+            loading: "Loading file...",
+            success: (result) => {
+                setIsUploading(false);
+                if (file.type === "video/mp4") {
+                    const updateSection = {
+                        ...formData.sections[indexSection],
+                    };
+                    updateSection.lessons[index] = {
+                        ...updateSection.lessons[index],
+                        video: result.content,
+                    };
+                    const updateSections = [...formData.sections];
+                    updateSections[indexSection] = updateSection;
 
-            setFormData({ ...formData, sections: [...updateSections] });
-        } else {
-            setFormData({
-                ...formData,
-                thumbnail: file,
-            });
-        }
+                    setFormData({
+                        ...formData,
+                        sections: [...updateSections],
+                    });
+                } else {
+                    setFormData({
+                        ...formData,
+                        thumbnail: result.content,
+                    });
+                }
+                return "Uploading successfully...";
+            },
+            error: (error) => {
+                console.log(error);
+                return "Upload thumbnail failed";
+            },
+        });
         e.target.value = "";
         errors[e.target.name] = "";
         setErrors(errors);
@@ -66,8 +83,21 @@ function CreateCourse() {
     };
 
     const handleUpdateVideoCourse = (e) => {
-        const file = e.target.files[0];
-        setFormData({ ...formData, video: file });
+        setIsUploading((prev) => true);
+        toast.promise(DataApi.uploadImg(e.target.files[0]), {
+            loading: "Loading video...",
+            success: (result) => {
+                setIsUploading((prev) => false);
+                setFormData((prev) => {
+                    return { ...prev, video: result.content };
+                });
+                return "Upload video successfully";
+            },
+            error: (error) => {
+                console.log(error);
+                return "Upload video failed";
+            },
+        });
     };
 
     const handleRemoveItemPrevivew = (e, type, index, sectionIndex) => {
@@ -208,6 +238,8 @@ function CreateCourse() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (isUploading)
+            return toast.error("Please wait for the file to finish uploading");
         const validationErrors = validateForm(formData);
         setErrors(validationErrors);
 
@@ -216,22 +248,6 @@ function CreateCourse() {
             return;
         }
 
-        const thumbnail = formData.thumbnail;
-        const courseVideo = formData.video;
-        formData.video = "";
-
-        const videos = [];
-        formData.sections.forEach((section) => {
-            if (section.lessons) {
-                section.lessons.forEach((less) => {
-                    if (less.video instanceof File) {
-                        videos.push(less.video);
-                        less.video = "";
-                    }
-                });
-            }
-        });
-
         const featchApi = async () => {
             let newCategories = [];
             formData.categories.forEach((cate) => newCategories.push(cate.id));
@@ -239,21 +255,17 @@ function CreateCourse() {
                 ...formData,
                 categories: newCategories,
             };
-            console.log(newCourse);
-            toast.promise(
-                DataApi.createCourse(newCourse, thumbnail, courseVideo, videos),
-                {
-                    loading: "Loading...",
-                    success: () => {
-                        window.location.reload();
-                        return "Create successfully";
-                    },
-                    error: (error) => {
-                        console.log(error);
-                        return error;
-                    },
-                }
-            );
+            toast.promise(DataApi.createCourse(newCourse), {
+                loading: "Loading...",
+                success: () => {
+                    setFormData(initFormData);
+                    return "Create successfully";
+                },
+                error: (error) => {
+                    console.log(error);
+                    return error;
+                },
+            });
         };
 
         const debounceApi = debounce(featchApi);
@@ -421,9 +433,7 @@ function CreateCourse() {
                                             className={clsx(
                                                 styles.thumbnailImg
                                             )}
-                                            src={URL.createObjectURL(
-                                                formData.thumbnail
-                                            )}
+                                            src={formData.thumbnail}
                                             alt=""
                                         />
                                         <button
@@ -485,9 +495,7 @@ function CreateCourse() {
                                             className="rounded-lg"
                                         >
                                             <source
-                                                src={URL.createObjectURL(
-                                                    formData.video
-                                                )}
+                                                src={formData.video}
                                                 type="video/mp4"
                                             />
                                         </video>
@@ -745,9 +753,9 @@ function CreateCourse() {
                                                                                         className="rounded-lg"
                                                                                     >
                                                                                         <source
-                                                                                            src={URL.createObjectURL(
+                                                                                            src={
                                                                                                 lesson.video
-                                                                                            )}
+                                                                                            }
                                                                                             type="video/mp4"
                                                                                         />
                                                                                     </video>

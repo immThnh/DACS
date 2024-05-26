@@ -22,8 +22,8 @@ public class PCourseController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseObject> getCourseById(@PathVariable int id) {
-        var result = courseService.getCourseById(id);
+    public ResponseEntity<ResponseObject> getCourseById(@PathVariable int id, @RequestParam boolean isDeleted){
+        var result = courseService.getCourseById(id, isDeleted);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 

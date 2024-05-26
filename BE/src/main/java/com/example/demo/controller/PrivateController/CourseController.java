@@ -26,21 +26,17 @@ public class CourseController {
 
     @PostMapping("/create")
     public ResponseEntity<ResponseObject> create(@RequestPart CourseDTO course
-            , @RequestPart(required = false) MultipartFile thumbnail
-            , @RequestPart(required = false) MultipartFile courseVideo
-            , @RequestPart(value = "videos", required = false) List<MultipartFile> videos ) {
-        var result = courseService.addCourse(course, thumbnail, courseVideo, videos);
+          ) {
+        var result = courseService.addCourse(course);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 
     @PutMapping("/edit/{id}")
     public ResponseEntity<ResponseObject> updateCourse(@PathVariable int id
             , @RequestPart CourseDTO course
-            , @RequestPart(required = false) MultipartFile thumbnail
-            , @RequestPart(required = false) MultipartFile courseVideo
-            , @RequestPart(value = "videos", required = false) List<MultipartFile> videos)  {
+          )  {
 
-        var result = courseService.updateCourse(id, course, thumbnail, courseVideo, videos);
+        var result = courseService.updateCourse(id, course);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 

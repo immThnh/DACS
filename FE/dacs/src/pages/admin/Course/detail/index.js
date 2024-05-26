@@ -171,9 +171,9 @@ function AdminDetailCourse() {
             try {
                 const data = await dataApi.getCourseById(id);
                 const course = data.content;
-                const lessonFirst = course.sections[0].lessons[0];
-                const video = lessonFirst.video;
-                const linkVideo = lessonFirst.linkVideo;
+                const lessonFirst = course.sections[0]?.lessons[0];
+                const video = lessonFirst?.video;
+                const linkVideo = lessonFirst?.linkVideo;
                 setLessonSelected(lessonFirst);
                 setCourse(course);
                 setCurrentVideoUrl(video ? video : linkVideo);
@@ -272,7 +272,7 @@ function AdminDetailCourse() {
                                                     }
                                                     aliasEmail={alias}
                                                     isHighlighted={
-                                                        lessonSelected.id
+                                                        lessonSelected?.id
                                                     }
                                                     handleVideoSelect={
                                                         handleVideoSelect
