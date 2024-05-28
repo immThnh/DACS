@@ -37,7 +37,7 @@ function CreateCourse() {
 
     const handleFileChange = (e, index, indexSection) => {
         const file = e.target.files[0];
-        setIsUploading(true);
+        setIsUploading((prev) => true);
         toast.promise(DataApi.uploadImg(file), {
             loading: "Loading file...",
             success: (result) => {
@@ -53,14 +53,18 @@ function CreateCourse() {
                     const updateSections = [...formData.sections];
                     updateSections[indexSection] = updateSection;
 
-                    setFormData({
-                        ...formData,
-                        sections: [...updateSections],
+                    setFormData((prev) => {
+                        return {
+                            ...prev,
+                            sections: [...updateSections],
+                        };
                     });
                 } else {
-                    setFormData({
-                        ...formData,
-                        thumbnail: result.content,
+                    setFormData((prev) => {
+                        return {
+                            ...prev,
+                            thumbnail: result.content,
+                        };
                     });
                 }
                 return "Uploading successfully...";
@@ -138,9 +142,10 @@ function CreateCourse() {
         var newSection = { ...formData.sections[sectionId] };
         newSection.lessons.splice(index, 1);
         var newSections = [...formData.sections];
-
-        newSections[sectionId] = newSections;
-        setFormData({ ...formData, sections: newSections });
+        newSections[sectionId] = newSection;
+        setFormData((prev) => {
+            return { ...prev, sections: newSections };
+        });
     };
 
     const handleAddLesson = (sectionIndex) => {
@@ -172,7 +177,9 @@ function CreateCourse() {
     const handleRemoveSection = (index) => {
         const updateSections = [...formData.sections];
         updateSections.splice(index, 1);
-        setFormData({ ...formData, sections: [...updateSections] });
+        setFormData((prev) => {
+            return { ...prev, sections: [...updateSections] };
+        });
     };
 
     const debounce = (func, delay = 600) => {

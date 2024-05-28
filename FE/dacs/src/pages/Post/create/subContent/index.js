@@ -2,9 +2,13 @@ import styles from "../../../admin/Course/create/CreateCourse.module.scss";
 import clsx from "clsx";
 import btnClose from "../../../../assets/images/btnClose.svg";
 import fileSelect from "../../../../assets/images/fileSelect.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import React from "react";
 import CreatableSelect from "react-select/creatable";
+import { toast } from "sonner";
+import * as UserApi from "../../../../api/apiService/authService";
+import { useSelector } from "react-redux";
+import * as DataApi from "../../../../api/apiService/dataService";
 
 const options = ["Java", "React", "Node", "Python", "C++", "C#"].map(
     (option) => ({
@@ -19,22 +23,50 @@ const customStyles = {
         height: 50,
     }),
 };
-function SubContent() {
+
+function SubContent({ post = {}, handleBackClick }) {
     const [thumbnail, setThumbnail] = useState(null);
+    const user = useSelector((state) => state.login.user);
     const [tags, setTags] = useState([]);
+
     const handleRemovePreview = () => {
         setThumbnail(null);
     };
 
     const handleChangeTag = (e) => {
-        if (tags.length <= 4 && e.length <= 4) {
-            setTags(e);
-        }
+        console.log(e);
+        console.log("object");
+        // if (tags.length <= 4 && e.length <= 4) {
+        //     setTags(e);
+        // }
     };
 
     const handlePublish = () => {
-        console.log("object");
+        const tagsValue = tags.map((tag) => {
+            return {
+                name: tag.value,
+            };
+        });
+        post = { ...post, tags: tagsValue, thumbnail };
+        toast.promise(UserApi.createPost({ ...post }, user.email), {
+            loading: "loading...",
+            success: (result) => {
+                return result.mess;
+            },
+            error: (error) => {
+                console.log(error);
+                return error.mess;
+            },
+        });
     };
+
+    useEffect(() => {
+        const fetchApi = async () => {
+            try {
+                const result = await DataApi.serchTag();
+            } catch (error) {}
+        };
+    }, []);
 
     return (
         <div className="container mt-10">
@@ -105,7 +137,13 @@ function SubContent() {
                             onChange={handleChangeTag}
                             styles={customStyles}
                         />
-                        <div>
+                        <div className="flex justify-between">
+                            <button
+                                onClick={handleBackClick}
+                                className="cursor-pointer hover:opacity-80z w-auto rounded-lg inline-block float-end mt-4 px-4 py-2 text-white bg-black font-medium text-sm"
+                            >
+                                Back To Create
+                            </button>
                             <button
                                 className="cursor-pointer hover:opacity-80z w-auto rounded-lg inline-block float-end mt-4 px-4 py-2 text-white bg-black font-medium text-sm"
                                 onClick={handlePublish}

@@ -324,3 +324,11 @@ export const getPosts = async (page = "0", size = "5") => {
         return Promise.reject(error);
     }
 };
+
+export const serchTag = async (name) => {
+    try {
+        return await publicInstance.get(`/tag?name=${name}`);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};

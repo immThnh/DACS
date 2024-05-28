@@ -3,10 +3,7 @@ package com.example.demo.auth;
 import com.example.demo.cloudinary.CloudService;
 import com.example.demo.config.ConfigVNPAY;
 import com.example.demo.dto.*;
-import com.example.demo.entity.data.Comment;
-import com.example.demo.entity.data.MethodPayment;
-import com.example.demo.entity.data.Notification;
-import com.example.demo.entity.data.Progress;
+import com.example.demo.entity.data.*;
 import com.example.demo.entity.user.Role;
 import com.example.demo.entity.user.User;
 import com.example.demo.jwt.JwtService;
@@ -18,10 +15,7 @@ import com.example.demo.repository.data.CourseRepository;
 import com.example.demo.repository.data.LessonRepository;
 import com.example.demo.repository.data.NotificationRepository;
 import com.example.demo.repository.data.ProgressRepository;
-import com.example.demo.service.CommentService;
-import com.example.demo.service.InvoiceService;
-import com.example.demo.service.NotificationService;
-import com.example.demo.service.PostService;
+import com.example.demo.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,13 +55,15 @@ public class AuthService {
     private  final CommentService commentService;
     @Autowired
     private PostService postService;
+    @Autowired
+    private TagService tagService;
 
-   public ResponseObject savePost(PostDTO postDTO) {
+
+    public ResponseObject savePost(PostDTO postDTO) {
        var user = userRepository.findByEmail(postDTO.getEmail()).orElse(null);
        if (user == null) {
            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("User not found").build();
        }
-
        postService.savePost(user, postDTO);
        userRepository.save(user);
        return ResponseObject.builder().status(HttpStatus.OK).mess("Create post successfully").build();

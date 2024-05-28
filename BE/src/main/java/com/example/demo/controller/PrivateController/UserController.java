@@ -4,8 +4,10 @@ import com.example.demo.auth.*;
 import com.example.demo.dto.PasswordDTO;
 import com.example.demo.dto.PostDTO;
 import com.example.demo.dto.ResponseObject;
+import com.example.demo.entity.data.Post;
 import com.example.demo.mail.MailRequest;
 import com.example.demo.mail.MailService;
+import com.example.demo.service.PostService;
 import com.example.demo.service.UserService;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +22,6 @@ public class UserController {
     private final AuthService authService;
     private final MailService mailService;
     private final UserService userService;
-
-
 
     @PutMapping("/resetPassword/{email}")
     public ResponseEntity<ResponseObject> resetPassword(@RequestBody PasswordDTO passwordDTO, @RequestParam String email) {

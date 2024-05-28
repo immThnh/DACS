@@ -1,6 +1,7 @@
 package com.example.demo.controller.PublicController;
 
 import com.example.demo.dto.ResponseObject;
+import com.example.demo.entity.data.Post;
 import com.example.demo.service.PostService;
 import jakarta.mail.Multipart;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ public class PPostController {
         var result = postService.uploadImg(file);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
+
 
     @GetMapping("")
     public ResponseEntity<ResponseObject> getPost(@RequestParam int page, @RequestParam int size) {

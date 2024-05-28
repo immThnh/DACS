@@ -4,10 +4,11 @@ package com.example.demo.controller.PrivateController;
 import com.example.demo.auth.AuthService;
 import com.example.demo.dto.*;
 import com.example.demo.entity.data.MethodPayment;
-import com.twilio.http.Response;
+import com.example.demo.entity.data.Post;
+import com.example.demo.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,18 +22,22 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/me")
 public class MeController {
-    private final AuthService authService;
+    @Autowired
+    private AuthService authService;
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/")
     public String greeting() {
         return "Hello me";
     }
 
-    @PostMapping("/post/create")
-    public ResponseEntity<ResponseObject> createPost(@RequestBody PostDTO post) {
-        var result = authService.savePost(post);
+    @PostMapping("/{email}/post/create")
+    public ResponseEntity<ResponseObject> createPost(@RequestBody Post post, @PathVariable String email) {
+        var result = userService.createPost(post, email);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
+
 
     @DeleteMapping("/{email}/comment/delete/{id}")
     public ResponseEntity<ResponseObject> DeleteComment(@PathVariable String email, @PathVariable int id) {

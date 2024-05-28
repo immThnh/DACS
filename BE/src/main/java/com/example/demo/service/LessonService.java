@@ -24,6 +24,10 @@ import java.util.stream.Collectors;
 public class LessonService {
     private final LessonRepository lessonRepository;
 
+    public void removeLessonsOfSections(List<Integer> sectionIds, boolean isDeleted) {
+        lessonRepository.markLessonsAsDeleted(sectionIds, isDeleted);
+    }
+
     public ResponseObject getById(int id) {
         var lesson = lessonRepository.findById(id).orElse(null);
         if(lesson == null) {
@@ -34,6 +38,9 @@ public class LessonService {
 
     public List<Lesson> getLessonsBySection(Section section, boolean isDeleted) {
         return lessonRepository.findLessonsBySection(section.getId(), isDeleted).orElse(null);
+    }
+    public List<Lesson> getLessonsBySections(List<Integer> sectionIds, boolean isDeleted) {
+        return lessonRepository.findLessonsBySections(sectionIds, isDeleted).orElse(null);
     }
 
     public List<Lesson> updateLessonsOfSection(Section oldSection, SectionDTO newSection) {

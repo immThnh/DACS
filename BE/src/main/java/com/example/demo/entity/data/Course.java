@@ -34,8 +34,7 @@ public class Course {
     private String alias;
     private boolean isDeleted = false;
 
-    @ManyToMany()
-
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinTable(
             name = "course_category",
             joinColumns = @JoinColumn(name = "course_id", referencedColumnName = "id"),
@@ -43,7 +42,7 @@ public class Course {
     )
     private List<Category> categories = new ArrayList<>();
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "course", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "course", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Section> sections = new ArrayList<>();
 }

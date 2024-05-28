@@ -202,9 +202,9 @@ function EditCourse() {
 
     const handleRemoveLesson = (index, sectionId) => {
         var newSection = { ...formData.sections[sectionId] };
+        newSection.lessons.splice(index, 1);
         var newSections = [...formData.sections];
-
-        newSections[sectionId].lesson = newSection.lessons.splice(index, 1);
+        newSections[sectionId] = newSection;
         setFormData({ ...formData, sections: newSections });
     };
     const handleRemoveVideoCourse = (e) => {
@@ -212,19 +212,6 @@ function EditCourse() {
     };
 
     //!NOTE: ========================END HANDLE ====================================
-
-    function isURL(str) {
-        const urlPattern = new RegExp(
-            "^(https?:\\/\\/)?" + // protocol
-                "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
-                "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
-                "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
-                "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
-                "(\\#[-a-z\\d_]*)?$",
-            "i"
-        ); // fragment locator
-        return urlPattern.test(str);
-    }
 
     //!======================================NOTE SUBMIT ========================
     const handleSubmit = (e) => {

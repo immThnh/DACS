@@ -8,19 +8,14 @@ import com.example.demo.entity.data.Invoice;
 import com.example.demo.entity.data.MethodPayment;
 import com.example.demo.entity.user.User;
 import com.example.demo.repository.data.InvoiceRepository;
-import com.fasterxml.jackson.dataformat.xml.ser.UnwrappingXmlBeanSerializer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.Method;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor

@@ -23,6 +23,10 @@ public class PostService {
     @Autowired
     private CloudService cloudService;
 
+    @Autowired
+    private UserService userService;
+
+
     public ResponseObject getPosts(int page, int size){
         return ResponseObject.builder().status(HttpStatus.OK).content(postRepository.findAll(PageRequest.of(page, size))).build();
     }
@@ -36,6 +40,7 @@ public class PostService {
                 .build();
         postRepository.save(post);
     }
+
 
     public ResponseObject uploadImg(MultipartFile file) {
         String path = null;

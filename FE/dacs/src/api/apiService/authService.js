@@ -350,9 +350,9 @@ export const getAllUserAndRole = async (isDelete = "false") => {
     }
 };
 
-export const createPost = async (post) => {
+export const createPost = async (post, email) => {
     try {
-        return await userInstance.post("/post/create", post);
+        return await userInstance.post(`/${email}/post/create`, post);
     } catch (error) {
         return Promise.reject(error);
     }

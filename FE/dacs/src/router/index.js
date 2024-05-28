@@ -16,7 +16,7 @@ import HistoryDeleted from "../pages/admin/Course/historyDeleted";
 import HistoryDeletedCategory from "../pages/admin/Category/historyDeleted";
 import ListUser from "../pages/admin/user/list";
 import ListDeletedUser from "../pages/admin/user/historyDeleted";
-import UserProfile from "../pages/user/userprofile/index";
+import UserProfile from "../pages/user/userProfile/index";
 import Payment from "../pages/payment";
 import SuccessPayment from "../pages/payment/success";
 import FailurePayment from "../pages/payment/failure";
@@ -27,7 +27,6 @@ import ListDeleteInvoice from "../pages/admin/invoice/historyDelete";
 import CreateUser from "../pages/admin/user/create";
 import AdminDetailCourse from "../pages/admin/Course/detail";
 import Post from "../pages/Post";
-import SubContent from "../pages/Post/create/subContent";
 import CreatePost from "../pages/Post/create";
 
 const publicRoutes = [
@@ -52,7 +51,6 @@ const userRoutes = [
     { path: "/payment/failure", component: FailurePayment },
     { path: "me/profile/:email", component: UserProfile },
     { path: "me/post/create", component: CreatePost },
-    { path: "me/post/create/sub", component: SubContent },
 ];
 
 const adminRoutes = [

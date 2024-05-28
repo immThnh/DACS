@@ -19,11 +19,16 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String content;
-    @ManyToOne
-    private User user;
     private LocalDateTime date ;
     private String title;
+    private  String thumbnail;
     private boolean isDeleted = false;
+
+    @ManyToOne
+    private User user;
+
+    @OneToMany()
+    private List<Tag> tags;
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Comment> comment;

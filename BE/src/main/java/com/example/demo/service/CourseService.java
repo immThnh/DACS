@@ -2,31 +2,20 @@ package com.example.demo.service;
 
 import com.example.demo.cloudinary.CloudService;
 import com.example.demo.dto.ResponseObject;
-import com.example.demo.dto.SectionDTO;
-import com.example.demo.entity.data.Course;
-import com.example.demo.entity.data.Lesson;
-import com.example.demo.entity.data.Section;
+import com.example.demo.entity.data.*;
 import com.example.demo.repository.data.CourseRepository;
 import com.example.demo.dto.CourseDTO;
-import com.example.demo.repository.data.SectionRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Data
 @RequiredArgsConstructor
@@ -39,21 +28,19 @@ public class CourseService {
     private final LessonService lessonService;
     private final SectionService sectionService;
 
+
     public ResponseObject getCourseById(int id, boolean isDeleted) {
         Course course = courseRepository.findById(id).orElse(null);
-
         if (course == null) {
             return ResponseObject.builder().mess("Course is not exist!").status(HttpStatus.BAD_REQUEST).build();
         }
-        var sections = sectionService.getSectionsByCourse(course, isDeleted);
+        var sections = sectionService.getSectionsByCourse(course);
         course.setSections(sections);
-        System.out.println(course);
         return ResponseObject.builder().content(course).status(HttpStatus.OK).build();
     }
 
     public ResponseObject getAllCourse(int page, int size) {
         var courses = courseRepository.findAllByIsDeleted(false, PageRequest.of(page, size));
-
         return ResponseObject.builder().status(HttpStatus.OK).mess("Get successfully").content(courses).build();
     }
 

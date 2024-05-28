@@ -24,7 +24,7 @@ public class Section {
 
     private String title;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "section", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "section", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Lesson> lessons;
 

@@ -2,9 +2,13 @@ package com.example.demo.service;
 
 import com.example.demo.dto.ResponseObject;
 import com.example.demo.dto.UsersAndRoles;
+import com.example.demo.entity.data.Post;
 import com.example.demo.entity.user.Role;
+import com.example.demo.entity.user.User;
 import com.example.demo.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -13,8 +17,29 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserService {
-    private final UserRepository userRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private TagService tagService;
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
+
+
+    public ResponseObject createPost(Post post, String email) {
+        var user = getUserByEmail(email);
+        if (user == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("User not found").build();
+        }
+        post.setUser(user);
+        user.getPosts().add(post);
+        userRepository.save(user);
+        tagService.saveTags(post.getTags());
+        return ResponseObject.builder().status(HttpStatus.OK).mess("Publish post successfully").build();
+    }
 
     public ResponseObject getAllUser() {
         var users = userRepository.findAll();
@@ -30,8 +55,6 @@ public class UserService {
         UsersAndRoles usersAndRoles = UsersAndRoles.builder().roles(roles).users(users).build();
         return ResponseObject.builder().status(HttpStatus.OK).content(usersAndRoles).build();
     }
-
-
 
     public ResponseObject getUserByRole(String role, int page, int size) {
         if (Objects.equals(role, "All"))

@@ -27,7 +27,7 @@ public class Lesson {
     private int duration;
     private boolean isDeleted = false;
 
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JsonBackReference
     private Section section;
 
