@@ -6,22 +6,22 @@ import "swiper/css/pagination";
 import "./Slideshow.css";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import background from "../../assets/images/Banner_01_2.png";
-
+import background2 from "../../assets/images/BannerReact.png"
 const PromoSlideshow = () => {
     const slides = [
         {
             img: background,
-            title: "Lorem ipsum dolor",
+            title: "Courses to improve UI UX design skills",
             description:
-                "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eos, natus fugiat quod unde aliquid eius facere dignissimos aut quidem. Temporibus sapiente eligendi reiciendis dolorem rerum nobis fugit magnam, dolore corrupti!",
-            buttonText: "Register Now",
+                "Practice projects with Figma, hundreds of exercises and challenges, 100% instruction by Son Dang, included flashcards, and more.",
+            buttonText: "See now",
         },
         {
-            img: background,
-            title: "Lorem ipsum dolor",
+            img: background2,
+            title: "Learn ReactJS for Free!",
             description:
-                "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eos, natus fugiat quod unde aliquid eius facere dignissimos aut quidem. Temporibus sapiente eligendi reiciendis dolorem rerum nobis fugit magnam, dolore corrupti!",
-            buttonText: "Register Now",
+                "ReactJS course from basic to advanced. The result of this course is that you can do most common projects with ReactJS.",
+            buttonText: "Enroll now",
         },
     ];
 

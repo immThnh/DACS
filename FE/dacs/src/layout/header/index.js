@@ -99,6 +99,18 @@ export default function Header() {
                                 Post
                             </Link>
                         </nav>
+                        <nav className="flex gap-4 justify-between my-auto">
+                            <Link
+                                className={`nav-header ${
+                                    window.location.pathname === "/"
+                                        ? "nav-header-active"
+                                        : ""
+                                }`}
+                                to="/allCourse"
+                            >
+                                Courses
+                            </Link>
+                        </nav>
                         <div className="flex items-center">
                             <SearchBar></SearchBar>
                         </div>
