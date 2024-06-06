@@ -1,6 +1,6 @@
 import styles from "./List.module.scss";
 import clsx from "clsx";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import deleteIcon from "../../../../assets/images/delete.svg";
 import noDataIcon from "../../../../assets/images/ic_noData.svg";
 import viewIcon from "../../../../assets/images/view.svg";

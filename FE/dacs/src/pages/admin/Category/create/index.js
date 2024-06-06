@@ -30,7 +30,7 @@ function CreateCategory() {
             <div className="container flex flex-col">
                 <div className="wrapMainDash mr-auto w-3/4 ">
                     <h3 className="titleMainDash">Create a new category</h3>
-                    <div
+                    <form
                         className={clsx(
                             styles.formGroup,
                             "flex gap-6 flex-col rounded-lg"
@@ -58,7 +58,7 @@ function CreateCategory() {
                         >
                             Create
                         </button>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>

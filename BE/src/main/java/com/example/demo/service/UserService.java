@@ -3,9 +3,12 @@ package com.example.demo.service;
 import com.example.demo.dto.ResponseObject;
 import com.example.demo.dto.UsersAndRoles;
 import com.example.demo.entity.data.Post;
+import com.example.demo.entity.data.QPost;
 import com.example.demo.entity.user.Role;
 import com.example.demo.entity.user.User;
 import com.example.demo.repository.UserRepository;
+import com.querydsl.jpa.impl.JPAQuery;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +22,90 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Transactional
 public class UserService {
-    @Autowired
     private UserRepository userRepository;
-    @Autowired
     private TagService tagService;
+    private EntityManager entityManager;
+
+    @Autowired
+    public UserService(UserRepository userRepository, TagService tagService, EntityManager entityManager) {
+        this.userRepository = userRepository;
+        this.tagService = tagService;
+        this.entityManager = entityManager;
+    }
+
+
+    public ResponseObject updateDeletePostById(String email, int postId, boolean deleted) {
+        var user = getUserByEmail(email);
+        if (user == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("User not found").build();
+        }
+
+        var post = user.getPosts().stream().filter(p -> p.getId() == postId).findFirst();
+        if (post.isEmpty()) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Post not found").build();
+        }
+        post.get().setDeleted(deleted);
+        userRepository.save(user);
+        return ResponseObject.builder().status(HttpStatus.OK).mess("Delete post successfully").build();
+    }
+
+    public ResponseObject getPostById(String email, int postId) {
+        var user = getUserByEmail(email);
+        if (user == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("User not found").build();
+        }
+        var post = new JPAQuery<Post>(entityManager)
+                .from(QPost.post)
+                .where(QPost.post.user.id.eq(user.getId()).and(QPost.post.id.eq(postId)).and(QPost.post.isDeleted.eq(false)))
+                .fetchFirst();
+        return ResponseObject.builder().status(HttpStatus.OK).content(post).build();
+    }
+
+    public ResponseObject getPosts(String email, boolean deleted, int page, int size) {
+        var user = getUserByEmail(email);
+        if (user == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("User not found").build();
+        }
+        var posts = user.getPosts().stream().filter(post -> post.getDeleted() == deleted).limit((long) page * size + size).toList();
+        return ResponseObject.builder().status(HttpStatus.OK).content(posts).build();
+    }
+
+    public void save(User user) {
+        userRepository.save(user);
+    }
+
+    public boolean isPostFavorite(String email, Post post) {
+        var user = getUserByEmail(email);
+        if (user == null) {
+            return false;
+        }
+        return user.getFavoritePosts().contains(post);
+    }
+
+    public ResponseObject toggleFavoritePost(String email, int postId) {
+        var remove = false;
+        var user = getUserByEmail(email);
+        if (user == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("User not found").build();
+        }
+        var post = entityManager.find(Post.class, postId);
+        if (post == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Post not found").build();
+        }
+        if (user.getFavoritePosts().contains(post)) {
+            user.getFavoritePosts().remove(post);
+            remove = true;
+
+        } else {
+            user.getFavoritePosts().add(post);
+        }
+        userRepository.save(user);
+        return ResponseObject.builder().status(HttpStatus.OK).mess(!remove ? "Add to bookmarks":"Remove to bookmarks").build();
+    }
 
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
     }
-
 
     public ResponseObject createPost(Post post, String email) {
         var user = getUserByEmail(email);
@@ -35,20 +113,30 @@ public class UserService {
             return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("User not found").build();
         }
         post.setUser(user);
+        post.setTags(tagService.saveTags(post.getTags()));
         user.getPosts().add(post);
         userRepository.save(user);
-        tagService.saveTags(post.getTags());
         return ResponseObject.builder().status(HttpStatus.OK).mess("Publish post successfully").build();
     }
 
-    public ResponseObject getAllUser() {
-        var users = userRepository.findAll();
-        return ResponseObject.builder().status(HttpStatus.OK).mess("Get data successfully").status(HttpStatus.OK).content(users).build();
+    public ResponseObject updatePost(Post post, String email) {
+        var user = getUserByEmail(email);
+        if (user == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("User not found").build();
+        }
+
+        var existPost = user.getPosts().stream().filter(p -> p.getId() == post.getId()).findFirst();
+        if (existPost.isEmpty()) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Post not found").build();
+        }
+
+        existPost.get().setContent(post.getContent());
+        existPost.get().setTitle(post.getTitle());
+        userRepository.save(user);
+        return ResponseObject.builder().status(HttpStatus.OK).mess("Publish post successfully").build();
     }
 
-    public ResponseObject getAllRole() {
-        return ResponseObject.builder().status(HttpStatus.OK).content(Role.values()).build();
-    }
+
     public ResponseObject getAllUserAndRole(boolean isDeleted){
         var roles = Role.values();
         var users = userRepository.findAllByIsDeleted(isDeleted, PageRequest.of(0, 5));

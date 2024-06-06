@@ -25,7 +25,6 @@ public class SectionService {
     private LessonService lessonService;
     @Autowired
     private final EntityManager entityManager;
-//    private final JPAQuery<Section> query = new JPAQuery<>(entityManager);
 
     public void addListSectionDtoToCourse(Course course, List<SectionDTO> sectionDTOs) {
         if(course.getSections() == null) course.setSections(new ArrayList<>());

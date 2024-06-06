@@ -1,5 +1,4 @@
 import publicInstance, { userInstance } from "../instance";
-import axios from "axios";
 import instance, { privateInstance } from "../instance";
 
 export const enrollCourse = async (enrollDTO) => {
@@ -271,10 +270,12 @@ export const updateLessonIds = async (alias, courseId, lessonIds) => {
     }
 };
 
-export const getAllNotification = async (email) => {
+export const getAllNotification = async (email, page = "0", size = "5") => {
     try {
         return await userInstance.get(
-            `/${encodeURIComponent(email)}/notification/getAll`
+            `/${encodeURIComponent(
+                email
+            )}/notification/getAll?page=${page}&size=${size}`
         );
     } catch (error) {
         return Promise.reject(error);
@@ -306,7 +307,7 @@ export const removeAllNotifications = async (email) => {
         email = email.substring(0, email.lastIndexOf("@"));
     }
     try {
-        return await userInstance.delete(`${email}/notification/removeAll`);
+        return await userInstance.delete(`/${email}/notification/removeAll`);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -353,6 +354,64 @@ export const getAllUserAndRole = async (isDelete = "false") => {
 export const createPost = async (post, email) => {
     try {
         return await userInstance.post(`/${email}/post/create`, post);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const updatePost = async (post, email) => {
+    try {
+        return await userInstance.put(`/${email}/post/update`, post);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getPostById = async (postId) => {
+    try {
+        return await userInstance.get(`/post/favorite/${postId}`);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const toggleSavePost = async (postId, email) => {
+    try {
+        return await userInstance.put(`/${email}/post/favorite/${postId}`);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getPosts = async (email, isDeleted = false, page, size) => {
+    try {
+        return await userInstance.get(
+            `/${email}/posts?deleted=${isDeleted}&page=${page}&size=${size}`
+        );
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getMyPostById = async (email, id) => {
+    try {
+        return await userInstance.get(`/${email}/posts/${id}`);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const deletePost = async (email, postId) => {
+    try {
+        return await userInstance.put(`/${email}/post/delete/${postId}`);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const restorePost = async (email, postId) => {
+    try {
+        return await userInstance.put(`/${email}/post/restore/${postId}`);
     } catch (error) {
         return Promise.reject(error);
     }

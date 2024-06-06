@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import clsx from "clsx";
 import styles from "./CreatePost.module.scss";
 import ReactQuill from "react-quill";
@@ -11,11 +11,6 @@ import * as dataApi from "../../../api/apiService/dataService";
 import SubContent from "./subContent/index";
 
 let injectIsLoading = null;
-
-const init = {
-    title: "",
-    content: "",
-};
 
 Quill.register("modules/imageUploader", ImageUploader);
 
@@ -37,8 +32,11 @@ const handleUpload = (file, setIsLoading) => {
     return fetchApi();
 };
 
-function CreatePost() {
-    const [post, setPost] = useState(init);
+function CreatePost({ isEdit, postInit }) {
+    const [post, setPost] = useState({
+        title: "",
+        content: "",
+    });
     const [isLoading, setIsLoading] = useState(false);
     const [openSubContent, setOpenSubContent] = useState(false);
     injectIsLoading = setIsLoading;
@@ -53,17 +51,22 @@ function CreatePost() {
         setOpenSubContent(!openSubContent);
     };
 
+    useEffect(() => {
+        setPost({ ...postInit });
+    }, [postInit]);
+
     return (
         <div className="container mt-10">
             {openSubContent ? (
                 <SubContent
+                    isEdit={isEdit}
                     post={post}
                     handleBackClick={handleOpenSubContent}
                 ></SubContent>
             ) : (
                 <div className="wrap">
                     <h1 className="font-bold text-3xl uppercase ">
-                        Create Post
+                        {isEdit ? "Edit" : "Create"} Post
                     </h1>
                     <div className={clsx(styles.wrap, "mt-10")}>
                         <form>
@@ -112,7 +115,12 @@ function CreatePost() {
 
                     <button
                         onClick={handleOpenSubContent}
-                        className="cursor-pointer hover:opacity-80z w-auto rounded-lg inline-block float-end mt-4 px-4 py-2 text-white bg-black font-semibold text-base"
+                        className={clsx(
+                            "cursor-pointer hover:opacity-80z w-auto rounded-lg inline-block float-end mt-4 px-4 py-2 text-white bg-black font-semibold text-base",
+                            {
+                                notActive: !post.title || !post.content,
+                            }
+                        )}
                     >
                         Publish
                     </button>
@@ -164,4 +172,4 @@ const formats = [
     "imageBlot",
 ];
 
-export default CreatePost;
+export default memo(CreatePost);

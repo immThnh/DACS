@@ -54,7 +54,9 @@ export default function NotificationItem({ iconBtn }) {
         const fetchApi = async () => {
             try {
                 const result = await userApi.readAllNotifications(user.email);
-                dispatch(notificationSlice.actions.init(result.content));
+                dispatch(
+                    notificationSlice.actions.init(result.content.content)
+                );
             } catch (error) {
                 console.log(error);
             }

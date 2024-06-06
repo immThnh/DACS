@@ -77,7 +77,7 @@ $border-color: #e9ecee;
     margin-right: 16px;
     svg {
         transform: none !important;
-        color: #e9ebed;
+        // color: #e9ebed;
     }
 }
 
@@ -181,6 +181,9 @@ $border-color: #e9ecee;
 .actionLink.active {
     background-color: rgba(0, 167, 111, 0.08);
     color: rgb(0, 167, 111);
+    svg {
+        color: #778591;
+    }
 }
 
 .btnClose {

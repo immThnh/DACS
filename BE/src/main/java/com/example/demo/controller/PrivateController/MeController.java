@@ -22,14 +22,34 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/me")
 public class MeController {
-    @Autowired
     private AuthService authService;
-    @Autowired
     private UserService userService;
 
-    @GetMapping("/")
-    public String greeting() {
-        return "Hello me";
+    @Autowired
+    public MeController(AuthService authService, UserService userService) {
+        this.authService = authService;
+        this.userService = userService;
+    }
+
+    @GetMapping("/{email}/posts/{id}")
+    public ResponseEntity<ResponseObject> getPosts(@PathVariable String email,  @PathVariable int id) {
+        var result = userService.getPostById(email, id);
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
+
+    @GetMapping("/{email}/posts")
+    public ResponseEntity<ResponseObject> getPosts(@PathVariable String email,
+            @RequestParam boolean deleted,
+                                                   @RequestParam(defaultValue = "0") int page,
+                                                   @RequestParam(defaultValue = "5") int size) {
+        var result = userService.getPosts(email, deleted, page, size);
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
+
+    @PutMapping("/{email}/post/favorite/{postId}")
+    public ResponseEntity<ResponseObject> favoritePost(@PathVariable String email, @PathVariable int postId) {
+        var result = userService.toggleFavoritePost(email, postId);
+        return ResponseEntity.status(result.getStatus()).body(result);
     }
 
     @PostMapping("/{email}/post/create")
@@ -38,10 +58,28 @@ public class MeController {
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 
+    @PutMapping("/{email}/post/update")
+    public ResponseEntity<ResponseObject> updatePost(@RequestBody Post post, @PathVariable String email) {
+        var result = userService.updatePost(post, email);
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
+
 
     @DeleteMapping("/{email}/comment/delete/{id}")
     public ResponseEntity<ResponseObject> DeleteComment(@PathVariable String email, @PathVariable int id) {
         var result = authService.deleteCommentById(email, id);
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
+
+    @PutMapping("/{email}/post/delete/{id}")
+    public ResponseEntity<ResponseObject> DeletePost(@PathVariable String email, @PathVariable int id) {
+        var result = userService.updateDeletePostById(email, id, true);
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
+
+    @PutMapping("/{email}/post/restore/{id}")
+    public ResponseEntity<ResponseObject> RestorePost(@PathVariable String email, @PathVariable int id) {
+        var result = userService.updateDeletePostById(email, id, false);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 
@@ -90,8 +128,8 @@ public class MeController {
     }
 
     @GetMapping("/{email}/notification/getAll")
-    public ResponseEntity<ResponseObject> getAllNotification(@PathVariable String email) {
-        var result = authService.getAllNotificationsByEmail(email);
+    public ResponseEntity<ResponseObject> getAllNotification(@PathVariable String email, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "5") int size) {
+        var result = authService.getAllNotificationsByEmail(email, page, size);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 

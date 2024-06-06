@@ -12,6 +12,7 @@ public class CommentDTO {
     private String content;
     private String path;
     private int lessonId;
+    private int postId;
     private boolean sub;
     private String avatar;
     private int parentId;

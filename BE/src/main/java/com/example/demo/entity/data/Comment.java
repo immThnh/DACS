@@ -33,8 +33,4 @@ public class Comment {
     @ManyToOne
     @JsonIgnore
     private User user;
-
-    @ManyToOne
-    @JsonIgnore
-    private Lesson lesson;
 }

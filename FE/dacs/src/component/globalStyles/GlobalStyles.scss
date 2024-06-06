@@ -352,7 +352,7 @@ hr {
 }
 
 .cssHr {
-    margin: 0px !important;
+    // margin: 0px;
     flex-shrink: 0;
     border-width: 0px 0px thin;
     border-style: solid;
@@ -702,4 +702,36 @@ hr {
         border-color: black;
         transition: all 0.2s ease-in-out;
     }
+}
+.notActive:hover {
+    cursor: not-allowed;
+    opacity: 0.6 !important;
+}
+
+.notActive {
+    pointer-events: none !important;
+    user-select: none !important;
+    cursor: not-allowed !important;
+    opacity: 0.6;
+}
+
+.tagApproved {
+    padding: 2px 8px;
+    border-radius: 6px;
+    background-color: #dcfce7;
+    color: #209562;
+}
+
+.tagPending {
+    padding: 2px 8px;
+    border-radius: 6px;
+    color: #ba7308;
+    background-color: #fff1d6;
+}
+
+.tagRejected {
+    padding: 2px 8px;
+    border-radius: 6px;
+    color: #b81f1a;
+    background-color: #ffe4de;
 }

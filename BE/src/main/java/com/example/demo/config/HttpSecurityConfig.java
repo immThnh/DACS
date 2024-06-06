@@ -9,6 +9,7 @@ import com.example.demo.jwt.JwtFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -23,34 +24,28 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 
 @Configuration
-@RequiredArgsConstructor
-public class SecurityConfig {
+public class HttpSecurityConfig {
 
     private final JwtFilter jwtFilter;
     private final Oauth2SuccessHandler oauth2SuccessHandler;
     private final LogoutHandler logoutHandler;
     private final RestAuthenticationEntryPoint restAuthenticationEntryPoint;
 
-    @Bean
-    public AccessDeniedHandler accessDeniedHandler () {
-        return (request, response, accessDeniedException) -> {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-            ResponseObject res = ResponseObject.builder().status(HttpStatus.FORBIDDEN).mess("You don't have permission!").build();
-            ObjectMapper mapper = new ObjectMapper();
-            response.getWriter().write(mapper.writeValueAsString(res));
-            response.getWriter().flush();
-        };
+    @Autowired
+    public HttpSecurityConfig (JwtFilter jwtFilter, Oauth2SuccessHandler oauth2SuccessHandler, LogoutHandler logoutHandler, RestAuthenticationEntryPoint restAuthenticationEntryPoint) {
+        this.jwtFilter = jwtFilter;
+        this.oauth2SuccessHandler = oauth2SuccessHandler;
+        this.logoutHandler = logoutHandler;
+        this.restAuthenticationEntryPoint = restAuthenticationEntryPoint;
     }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
-//                .cors(AbstractHttpConfigurer::disable) vô hiệu hóa cấu hình mặc định và cấu hình CORS riêng
                  .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                "/api/v1/public/**", "/oauth2/**", "/ws/**").permitAll()
-                        .requestMatchers("/api/v1/user/**").hasAnyRole(Role.USER.name(), Role.ADMIN.name(), Role.MANAGER.name())
+                                "/api/v1/public/**", "/oauth2/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/private/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name())
                         .requestMatchers(HttpMethod.POST, "/api/v1/private/**").hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name())
                         .requestMatchers(HttpMethod.PUT, "/api/v1/private/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name())
@@ -66,11 +61,9 @@ public class SecurityConfig {
                             response.setStatus(HttpServletResponse.SC_OK);
                         }))
                 )
-//                .authenticationProvider(authenticationProvider)
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(restAuthenticationEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-//                .exceptionHandling(exception -> exception.accessDeniedHandler(accessDeniedHandler()))
                 .build();
     }
 }

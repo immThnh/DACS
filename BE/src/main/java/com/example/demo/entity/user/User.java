@@ -1,10 +1,12 @@
 package com.example.demo.entity.user;
 
+import com.example.demo.config.GrantedAuthorityDeserializer;
 import com.example.demo.entity.data.*;
 import com.example.demo.jwt.Token;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -49,6 +51,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user",cascade = CascadeType.REMOVE)
     private List<Comment> comments;
 
+    @ManyToMany(cascade = CascadeType.PERSIST)
+    private List<Post> favoritePosts = new ArrayList<>();
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Notification> notifications = new ArrayList<>();
 
@@ -64,6 +69,7 @@ public class User implements UserDetails {
     }
 
     @Override
+    @JsonDeserialize(using = GrantedAuthorityDeserializer.class)
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return role.getAuthorities();
     }

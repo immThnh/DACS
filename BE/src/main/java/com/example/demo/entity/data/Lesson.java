@@ -27,8 +27,11 @@ public class Lesson {
     private int duration;
     private boolean isDeleted = false;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
-    private Section section;
+    @OneToMany(cascade = CascadeType.ALL)
+    List<Comment> comments = new ArrayList<>();
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JsonBackReference
+//    private Section section;
 
 }

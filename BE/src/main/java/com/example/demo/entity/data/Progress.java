@@ -21,9 +21,6 @@ public class Progress {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  int id;
 
-    @ElementCollection // 1
-    @CollectionTable(name = "lesson_ids", joinColumns = @JoinColumn(name = "id")) // 2
-    @Column(name = "list_lessonid") // 3
     private List<Integer> lessonIds;
 
     @ManyToOne(cascade = CascadeType.PERSIST)

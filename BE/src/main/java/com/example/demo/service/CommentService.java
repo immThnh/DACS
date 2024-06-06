@@ -4,28 +4,59 @@ import com.example.demo.dto.CommentDTO;
 import com.example.demo.dto.ResponseObject;
 import com.example.demo.entity.data.Comment;
 import com.example.demo.entity.data.Notification;
+import com.example.demo.entity.data.Post;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.repository.data.CommentRepository;
 import com.example.demo.repository.data.LessonRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class CommentService {
-    private final UserRepository userRepository;
-    private  final CommentRepository commentRepository;
-    private  final LessonRepository lessonRepository;
+    @Autowired
+    private  UserRepository userRepository;
+    @Autowired
+    private  CommentRepository commentRepository;
+    @Autowired
+    private SimpMessagingTemplate simpMessagingTemplate;
+    @Autowired
+    private PostService postService;
+    @Autowired
+    private LessonService lessonService;
+    @Autowired
+    private NotificationService notificationService;
+
+
+    public ResponseObject getComments(int id, int page, int size) {
+        var post = postService.findById(id);
+        if (post == null) {
+            return ResponseObject.builder().status(HttpStatus.NOT_FOUND).mess("Post not found").build();
+        }
+        return ResponseObject.builder()
+                .status(HttpStatus.OK)
+                .content(getCommentsByPostId(id, page, size))
+                .build();
+    }
 
     public Comment getById(int id) {
         return commentRepository.findById(id).orElse(null);
+    }
+
+    public Page<Comment> getCommentsByPostId(int postId, int page, int size) {
+        return commentRepository.findAllByPostId(postId, PageRequest.of(page, size));
     }
 
     public void deleteById(int id) {
@@ -43,54 +74,50 @@ public class CommentService {
         }
         commentRepository.delete(comment);
     }
-    public Notification saveNotification(CommentDTO commentDTO) {
-        var sendToUser = userRepository.findByEmail(commentDTO.getReplyToUser()).orElse(null);
-        if (sendToUser == null) {
-            System.out.println("sendToUser not found");
-            return null;
-        }
-        Notification notification = Notification.builder()
-                .content(commentDTO.getContent())
-                .date(LocalDateTime.now())
-                .fromUser(commentDTO.getUserName())
-                .user(sendToUser)
-                .img(commentDTO.getAvatar())
-                .path(commentDTO.getPath())
-                .content("Mentioned you in a comment")
-                .build();
-        if(notification == null)
-        {
-            System.out.println("Notification is null");
-        }
-        sendToUser.getNotifications().add(notification);
-        userRepository.save(sendToUser);
-        return notification;
-    }
 
-    public Comment saveComment(CommentDTO commentDTO) {
+
+    public Comment saveComment(CommentDTO commentDTO) throws Exception {
+        if (commentDTO == null) {
+            throw new IllegalArgumentException("CommentDTO cannot be null");
+        }
+
         var user = userRepository.findByEmail(commentDTO.getEmail()).orElse(null);
-        var lesson = lessonRepository.findById(commentDTO.getLessonId()).orElse(null);
-        if (user == null || lesson == null) {
-            System.out.println("user || lesson not found");
+        if (user == null) {
+            System.out.println("saveComment: user not found");
             return null;
         }
+
         Comment comment = Comment.builder()
                 .userEmail(commentDTO.getEmail())
                 .userName(commentDTO.getUserName())
                 .avatar(commentDTO.getAvatar())
                 .user(user)
                 .content(commentDTO.getContent())
-                .lesson(lesson)
                 .parentId(commentDTO.getParentId())
                 .date(LocalDateTime.now())
                 .replyToUser(commentDTO.getReplyToUser())
                 .replyToUserName(commentDTO.getReplyToUserName())
                 .build();
+
+        if(commentDTO.getLessonId() != 0) {
+           var result = lessonService.saveComment(commentDTO.getLessonId(), comment);
+           if (!result)
+                throw new Exception("Lesson not found");
+
+        }
+        else if (commentDTO.getPostId() != 0) {
+            var result = postService.saveComment(commentDTO.getPostId(), comment);
+            if (!result)
+                throw new Exception("Post not found");
+            postService.sendNotificationToPostUser(commentDTO, commentDTO.getPostId());
+        }
+        notificationService.sendNotificationToUser(commentDTO, commentDTO.getReplyToUser(), "Mentioned you in a comment");
         return commentRepository.save(comment);
     }
 
-    public ResponseObject getCommentByLessonId(int lessonId) {
-        var comments = commentRepository.findAllByLessonId(lessonId, PageRequest.of(0, Integer.MAX_VALUE));
+
+    public ResponseObject getCommentByLessonId(int lessonId, int page, int size) {
+        var comments = commentRepository.findAllByLessonId(lessonId, PageRequest.of(page, size));
         return ResponseObject.builder().status(HttpStatus.OK).content(comments).build();
     }
 }

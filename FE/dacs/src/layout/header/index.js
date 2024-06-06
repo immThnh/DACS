@@ -34,8 +34,10 @@ export default function Header() {
         const fetchApi = async () => {
             try {
                 const result = await userApi.getAllNotification(user.email);
-                if (result.content.length > 0) {
-                    dispatch(notificationSlice.actions.init(result.content));
+                if (result.content.content.length > 0) {
+                    dispatch(
+                        notificationSlice.actions.init(result.content.content)
+                    );
                 }
             } catch (error) {
                 console.log(error);

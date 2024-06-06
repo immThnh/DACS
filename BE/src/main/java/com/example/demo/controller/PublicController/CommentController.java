@@ -21,21 +21,16 @@ import java.util.Objects;
 public class CommentController {
     private final CommentService commentService;
 
-    @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
 
     @MessageMapping("/comment/lesson/{lessonId}")
     @SendTo("/comment/lesson/{lessonId}")
     public Comment handleComment(@Payload CommentDTO commentDTO, @DestinationVariable int lessonId) throws Exception {
-        if (commentDTO == null) {
-            throw new IllegalArgumentException("CommentDTO cannot be null");
-        }
+        return commentService.saveComment(commentDTO);
+    }
 
-        if(commentDTO.getReplyToUser() != null && !Objects.equals(commentDTO.getEmail(), commentDTO.getReplyToUser())) {
-            Notification notification = commentService.saveNotification(commentDTO);
-            var alias = notification.getUser().getEmail().split("@")[0];
-            simpMessagingTemplate.convertAndSendToUser(alias,"/notification", notification);
-        }
+    @MessageMapping("/comment/post/{postId}")
+    @SendTo("/comment/post/{postId}")
+    public Comment handleCommentPost(@Payload CommentDTO commentDTO, @DestinationVariable int postId) throws Exception {
         return commentService.saveComment(commentDTO);
     }
 

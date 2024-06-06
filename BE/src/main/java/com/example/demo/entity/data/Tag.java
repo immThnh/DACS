@@ -16,5 +16,6 @@ public class Tag {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
+    private int sumP = 1;
     private boolean isDeleted = false;
 }

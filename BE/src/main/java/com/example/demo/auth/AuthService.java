@@ -93,13 +93,11 @@ public class AuthService {
         if (user == null) {
             return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).content("User not found ").build();
         }
-        var result = notificationService.removeAllNotificationsByEmail(user.getId());
-        if (result != null) {
-            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Error while remove all notification").build();
-        }
+       notificationService.removeAllNotificationsByEmail(user.getId());
+
         user.setNotifications(new ArrayList<>());
         userRepository.save(user);
-        return ResponseObject.builder().status(HttpStatus.OK).content(result).mess("Remove all notification successfully").build();
+        return ResponseObject.builder().status(HttpStatus.OK).mess("Remove all notification successfully").build();
     }
     public ResponseObject readAllNotification(String email) {
         if(!email.contains("@")) {
@@ -131,12 +129,12 @@ public class AuthService {
         }
         return ResponseObject.builder().status(HttpStatus.OK).mess("Read notification successfully").content(result).build();
     }
-    public ResponseObject getAllNotificationsByEmail(String email) {
+    public ResponseObject getAllNotificationsByEmail(String email, int page, int size) {
         var user = userRepository.findByEmail(email).orElse(null);
         if (user == null) {
             return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).content("User not found").build();
         }
-        return ResponseObject.builder().status(HttpStatus.OK).content(notificationService.getAllNotificationsByEmail(user.getId())).build();
+        return ResponseObject.builder().status(HttpStatus.OK).content(notificationService.getAllNotificationsByEmail(user.getId(), page, size)).build();
     }
 
 

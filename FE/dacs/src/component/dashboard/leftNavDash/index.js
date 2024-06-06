@@ -1,7 +1,6 @@
 import styles from "./LeftNavDash.module.scss";
 import clsx from "clsx";
 import appDash from "../../../assets/images/app_dash.svg";
-import eDash from "../../../assets/images/ecommerce_dash.svg";
 import icUser from "../../../assets/images/ic_user.svg";
 import icCourse from "../../../assets/images/icCourse.svg";
 import { Link } from "react-router-dom";
@@ -172,6 +171,80 @@ function LeftNavDash() {
                             </div>
                         )}
                         <div
+                            id="postLink"
+                            className={clsx(styles.actionLink, {
+                                [styles.active]: listOpen.includes("postLink"),
+                            })}
+                            onClick={handleOnSub}
+                        >
+                            <span className={clsx(styles.icon)}>
+                                <svg
+                                    dataSlot="icon"
+                                    fill="none"
+                                    strokeWidth={1.5}
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    aria-hidden="true"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+                                    />
+                                </svg>
+                            </span>
+                            <span
+                                className={clsx(
+                                    styles.nameAction,
+                                    styles.label
+                                )}
+                            >
+                                Post
+                            </span>
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                aria-hidden="true"
+                                role="img"
+                                className="arrow MuiBox-root css-3o0h5k iconify iconify--eva"
+                                width="1em"
+                                height="1em"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    fill="currentColor"
+                                    d="M10 19a1 1 0 0 1-.64-.23a1 1 0 0 1-.13-1.41L13.71 12L9.39 6.63a1 1 0 0 1 .15-1.41a1 1 0 0 1 1.46.15l4.83 6a1 1 0 0 1 0 1.27l-5 6A1 1 0 0 1 10 19"
+                                ></path>
+                            </svg>
+                        </div>
+                        {listOpen.includes("postLink") && (
+                            <div
+                                id="subPost"
+                                className={clsx(styles.subContent, {
+                                    "d-block": !close,
+                                })}
+                            >
+                                <ul className={clsx(styles.subList)}>
+                                    <Link
+                                        to="/admin/post/list"
+                                        id="list"
+                                        onClick={subItemClickHandle}
+                                        className={clsx(styles.subItem)}
+                                    >
+                                        <li className="d-flex">
+                                            <span
+                                                className={clsx(styles.dotItem)}
+                                            ></span>
+                                            <span className={clsx(styles.text)}>
+                                                List
+                                            </span>
+                                        </li>
+                                    </Link>
+                                </ul>
+                            </div>
+                        )}
+
+                        <div
                             onClick={handleOnSub}
                             id="courseLink"
                             className={clsx(styles.actionLink, {
@@ -180,7 +253,7 @@ function LeftNavDash() {
                             })}
                         >
                             <span className={clsx(styles.icon)}>
-                                <img src={icCourse} alt="" />
+                                <img className="ml-0.5" src={icCourse} alt="" />
                             </span>
                             <span
                                 className={clsx(

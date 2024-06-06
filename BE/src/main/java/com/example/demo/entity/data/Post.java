@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -18,18 +19,25 @@ public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String content;
-    private LocalDateTime date ;
+    private LocalDateTime date = LocalDateTime.now();
     private String title;
     private  String thumbnail;
     private boolean isDeleted = false;
+    @Enumerated(EnumType.STRING)
+    private PostStatus status = PostStatus.PENDING;
 
     @ManyToOne
     private User user;
-
-    @OneToMany()
+    @ManyToMany
     private List<Tag> tags;
-
     @OneToMany(cascade = CascadeType.ALL)
-    private List<Comment> comment;
+    private List<Comment> comments = new ArrayList<>();
+    private int totalComment = 0;
+
+    public boolean getDeleted() {
+        return isDeleted;
+    }
 }

@@ -4,6 +4,7 @@ import com.example.demo.cloudinary.CloudService;
 import com.example.demo.dto.ResponseObject;
 import com.example.demo.dto.SectionDTO;
 import com.example.demo.dto.LessonDTO;
+import com.example.demo.entity.data.Comment;
 import com.example.demo.entity.data.Lesson;
 import com.example.demo.entity.data.Section;
 import com.example.demo.repository.data.LessonRepository;
@@ -24,23 +25,32 @@ import java.util.stream.Collectors;
 public class LessonService {
     private final LessonRepository lessonRepository;
 
+    public boolean saveComment(int lessonId, Comment comment) {
+        var lesson = lessonRepository.findById(lessonId).orElse(null);
+        if(lesson == null) {
+            return false;
+        }
+        lesson.getComments().add(comment);
+
+
+        lessonRepository.save(lesson);
+        return true;
+    }
+
     public void removeLessonsOfSections(List<Integer> sectionIds, boolean isDeleted) {
         lessonRepository.markLessonsAsDeleted(sectionIds, isDeleted);
     }
 
+    public Lesson findById(int id) {
+        return lessonRepository.findById(id).orElse(null);
+    }
+
     public ResponseObject getById(int id) {
-        var lesson = lessonRepository.findById(id).orElse(null);
+        var lesson = findById(id);
         if(lesson == null) {
             return ResponseObject.builder().content("Lesson is not exist!").status(HttpStatus.BAD_REQUEST).build();
         }
         return  ResponseObject.builder().status(HttpStatus.OK).content(lesson).build();
-    }
-
-    public List<Lesson> getLessonsBySection(Section section, boolean isDeleted) {
-        return lessonRepository.findLessonsBySection(section.getId(), isDeleted).orElse(null);
-    }
-    public List<Lesson> getLessonsBySections(List<Integer> sectionIds, boolean isDeleted) {
-        return lessonRepository.findLessonsBySections(sectionIds, isDeleted).orElse(null);
     }
 
     public List<Lesson> updateLessonsOfSection(Section oldSection, SectionDTO newSection) {
@@ -73,7 +83,6 @@ public class LessonService {
                         .video(newLesson.getVideo())
                         .title(newLesson.getTitle())
                         .linkVideo(newLesson.getLinkVideo())
-                        .section(oldSection)
                         .build();
                 oldSection.getLessons().add(currentLesson);
                 lessonsUpdate.add(currentLesson);

@@ -1,4 +1,4 @@
-import publicInstance, { privateInstance } from "../instance";
+import publicInstance, { privateInstance, userInstance } from "../instance";
 
 export const getAllCategories = async (page = 0, size = 9999999) => {
     try {
@@ -223,9 +223,10 @@ export const restoreCourseById = (id) => {
     }
 };
 
-export const getComments = async (lessonId) => {
+export const getComments = async (path = "") => {
     try {
-        return await publicInstance.get(`/lesson/${lessonId}/comments`);
+        // return await publicInstance.get(`/lesson/${lessonId}/comments`);
+        return await publicInstance.get(`${path}`);
     } catch (error) {
         console.log(error.status);
         return Promise.reject(error);
@@ -319,7 +320,7 @@ export const uploadImg = async (img) => {
 
 export const getPosts = async (page = "0", size = "5") => {
     try {
-        return await publicInstance.get(`/post?page=${page}&size=${size}`);
+        return await publicInstance.get(`/post/list?page=${page}&size=${size}`);
     } catch (error) {
         return Promise.reject(error);
     }
@@ -328,6 +329,50 @@ export const getPosts = async (page = "0", size = "5") => {
 export const serchTag = async (name) => {
     try {
         return await publicInstance.get(`/tag?name=${name}`);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getPostByTitle = async (title) => {
+    try {
+        return await publicInstance.get(
+            `/post?title=${encodeURIComponent(title)}`
+        );
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getAllPost = async (
+    status = "ALL",
+    page = 0,
+    selectedSize = 5
+) => {
+    try {
+        return await privateInstance.get(
+            `/post/getAll?status=${status}&page=${page}&size=${selectedSize}`
+        );
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const processStatusPost = async (id, status, page, size) => {
+    try {
+        return await privateInstance.put(
+            `/post/${id}/status/${status}?page=${page}&size=${size}`
+        );
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const searchPostByTitle = async (title, status, page = 0, size = 5) => {
+    try {
+        return await privateInstance.get(
+            `/post?title=${title}&status=${status}&page=${page}&size=${size}`
+        );
     } catch (error) {
         return Promise.reject(error);
     }

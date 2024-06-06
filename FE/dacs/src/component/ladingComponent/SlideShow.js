@@ -40,7 +40,7 @@ const PromoSlideshow = () => {
                     clickable: true,
                     renderBullet: (index, className) => {
                         return (
-                            '<span class="' +
+                            '<span className="' +
                             className +
                             ' SwiperBulletcustom"></span>'
                         );

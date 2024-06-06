@@ -1,10 +1,8 @@
 import { Stomp } from "@stomp/stompjs";
-import { Socket } from "net";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import notificationSlice from "../../redux/reducers/notificationSlice";
 import SockJS from "sockjs-client";
-import { client } from "stompjs";
 import { toast } from "sonner";
 
 export default function useNotificationWebSocket() {

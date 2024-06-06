@@ -86,6 +86,7 @@
         padding: 2px;
         font-weight: 500;
         font-size: 12px;
+        margin-right: 10px;
     }
 }
 .content {
@@ -95,7 +96,7 @@
 
 .cmtWrap {
     max-height: 476px;
-    height: 476px;
+    // height: 476px;
     padding-right: 10px;
     overflow-y: scroll;
 }

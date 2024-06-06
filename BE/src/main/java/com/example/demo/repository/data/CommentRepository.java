@@ -14,8 +14,11 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Integer> {
 
-    @Query(value = "SELECT * FROM comment WHERE lesson_id = :lessonId ORDER BY date DESC", nativeQuery = true)
+    @Query(value = "SELECT * FROM comment c left join lesson_comments lc on c.id = lc.comments_id where lc.lesson_id = :lessonId  ORDER BY date DESC", nativeQuery = true)
     Page<Comment> findAllByLessonId(int lessonId, Pageable pageable);
+
+    @Query(value = "select * from comment c left join  post_comments pc on c.id = pc.comments_id where pc.post_id = :postId ORDER BY date DESC", nativeQuery = true)
+    Page<Comment> findAllByPostId(int postId, Pageable pageable);
 
     List<Comment> findAllByParentId(int parentId);
 }

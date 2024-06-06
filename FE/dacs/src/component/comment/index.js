@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import styles from "./Comment.module.scss";
 import { Menu, Dialog, Transition } from "@headlessui/react";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import avatar from "../../assets/images/avatar_25.jpg";
 import { over } from "stompjs";
 import SockJS from "sockjs-client";
@@ -31,6 +31,13 @@ export default function Comment({
     const [subComment, setSubComment] = useState(initComment);
     const [comment, setComment] = useState(initComment);
     const [listViewSubComment, setListViewSubComment] = useState([]);
+    const [quantityComment, setQuantiyComment] = useState({
+        page: 0,
+        size: 5,
+    });
+    const [totalComment, setTotalComment] = useState();
+    let isFirstRender = useRef(true);
+
     const onError = (err) => {
         console.log(err);
     };
@@ -56,24 +63,29 @@ export default function Comment({
         if (lessonId === "") {
             return;
         }
-        connect();
 
         const fetchApi = async () => {
             try {
-                const result = await dataApi.getComments(lessonId);
+                if (isFirstRender) {
+                    connect();
+                    isFirstRender.current = false;
+                }
+                const result = await dataApi.getComments(
+                    `/lesson/${lessonId}/comments?page=${quantityComment.page}&size=${quantityComment.size}`
+                );
                 setComments(result.content.content);
+                setTotalComment(result.content.totalElements);
             } catch (error) {
                 console.log(error);
             }
         };
         fetchApi();
-        setComment({ ...comment, lessonId: lessonId });
         return () => {
             if (stompClient) {
                 stompClient.disconnect(onDisconnected, {});
             }
         };
-    }, [lessonId]);
+    }, [lessonId, quantityComment.page, quantityComment.size]);
     const sendValue = (sub) => {
         if (stompClient) {
             let data = null;
@@ -83,6 +95,7 @@ export default function Comment({
                       path: `/course/detail/${courseId}/openComment`,
                   })
                 : (data = { ...comment });
+            data = { ...data, lessonId: lessonId };
             stompClient.send(
                 `/app/comment/lesson/${lessonId}`,
                 {},
@@ -144,11 +157,12 @@ export default function Comment({
     }
 
     const handleRemoveComment = (cmtId) => {
-        console.log(cmtId);
         const fetchApi = async () => {
             try {
                 await userApi.removeCommentById(userInfo.email, cmtId);
-                const result = await dataApi.getComments(lessonId);
+                const result = await dataApi.getComments(
+                    `/lesson/${lessonId}/comments?pae=${quantityComment.page}&size=${quantityComment.size}`
+                );
                 setComments(result.content.content);
             } catch (error) {
                 toast.error(error.mess);
@@ -157,6 +171,13 @@ export default function Comment({
         };
 
         fetchApi();
+    };
+
+    const handleShowMoreComment = () => {
+        setQuantiyComment({
+            ...quantityComment,
+            size: quantityComment.size + 5,
+        });
     };
 
     return (
@@ -882,6 +903,14 @@ export default function Comment({
                                                 );
                                             })}
                                     </div>
+                                    {quantityComment.size < totalComment && (
+                                        <div
+                                            className="font-medium text-sm mt-3 cursor-pointer hover:opacity-75 p-1"
+                                            onClick={handleShowMoreComment}
+                                        >
+                                            See more comments
+                                        </div>
+                                    )}
 
                                     <div className="mt-8">
                                         <button

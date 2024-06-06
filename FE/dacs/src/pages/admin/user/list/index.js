@@ -2,7 +2,6 @@ import styles from "../../Course/list/List.module.scss";
 import clsx from "clsx";
 import { Link } from "react-router-dom";
 import deleteIcon from "../../../../assets/images/delete.svg";
-import viewIcon from "../../../../assets/images/view.svg";
 import avatar from "../../../../assets/images/avatar_25.jpg";
 import noDataIcon from "../../../../assets/images/ic_noData.svg";
 import editIcon from "../../../../assets/images/edit.svg";

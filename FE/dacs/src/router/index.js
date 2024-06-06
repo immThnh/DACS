@@ -28,6 +28,12 @@ import CreateUser from "../pages/admin/user/create";
 import AdminDetailCourse from "../pages/admin/Course/detail";
 import Post from "../pages/Post";
 import CreatePost from "../pages/Post/create";
+import ViewPost from "../pages/Post/ViewPost";
+import EditPost from "../pages/Post/edit";
+import BookMarkPost from "../pages/Post/bookmark";
+import MyPosts from "../pages/Post/MyPosts";
+import ListPost from "../pages/admin/post/list";
+import AdminViewPost from "../pages/admin/post/view";
 
 const publicRoutes = [
     { path: "/", component: LandingPage },
@@ -35,7 +41,8 @@ const publicRoutes = [
     { path: "/login", component: Login },
     { path: "*", component: NotFoundPage },
     { path: "/course/:id", component: Course },
-    { path: "/posts/", component: Post },
+    { path: "/posts", component: Post },
+    { path: "/posts/:title/", component: ViewPost },
     // { path: "/search/:query", component: SearchResults },
 ];
 
@@ -50,7 +57,10 @@ const userRoutes = [
     { path: "/payment/success", component: SuccessPayment },
     { path: "/payment/failure", component: FailurePayment },
     { path: "me/profile/:email", component: UserProfile },
-    { path: "me/post/create", component: CreatePost },
+    { path: "/new-post", component: CreatePost },
+    { path: "/post/:id/edit", component: EditPost },
+    { path: "/me/posts/publish", component: MyPosts },
+    { path: "/me/bookmark/posts", component: BookMarkPost },
 ];
 
 const adminRoutes = [
@@ -81,6 +91,9 @@ const adminRoutes = [
     { path: "/admin/invoice/list", component: ListInvoice },
     { path: "/admin/invoice/create", component: CreateCourse },
     { path: "/admin/invoice/historyDelete", component: ListDeleteInvoice },
+
+    { path: "/admin/post/list", component: ListPost },
+    { path: "/admin/post/detail/:title", component: AdminViewPost },
 ];
 
 export { publicRoutes, adminRoutes, userRoutes };
