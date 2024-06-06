@@ -18,11 +18,9 @@ function Combobox({ title = "title", list = [], fValueChange = (temp) => {} }) {
             >
                 {list.map((op, index) => {
                     return (
-                        <>
-                            <option key={index} selected>
-                                {op}
-                            </option>
-                        </>
+                        <option key={index} selected>
+                            {op}
+                        </option>
                     );
                 })}
             </select>

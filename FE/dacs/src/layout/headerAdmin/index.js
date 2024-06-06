@@ -3,8 +3,10 @@ import styles from "./HeaderAdmin.module.scss";
 import logo from "../../assets/images/logo.png";
 import clsx from "clsx";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 function AdminHeader() {
+
     return (
         <div
             className={clsx("z-header d-flex fixed", styles.dashContainer, {

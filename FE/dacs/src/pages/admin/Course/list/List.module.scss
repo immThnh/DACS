@@ -99,7 +99,7 @@
     }
 
     .formSelect {
-        width: 200px;
+        width: auto;
         height: 56px;
         border-radius: 8px !important;
         cursor: pointer;
@@ -165,7 +165,7 @@
         padding: 16.5px 0px;
     }
     &:focus-within {
-        border-color: black; // Ví dụ: đổi màu viền của phần tử cha khi có phần tử con đang focus
+        border-color: black;
     }
     &:hover {
         border-color: black;
@@ -227,7 +227,7 @@
         font-weight: 500;
         line-height: 1.57143;
         font-size: 14px;
-        overflow: hidden;
+        // overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
         text-decoration: none;
@@ -251,8 +251,8 @@
 }
 
 .containerData {
-    margin-top: 20px;
-    overflow: hidden;
+    // padding-top: 20px;
+    // overflow: hidden;
 }
 
 .noData {
@@ -306,6 +306,7 @@
 .disableControl {
     user-select: none;
     cursor: not-allowed;
+    pointer-events: none;
     svg {
         color: #a7b1bb;
     }
@@ -319,4 +320,7 @@
 .descModal {
     font-weight: 400;
     font-size: 14px;
+}
+
+.adminTag {
 }
