@@ -25,12 +25,13 @@ public class Lesson {
     private String video;
     private LocalDateTime date;
     private int duration;
+    private boolean isDeleted = false;
 
-    @ManyToOne()
-    @JsonBackReference
-//    @JsonIgnore
-    private Section section;
+    @OneToMany(cascade = CascadeType.ALL)
+    List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "lesson", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Exercise> exercises = new ArrayList<>();
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JsonBackReference
+//    private Section section;
+
 }

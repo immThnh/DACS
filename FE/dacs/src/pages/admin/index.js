@@ -1,193 +1,551 @@
-import NavigationTopBar from "../../component/dashboard/NavigationTopBar";
+import { Fragment, useEffect, useState } from "react";
 import styles from "./Dashboard.module.scss";
-import logo from "../../assets/images/logo.png";
-import LeftNavDash from "../../component/dashboard/leftNavDash";
 import clsx from "clsx";
+import thongKe from "../../assets/images/thongKe.svg";
+import CardStatiscal from "../../component/cardTotal";
+import * as dataApi from "../../api/apiService/dataService";
+import { useSelector } from "react-redux";
+import stylesList from "../admin/Course/list/List.module.scss";
+import Select from "react-select";
+import { Link } from "react-router-dom";
+import noDataIcon from "../../assets/images/ic_noData.svg";
+import avatar from "../../assets/images/avatar_25.jpg";
+
 const Dashboard = () => {
+    const [statistical, setStatistical] = useState({});
+    const [invoices, setInvoices] = useState([]);
+    const [courses, setCourses] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [totalInvoice, setTotalInvoice] = useState(0);
+    const user = useSelector((state) => state.login.user);
+
+    const monthNames = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ];
+
+    const date = new Date();
+    const currentMonth = date.getMonth() + 1;
+    const currentYear = date.getFullYear();
+
+    useEffect(() => {
+        const fetchApi = async () => {
+            try {
+                const result = await dataApi.getMonthlyStatistic(
+                    currentMonth,
+                    currentYear
+                );
+                setInvoices(result.invoicesCreated);
+                setCourses(result.coursesCreated);
+                setUsers(result.usersRegistered);
+                console.table(result.coursesCreated);
+                setTotalInvoice(result.invoiceTotal);
+            } catch (error) {}
+        };
+        fetchApi();
+    }, []);
     return (
-        <></>
-        // <div
-        //     className={clsx("d-flex", styles.dashContainer, {
-        //         [styles.dashboard3]: true,
-        //     })}
-        // >
-        //     <main className={styles.homePage}>
-        //         <section className={styles.contentArea}>
-        //             <NavigationTopBar />
+        <div className="mb-32">
+            <div className={clsx("container")}>
+                <div className={clsx("row gx-4 gy-4")}>
+                    <div
+                        className={clsx(
+                            styles.greeting,
+                            "col-lg-12 rounded-lg",
+                            "flex justify-between"
+                        )}
+                    >
+                        <div className={clsx(styles.title, "p-10")}>
+                            <h4
+                                className={clsx(
+                                    styles.green,
+                                    "font-semibold text-2xl"
+                                )}
+                            >
+                                Welcom back 👋
+                                <br />
+                                <strong style={{ textTransform: "capitalize" }}>
+                                    {user?.firstName + " " + user?.lastName}
+                                </strong>
+                            </h4>
+                            <span className="text-sm">
+                                That is statistical information for{" "}
+                                <strong>
+                                    {" "}
+                                    {monthNames[currentMonth - 1]},{" "}
+                                    {currentYear}
+                                </strong>
+                            </span>
+                        </div>
+                        <div
+                            className={clsx(
+                                styles.imgThongKe,
+                                "flex items-center"
+                            )}
+                        >
+                            <img src={thongKe} alt="" />
+                        </div>
+                    </div>
 
-        //         </section>
-        //     </main>
-        //     <div
-        //         className={clsx(styles.content, {
-        //             [styles.navigationSidebarMenuLi]: false,
-        //         })}
-        //     >
-        //         <div className={styles.logoContainer}>
-        //             <div className={styles.logo}>
-        //                 <img src={logo} alt="" />
-        //                 <h3 className={styles.brightWeb}>
-        //                     <span>Dream</span>
-        //                     <span className={styles.stack}> Chasers</span>
-        //                 </h3>
-        //             </div>
-        //         </div>
-        //         <LeftNavDash></LeftNavDash>
+                    <div className="col-lg-4 rounded-lg">
+                        <CardStatiscal
+                            title={"Total Active Users"}
+                            amount={users?.totalElements}
+                        ></CardStatiscal>
+                    </div>
+                    <div className="col-lg-4 rounded-lg">
+                        <CardStatiscal
+                            title={"Total Active Courses"}
+                            amount={courses?.totalElements}
+                        ></CardStatiscal>
+                    </div>
+                    <div className="col-lg-4 rounded-lg">
+                        <CardStatiscal
+                            title={"Total Balance"}
+                            amount={totalInvoice}
+                            currency={"VND"}
+                        ></CardStatiscal>
+                    </div>
 
-        //         {/* <ProductNavigation /> */}
-        //         <img
-        //             className={styles.dividerIcon}
-        //             loading="lazy"
-        //             alt=""
-        //             src="/divider.svg"
-        //         />
-        //         <div className={styles.pageHeader}>
-        //             <b className={styles.pages}>PAGES</b>
-        //         </div>
-        //         <div className={styles.dividerParent}>
-        //             <img
-        //                 className={styles.dividerIcon1}
-        //                 alt=""
-        //                 src="/divider.svg"
-        //             />
-        //             <div className={styles.settingsNavigation}>
-        //                 <div className={styles.navigationSidebarItemLi}>
-        //                     <div className={styles.products1}>
-        //                         <div className={styles.hideBg} />
-        //                         <h3 className={styles.h3}></h3>
-        //                         <div className={styles.settingsName}>
-        //                             <div className={styles.products2}>
-        //                                 Settings
-        //                             </div>
-        //                         </div>
-        //                     </div>
-        //                 </div>
-        //                 <div className={styles.navigationSidebarItemLi1}>
-        //                     <div className={styles.products3}>
-        //                         <div className={styles.hideBg1} />
-        //                         <h3 className={styles.h31}></h3>
-        //                         <div className={styles.productsContainer}>
-        //                             <div className={styles.products4}>
-        //                                 Logout
-        //                             </div>
-        //                         </div>
-        //                     </div>
-        //                 </div>
-        //             </div>
-        //         </div>
-        //     </div>
-        //     <div className={styles.navigationSidebarMenuLi1}>
-        //         <div className={styles.sideBarBg1} />
-        //         <div className={styles.products5}>
-        //             <div className={styles.hideBg2} />
-        //             <div className={styles.products6}>Logout</div>
-        //             <div className={styles.div}></div>
-        //         </div>
-        //         <div className={styles.products7}>
-        //             <div className={styles.hideBg3} />
-        //             <div className={styles.products8}>Settings</div>
-        //             <div className={styles.div1}></div>
-        //         </div>
-        //         <img
-        //             className={styles.dividerIcon2}
-        //             alt=""
-        //             src="/divider-2.svg"
-        //         />
-        //         <div className={styles.products9}>
-        //             <div className={styles.hideBg4} />
-        //             <div className={styles.products10}>Table</div>
-        //             <div className={styles.div2}></div>
-        //         </div>
-        //         <div className={styles.products11}>
-        //             <div className={styles.hideBg5} />
-        //             <div className={styles.products12}>Profile</div>
-        //             <div className={styles.div3}></div>
-        //         </div>
-        //         <div className={styles.products13}>
-        //             <div className={styles.hideBg6} />
-        //             <div className={styles.products14}>UI Elements</div>
-        //             <div className={styles.div4}></div>
-        //         </div>
-        //         <div className={styles.products15}>
-        //             <div className={styles.hideBg7} />
-        //             <div className={styles.products16}>Invoice</div>
-        //             <div className={styles.div5}></div>
-        //         </div>
-        //         <div className={styles.products17}>
-        //             <div className={styles.hideBg8} />
-        //             <div className={styles.products18}>Contact</div>
-        //             <div className={styles.div6}></div>
-        //         </div>
-        //         <div className={styles.products19}>
-        //             <div className={styles.hideBg9} />
-        //             <div className={styles.products20}>To-Do</div>
-        //             <div className={styles.div7}></div>
-        //         </div>
-        //         <div className={styles.products21}>
-        //             <div className={styles.hideBg10} />
-        //             <div className={styles.products22}>Feed</div>
-        //             <div className={styles.div8}></div>
-        //         </div>
-        //         <div className={styles.products23}>
-        //             <div className={styles.hideBg11} />
-        //             <div className={styles.products24}>Calendar</div>
-        //             <div className={styles.div9}></div>
-        //         </div>
-        //         <div className={styles.products25}>
-        //             <div className={styles.hideBg12} />
-        //             <div className={styles.products26}>File Manager</div>
-        //             <div className={styles.div10}></div>
-        //         </div>
-        //         <b className={styles.pages1}>PAGES</b>
-        //         <img
-        //             className={styles.dividerIcon3}
-        //             alt=""
-        //             src="/divider-3.svg"
-        //         />
-        //         <div className={styles.products27}>
-        //             <div className={styles.hideBg13} />
-        //             <div className={styles.products28}>E-commerce</div>
-        //             <div className={styles.div11}></div>
-        //         </div>
-        //         <div className={styles.products29}>
-        //             <div className={styles.hideBg14} />
-        //             <div className={styles.products30}>Order Lists</div>
-        //             <div className={styles.div12}></div>
-        //         </div>
-        //         <div className={styles.products31}>
-        //             <div className={styles.hideBg15} />
-        //             <div className={styles.products32}>Messenger</div>
-        //             <div className={styles.div13}></div>
-        //         </div>
-        //         <div className={styles.products33}>
-        //             <div className={styles.hideBg16} />
-        //             <div className={styles.products34}>Favourites</div>
-        //             <div className={styles.div14}></div>
-        //         </div>
-        //         <div className={styles.navigationSidebarItemLi2}>
-        //             <div className={styles.products35}>
-        //                 <div className={styles.hideBgHideBgCopyMask}>
-        //                     <div className={styles.mask1} />
-        //                     <div className={styles.hideBg17} />
-        //                     <div className={styles.hideBgCopy} />
-        //                 </div>
-        //                 <div className={styles.products36}>Products</div>
-        //                 <div className={styles.div15}></div>
-        //             </div>
-        //         </div>
-        //         <div className={styles.products37}>
-        //             <div className={styles.hideBg18} />
-        //             <div className={styles.products38}>Dashboard</div>
-        //             <div className={styles.div16}></div>
-        //         </div>
-        //         <div className={styles.logo1}>
-        //             <div className={styles.bg} />
-        //             <div className={styles.brightWeb1}>
-        //                 <span>Dash</span>
-        //                 <span className={styles.stack1}>Stack</span>
-        //             </div>
-        //         </div>
-        //     </div>
-        // </div>
+                    {/* /?NOTE Table */}
+                    <div className="col-lg-6 rounded-lg">
+                        <div className="boxShadow p-4 rounded-lg">
+                            <div className={clsx("mb-2 pl-6")}>
+                                <h4 className="text-base font-semibold">
+                                    NEW USER
+                                </h4>
+                            </div>
+                            <hr className="cssHr" />
+                            <div className={clsx(stylesList.mid, "mt-4")}>
+                                <div
+                                    className={clsx(
+                                        styles.titleMid,
+                                        "row rounded-lg py-2 bg-black text-white"
+                                    )}
+                                >
+                                    <div className="col-lg-2 self-center">
+                                        ID
+                                    </div>
+                                    <div className="col-lg-10">User</div>
+                                </div>
+                                <div
+                                    className={clsx(
+                                        stylesList.containerData,
+                                        "overflow-y-scroll mt-0 max-h-[364px] overflow-x-hidden"
+                                    )}
+                                >
+                                    {users &&
+                                        users?.content?.map(
+                                            (element, index) => {
+                                                return (
+                                                    <div
+                                                        key={index}
+                                                        className={clsx(
+                                                            stylesList.item,
+                                                            "row rounded-lg h-[60px]"
+                                                        )}
+                                                    >
+                                                        <div
+                                                            className={clsx(
+                                                                stylesList.field,
+                                                                "col-lg-2"
+                                                            )}
+                                                        >
+                                                            <div
+                                                                className={clsx(
+                                                                    stylesList.name
+                                                                )}
+                                                            >
+                                                                {element.id}
+                                                            </div>
+                                                        </div>
+                                                        <div
+                                                            className={clsx(
+                                                                stylesList.field,
+                                                                "col-lg-10 flex "
+                                                            )}
+                                                        >
+                                                            <div
+                                                                className={clsx(
+                                                                    stylesList.cssImg
+                                                                )}
+                                                            >
+                                                                <img
+                                                                    src={
+                                                                        !element.avatar
+                                                                            ? avatar
+                                                                            : element.avatar
+                                                                    }
+                                                                    alt=""
+                                                                />
+                                                            </div>
+                                                            <div className="overflow-hidden">
+                                                                <div
+                                                                    className={clsx(
+                                                                        stylesList.name
+                                                                    )}
+                                                                >
+                                                                    {element.firstName +
+                                                                        " " +
+                                                                        element.lastName}
+                                                                </div>
+                                                                <div
+                                                                    className={clsx(
+                                                                        stylesList.categories
+                                                                    )}
+                                                                >
+                                                                    {
+                                                                        element.email
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            }
+                                        )}
+                                    {users?.content?.length === 0 && (
+                                        <div
+                                            className={clsx(
+                                                stylesList.noData,
+                                                "flex flex-col justify-center text-center"
+                                            )}
+                                        >
+                                            <img
+                                                src={noDataIcon}
+                                                alt=""
+                                                className={clsx(
+                                                    stylesList.noDataImg,
+                                                    "m-auto w-32"
+                                                )}
+                                            />
+                                            <span>No Data</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="col-lg-6 rounded-lg">
+                        <div className="boxShadow p-4 rounded-lg">
+                            <div className={clsx("mb-2 pl-6")}>
+                                <h4 className="text-base font-semibold uppercase">
+                                    NEW COURSE
+                                </h4>
+                            </div>
+                            <hr className="cssHr" />
+                            <div className={clsx(stylesList.mid, "mt-4")}>
+                                <div
+                                    className={clsx(
+                                        styles.titleMid,
+                                        "row rounded-lg py-2 bg-black text-white"
+                                    )}
+                                >
+                                    <div className="col-lg-2 self-center">
+                                        ID
+                                    </div>
+                                    <div className="col-lg-7">Title</div>
+                                    <div className="col-lg-3">Price</div>
+                                </div>
+                                <div
+                                    className={clsx(
+                                        stylesList.containerData,
+                                        "overflow-y-scroll mt-0 max-h-[364px] overflow-x-hidden"
+                                    )}
+                                >
+                                    {courses &&
+                                        courses?.content?.map(
+                                            (element, index) => {
+                                                return (
+                                                    <div
+                                                        key={index}
+                                                        className={clsx(
+                                                            stylesList.item,
+                                                            "row rounded-lg h-[60px]"
+                                                        )}
+                                                    >
+                                                        <div
+                                                            className={clsx(
+                                                                stylesList.field,
+                                                                "col-lg-2"
+                                                            )}
+                                                        >
+                                                            <div
+                                                                className={clsx(
+                                                                    stylesList.name
+                                                                )}
+                                                            >
+                                                                {element.id}
+                                                            </div>
+                                                        </div>
+                                                        <div
+                                                            className={clsx(
+                                                                stylesList.field,
+                                                                "col-lg-7 flex "
+                                                            )}
+                                                        >
+                                                            <div
+                                                                className={clsx(
+                                                                    stylesList.cssImg
+                                                                )}
+                                                            >
+                                                                <img
+                                                                    src={
+                                                                        !element.thumbnail
+                                                                            ? avatar
+                                                                            : element.thumbnail
+                                                                    }
+                                                                    alt=""
+                                                                />
+                                                            </div>
+                                                            <div className="overflow-hidden">
+                                                                <div
+                                                                    className={clsx(
+                                                                        stylesList.name,
+                                                                        "line-clamp-3 text-wrap"
+                                                                    )}
+                                                                >
+                                                                    {
+                                                                        element.title
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div
+                                                            className={clsx(
+                                                                stylesList.field,
+                                                                "col-lg-3"
+                                                            )}
+                                                        >
+                                                            <div
+                                                                className={clsx(
+                                                                    stylesList.name
+                                                                )}
+                                                            >
+                                                                {element?.price ===
+                                                                0
+                                                                    ? "Free"
+                                                                    : element.price.toLocaleString() +
+                                                                      " VND"}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            }
+                                        )}
+                                    {courses?.content?.length === 0 && (
+                                        <div
+                                            className={clsx(
+                                                stylesList.noData,
+                                                "flex flex-col justify-center text-center"
+                                            )}
+                                        >
+                                            <img
+                                                src={noDataIcon}
+                                                alt=""
+                                                className={clsx(
+                                                    stylesList.noDataImg,
+                                                    "m-auto w-32"
+                                                )}
+                                            />
+                                            <span>No Data</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mx-auto col-lg-10 rounded-lg">
+                        <div className="boxShadow p-4 rounded-lg">
+                            <div className={clsx("mb-2 pl-6")}>
+                                <h4 className="text-base font-semibold uppercase">
+                                    NEW invoice
+                                </h4>
+                            </div>
+                            <hr className="cssHr" />
+                            <div className={clsx(stylesList.mid, "mt-4")}>
+                                <div
+                                    className={clsx(
+                                        styles.titleMid,
+                                        "row rounded-lg py-2 bg-black text-white"
+                                    )}
+                                >
+                                    <div className="col-lg-1 self-center">
+                                        ID
+                                    </div>
+                                    <div className="col-lg-4">Title</div>
+                                    <div className="col-lg-3">Content</div>
+                                    <div className="col-lg-2">Create at</div>
+                                    <div className="col-lg-2">Amount at</div>
+                                </div>
+                                <div
+                                    className={clsx(
+                                        stylesList.containerData,
+                                        "overflow-y-scroll mt-0 max-h-[364px] overflow-x-hidden"
+                                    )}
+                                >
+                                    {invoices &&
+                                        invoices?.content?.map(
+                                            (element, index) => {
+                                                return (
+                                                    <div
+                                                        key={index}
+                                                        className={clsx(
+                                                            stylesList.item,
+                                                            "row rounded-lg h-[60px]"
+                                                        )}
+                                                    >
+                                                        <div
+                                                            className={clsx(
+                                                                stylesList.field,
+                                                                "col-lg-1"
+                                                            )}
+                                                        >
+                                                            <div
+                                                                className={clsx(
+                                                                    stylesList.name
+                                                                )}
+                                                            >
+                                                                {element.id}
+                                                            </div>
+                                                        </div>
+                                                        <div
+                                                            className={clsx(
+                                                                stylesList.field,
+                                                                "col-lg-4 flex "
+                                                            )}
+                                                        >
+                                                            <div
+                                                                className={clsx(
+                                                                    stylesList.cssImg
+                                                                )}
+                                                            >
+                                                                <img
+                                                                    src={
+                                                                        !element
+                                                                            ?.user
+                                                                            ?.avatar
+                                                                            ? avatar
+                                                                            : element
+                                                                                  .user
+                                                                                  .avatar
+                                                                    }
+                                                                    alt=""
+                                                                />
+                                                            </div>
+                                                            <div className="overflow-hidden">
+                                                                <div
+                                                                    className={clsx(
+                                                                        stylesList.name,
+                                                                        "line-clamp-3 text-wrap"
+                                                                    )}
+                                                                >
+                                                                    {element
+                                                                        ?.user
+                                                                        ?.firstName +
+                                                                        " " +
+                                                                        element
+                                                                            ?.user
+                                                                            ?.lastName}
+                                                                </div>
+                                                                <div
+                                                                    className={clsx(
+                                                                        stylesList.categories
+                                                                    )}
+                                                                >
+                                                                    {
+                                                                        element.methodPayment
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div
+                                                            className={clsx(
+                                                                stylesList.field,
+                                                                "col-lg-3"
+                                                            )}
+                                                        >
+                                                            <div
+                                                                className={clsx(
+                                                                    stylesList.name,
+                                                                    "text-wrap line-clamp-3"
+                                                                )}
+                                                            >
+                                                                {
+                                                                    element?.content
+                                                                }
+                                                            </div>
+                                                        </div>
+                                                        <div
+                                                            className={clsx(
+                                                                stylesList.field,
+                                                                "col-lg-2"
+                                                            )}
+                                                        >
+                                                            <div
+                                                                className={clsx(
+                                                                    stylesList.name
+                                                                )}
+                                                            >
+                                                                {element?.createDate?.toLocaleTimeString()}
+                                                            </div>
+                                                        </div>
+                                                        <div
+                                                            className={clsx(
+                                                                stylesList.field,
+                                                                "col-lg-2"
+                                                            )}
+                                                        >
+                                                            <div
+                                                                className={clsx(
+                                                                    stylesList.name
+                                                                )}
+                                                            >
+                                                                {element?.totalInvoice.toLocaleString()}{" "}
+                                                                VND
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            }
+                                        )}
+                                    {invoices?.content?.length === 0 && (
+                                        <div
+                                            className={clsx(
+                                                stylesList.noData,
+                                                "flex flex-col justify-center text-center"
+                                            )}
+                                        >
+                                            <img
+                                                src={noDataIcon}
+                                                alt=""
+                                                className={clsx(
+                                                    stylesList.noDataImg,
+                                                    "m-auto w-32"
+                                                )}
+                                            />
+                                            <span>No Data</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 };
 

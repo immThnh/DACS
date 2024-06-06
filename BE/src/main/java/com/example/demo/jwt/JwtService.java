@@ -43,8 +43,12 @@ public class JwtService {
 
     private <T> T extractClaims(String token, Function<Claims, T> claimsResolver) {
         Claims claims = extractClaimsFromToken(token);
-        return claimsResolver.apply(claims);
+//        if (claims != null) {
+            return claimsResolver.apply(claims);
+//        }
+//        return null;
     }
+
 
     public String extractUserName(String token) {
 //        return extractClaims(token, new Function<Claims, String> () {
@@ -73,9 +77,15 @@ public class JwtService {
 
 
     private Claims extractClaimsFromToken(String token) {
-        return Jwts.parser()
-                .verifyWith((SecretKey) getKey())
-                .build().parseSignedClaims(token).getPayload();
+//       try {
+           return Jwts.parser()
+                   .verifyWith((SecretKey) getKey())
+                   .build().parseSignedClaims(token).getPayload();
+//       }
+//       catch (Exception e) {
+//           System.out.println("extractClaimsFromToken: " + e.getMessage());
+//           return null;
+//       }
     }
 
 

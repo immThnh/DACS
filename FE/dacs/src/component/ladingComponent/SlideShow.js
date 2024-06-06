@@ -6,6 +6,7 @@ import "swiper/css/pagination";
 import "./Slideshow.css";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
 import background from "../../assets/images/Banner_01_2.png";
+
 const PromoSlideshow = () => {
     const slides = [
         {
@@ -22,11 +23,10 @@ const PromoSlideshow = () => {
                 "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eos, natus fugiat quod unde aliquid eius facere dignissimos aut quidem. Temporibus sapiente eligendi reiciendis dolorem rerum nobis fugit magnam, dolore corrupti!",
             buttonText: "Register Now",
         },
-        // More slides...
     ];
 
     return (
-        <div className="max-w-[1536px] mx-auto">
+        <div className="max-w-screen-xl mx-auto">
             <Swiper
                 modules={[Pagination, Navigation, Autoplay]}
                 spaceBetween={50}
@@ -40,7 +40,7 @@ const PromoSlideshow = () => {
                     clickable: true,
                     renderBullet: (index, className) => {
                         return (
-                            '<span class="' +
+                            '<span className="' +
                             className +
                             ' SwiperBulletcustom"></span>'
                         );
@@ -55,24 +55,27 @@ const PromoSlideshow = () => {
                         key={index}
                         className="flex items-center justify-between bg-pink-300"
                     >
-                        <div className=" flex z-10 p-10 text-left text-white">
-                            <div className="w-1/2 ml-10">
-                                <h2 className="text-4xl font-bold">
+                        <div className="row">
+                        <div className="flex z-10 p-10 text-left text-white w-full md:w-1/2 col-lg-6">
+                            <div>
+                                <h2 className="pl-20 text-2xl md:text-4xl font-bold">
                                     {slide.title}
                                 </h2>
-                                <p className="my-4">{slide.description}</p>
-                                <button className="px-6 py-3 mt-4 text-white bg-purple-500 rounded-full font-medium shadow-lg">
+                                <p className="pl-20 my-4 text-sm md:text-base">
+                                    {slide.description}
+                                </p>
+                                <button className="ml-20 px-4 py-2 mb-2 text-white bg-purple-500 rounded-full font-medium shadow-lg text-sm md:text-base">
                                     {slide.buttonText}
                                 </button>
                             </div>
-                            <div className="w-1/2 ">
-                                <img
-                                    src={slide.img}
-                                    alt="Slide image"
-                                    style={{ width: "400px", height: "200px" }}
-                                    className="object-contain h-full m-auto pb-5"
-                                />
-                            </div>
+                        </div>
+                        <div className="md:w-1/2 col-lg-6">
+                            <img
+                                src={slide.img}
+                                alt="Slide image"
+                                className="object-contain h-full m-auto pb-5"
+                            />
+                        </div>
                         </div>
                     </SwiperSlide>
                 ))}

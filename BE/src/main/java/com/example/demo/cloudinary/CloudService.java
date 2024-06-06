@@ -24,7 +24,6 @@ public class CloudService {
         try {
             Map map = cloud.uploader().upload(file, ObjectUtils.asMap("resource_type", "auto", "folder", "dacs"));
             if(map != null) {
-                System.out.println(map.get("secure_url"));
                 return (map.get("secure_url").toString());
             }
         }
@@ -65,7 +64,6 @@ public class CloudService {
                                     new EagerTransformation().width(160).height(100).crop("crop").gravity("south").audioCodec("none")),
                             "eager_async", true));
 //                            "eager_notification_url", "https://mysite.example.com/notify_endpoint"));
-            return map.get("secure_url").toString();
         }
         catch (Exception e) {
             System.out.println("Cloud upload video: " + e.getMessage());

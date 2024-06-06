@@ -1,6 +1,7 @@
 package com.example.demo.entity.data;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -22,11 +24,12 @@ public class Section {
 
     private String title;
 
-    @OneToMany(mappedBy = "section", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 //    @JsonManagedReference
     private List<Lesson> lessons;
 
     @ManyToOne
     @JsonBackReference
     private Course course;
+    private boolean isDeleted = false;
 }

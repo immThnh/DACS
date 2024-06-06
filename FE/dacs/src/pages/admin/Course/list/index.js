@@ -28,14 +28,15 @@ function ListCourse() {
     const [deleteId, setDeleteId] = useState(null);
     const [selected, setSelected] = useState(selectes[0]);
     const [page, setPage] = useState(0);
-    const [reRender, setReRender] = useState();
 
     const handleRemoveCourse = () => {
         const fetchApi = async () => {
             toast.promise(dataApi.softDeleteCourse(deleteId), {
                 loading: "Removing...",
-                success: () => {
-                    setReRender(!reRender);
+                success: (data) => {
+                    console.log(data);
+                    setCourses(data.content.content);
+                    setTotalData(data.content.totalElements);
                     setDeletedModalOpen(false);
                     return "Remove successfully";
                 },
@@ -50,13 +51,16 @@ function ListCourse() {
 
     const handlePageData = async (action) => {
         const currentTotalData = page * selected + selected;
+        let updatePage = page;
         if (action === "next" && currentTotalData < totalData) {
-            console.log("a");
-            setPage((prev) => prev + 1);
+            updatePage += 1;
+            setPage(updatePage);
         }
         if (action === "previous" && page > 0) {
-            setPage((prev) => prev - 1);
+            updatePage -= 1;
+            setPage(updatePage);
         }
+        fetchCourseUpdate(updatePage, selected);
     };
 
     const handleCloseModal = () => {
@@ -69,30 +73,29 @@ function ListCourse() {
     };
 
     const handleSelectChange = (e) => {
-        const fetchApi = () => {
-            toast.promise(dataApi.getCoursesByCategory(e.id, page, selected), {
-                loading: "loading...",
-                success: (data) => {
-                    setCourses(data.content.content);
-                    setTotalData(data.content.totalElements);
-                    return "Get data successfully";
-                },
-                error: (error) => {
-                    return error;
-                },
-            });
+        const fetchApi = async () => {
+            try {
+                const result = await dataApi.getCoursesByCategory(
+                    e.id,
+                    page,
+                    selected
+                );
+                setCourses(result.content.content);
+                setTotalData(result.content.totalElements);
+            } catch (error) {
+                console.log(error);
+            }
         };
 
-        const debounceApi = debounce(fetchApi);
+        const debounceApi = debounce(fetchApi, 0);
         debounceApi();
     };
 
-    const handleSelectPageSizeChange = (size) => {
-        setSelected(size);
+    const fetchCourseUpdate = async (page = this.page, size = selected) => {
         const fetchApi = async () => {
             try {
                 const result = await dataApi.getAllCourse(page, size);
-                setCourses(result.content.content);
+                setCourses((prev) => result.content.content);
                 setTotalData(result.content.totalElements);
             } catch (error) {
                 console.log(error);
@@ -101,25 +104,25 @@ function ListCourse() {
         fetchApi();
     };
 
+    const handleSelectPageSizeChange = (size) => {
+        setSelected((prev) => size);
+        fetchCourseUpdate(page, size);
+    };
     const handleSearchInputChange = (e) => {
-        const fetchApi = () => {
-            toast.promise(
-                dataApi.getCourseByName(e.target.value, page, selected),
-                {
-                    loading: "loading...",
-                    success: (data) => {
-                        setCourses(data.content.content);
-                        setTotalData(data.content.totalElements);
-                        return "Get data successfully";
-                    },
-                    error: (error) => {
-                        console.log(error);
-                        return error;
-                    },
-                }
-            );
+        const fetchApi = async () => {
+            try {
+                const result = await dataApi.getCourseByName(
+                    e.target.value,
+                    page,
+                    selected
+                );
+                setCourses(result.content.content);
+                setTotalData(result.content.totalElements);
+            } catch (error) {
+                console.log(error);
+            }
         };
-        const debounceApi = debounce(fetchApi, 1000);
+        const debounceApi = debounce(fetchApi, 300);
         debounceApi();
     };
 
@@ -137,9 +140,9 @@ function ListCourse() {
     useEffect(() => {
         const fetchApi = async () => {
             try {
-                const result = await dataApi.getAllCourse(0, 5);
                 let categories = [];
                 categories = await dataApi.getAllCategories(0, 99999);
+                const result = await dataApi.getAllCourseAdmin(page, selected);
                 categories.content.content.push({ id: "-1", name: "All" });
                 setCourses(result.content.content);
                 setTotalData(result.content.totalElements);
@@ -149,9 +152,8 @@ function ListCourse() {
             }
         };
         fetchApi();
-    }, [reRender]);
+    }, []);
 
-    console.log(courses);
     return (
         <div className="flex justify-center w-full ">
             <div className="container mt-5 mx-14">
@@ -443,47 +445,50 @@ function ListCourse() {
                                                                 element,
                                                                 index
                                                             ) => (
-                                                                <Listbox.Option
+                                                                <div
                                                                     key={index}
-                                                                    className={({
-                                                                        active,
-                                                                    }) =>
-                                                                        `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                                                                            active
-                                                                                ? "bg-amber-100 text-amber-900"
-                                                                                : "text-gray-900"
-                                                                        }`
-                                                                    }
-                                                                    value={
-                                                                        element
-                                                                    }
                                                                 >
-                                                                    {({
-                                                                        selected,
-                                                                    }) => (
-                                                                        <>
-                                                                            <span
-                                                                                className={`block truncate ${
-                                                                                    selected
-                                                                                        ? "font-medium"
-                                                                                        : "font-normal"
-                                                                                }`}
-                                                                            >
-                                                                                {
-                                                                                    element
-                                                                                }
-                                                                            </span>
-                                                                            {selected ? (
-                                                                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
-                                                                                    <CheckIcon
-                                                                                        className="h-5 w-5"
-                                                                                        aria-hidden="true"
-                                                                                    />
+                                                                    <Listbox.Option
+                                                                        className={({
+                                                                            active,
+                                                                        }) =>
+                                                                            `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                                                                                active
+                                                                                    ? "bg-amber-100 text-amber-900"
+                                                                                    : "text-gray-900"
+                                                                            }`
+                                                                        }
+                                                                        value={
+                                                                            element
+                                                                        }
+                                                                    >
+                                                                        {({
+                                                                            selected,
+                                                                        }) => (
+                                                                            <>
+                                                                                <span
+                                                                                    className={`block truncate ${
+                                                                                        selected
+                                                                                            ? "font-medium"
+                                                                                            : "font-normal"
+                                                                                    }`}
+                                                                                >
+                                                                                    {
+                                                                                        element
+                                                                                    }
                                                                                 </span>
-                                                                            ) : null}
-                                                                        </>
-                                                                    )}
-                                                                </Listbox.Option>
+                                                                                {selected ? (
+                                                                                    <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-amber-600">
+                                                                                        <CheckIcon
+                                                                                            className="h-5 w-5"
+                                                                                            aria-hidden="true"
+                                                                                        />
+                                                                                    </span>
+                                                                                ) : null}
+                                                                            </>
+                                                                        )}
+                                                                    </Listbox.Option>
+                                                                </div>
                                                             )
                                                         )}
                                                     </Listbox.Options>
@@ -494,7 +499,6 @@ function ListCourse() {
                                 </div>
                                 <div className={clsx(styles.footerItem)}>
                                     <div className="mr-3">
-                                        {" "}
                                         <span id="currentPage">
                                             {page * selected + 1}-
                                             {totalData <
