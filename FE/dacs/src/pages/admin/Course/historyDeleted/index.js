@@ -134,7 +134,7 @@ function HistoryDeleted() {
     };
     return (
         <div className="flex justify-center w-full ">
-            <div className="container mt-5 mx-14">
+            <div className="container mt-4 mx-14">
                 <div className="wrapMainDash">
                     <div className={clsx(styles.topMain)}>
                         <div className={clsx(styles.itemTopMain)}>
@@ -152,7 +152,7 @@ function HistoryDeleted() {
                             <div className={clsx(styles.contentItem)}>
                                 <div
                                     // className={clsx(styles.cbb)
-                                    className={clsx(styles.formSelect)}
+                                    className={clsx(styles.formSelect, "w-52")}
                                 >
                                     <label htmlFor="">Category</label>
                                     <Select
@@ -160,6 +160,7 @@ function HistoryDeleted() {
                                         getOptionLabel={(x) => x.name}
                                         getOptionValue={(x) => x.id}
                                         options={options}
+                                        placeholder="All"
                                         styles={{
                                             control: (baseStyles, state) => ({
                                                 ...baseStyles,

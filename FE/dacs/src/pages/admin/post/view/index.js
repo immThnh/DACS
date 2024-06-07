@@ -1,21 +1,18 @@
 import clsx from "clsx";
 import avatar from "../../../../assets/images/avatar_25.jpg";
 import * as DataApi from "../../../../api/apiService/dataService";
-import { Link, useLocation, useParams } from "react-router-dom";
-import { Fragment, useEffect, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import moment from "moment";
-import CommentInPost from "../../../../component/comment/commentInPost";
 import { toast } from "sonner";
 import * as UserApi from "../../../../api/apiService/authService";
 import { useSelector } from "react-redux";
-import { Menu, Transition } from "@headlessui/react";
-import Modal from "../../../../component/modal";
 
 const AdminViewPost = () => {
     const { title } = useParams();
     const [post, setPost] = useState({});
-    const [openComment, setOpenComment] = useState(false);
-    const [deletedModalOpen, setDeletedModalOpen] = useState(false);
+    const [setOpenComment] = useState(false);
+    const [setDeletedModalOpen] = useState(false);
     const timeElapsed = moment(post?.createAt).fromNow();
     const user = useSelector((state) => state.login.user);
     const location = useLocation();
@@ -44,10 +41,6 @@ const AdminViewPost = () => {
         setOpenComment(true);
     };
 
-    const handleCloseComment = () => {
-        setOpenComment(false);
-    };
-
     const handleSavePost = async () => {
         console.log(user.email);
         toast.promise(UserApi.toggleSavePost(post.id, user.email), {
@@ -64,14 +57,6 @@ const AdminViewPost = () => {
 
     const handleCloseModal = () => {
         setDeletedModalOpen(false);
-    };
-
-    const handleRemovePost = () => {
-        console.log("object");
-    };
-
-    const openDeleteModal = () => {
-        setDeletedModalOpen(true);
     };
 
     return (

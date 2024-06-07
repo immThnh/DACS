@@ -8,9 +8,24 @@ import { Dropdown } from "../../pages/Post/ViewPost";
 import Modal from "../modal";
 import { toast } from "sonner";
 
-const PostItem = ({ handleRestorePost, openDeleteModal, post }) => {
+const PostItem = ({
+    handleRemoveBookmark,
+    page,
+    handleRestorePost,
+    openDeleteModal,
+    post,
+}) => {
     const timeEdit = moment(post?.date).fromNow();
-
+    let statusPost;
+    if (post.status) {
+        if (post.status === "APPROVED") {
+            statusPost = "Approved";
+        } else if (post.status === "PENDING") {
+            statusPost = "Pending";
+        } else {
+            statusPost = "Rejected";
+        }
+    }
     return (
         <div className="p-4 border border-gray-300 rounded-lg boxShadow">
             <div className="flex mb-2 justify-between">
@@ -24,7 +39,8 @@ const PostItem = ({ handleRestorePost, openDeleteModal, post }) => {
                     <Dropdown
                         handleRestorePost={handleRestorePost}
                         handleOpenDeletePost={openDeleteModal}
-                        isMyPost
+                        handleRemoveBookmark={handleRemoveBookmark}
+                        isMyPost={page === "MY_POST"}
                         post={post}
                     >
                         <svg
@@ -44,8 +60,26 @@ const PostItem = ({ handleRestorePost, openDeleteModal, post }) => {
                     </Dropdown>
                 </div>
             </div>
-            <div className="text-sm font-normal text-gray-500">
-                Edit {timeEdit}
+            <div className="flex text-sm font-normal ">
+                {page === "MY_POST" ? (
+                    <div
+                        className={clsx("flex mr-4 items-center italic", {
+                            "text-green-500": post?.status === "APPROVED",
+                            "text-yellow-500": post?.status === "PENDING",
+                            "text-red-500": post?.status === "REJECTED",
+                        })}
+                    >
+                        {statusPost}
+                        <span className="text-gray-500"> Edit {timeEdit}</span>
+                    </div>
+                ) : (
+                    <div className="text-gray-500">
+                        Author:{" "}
+                        <span className="text-gray-600 font-semibold text text-sm">
+                            {post.user.firstName + " " + post.user.lastName}
+                        </span>
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -64,12 +98,17 @@ function LayOutMyPost({ page = "MY_POST", children }) {
     useEffect(() => {
         const fetchApi = async () => {
             try {
-                const result = await UserApi.getPosts(
-                    user.email,
-                    isDeleted,
-                    quantity.page,
-                    quantity.size
-                );
+                let result;
+                if (page === "MY_POST") {
+                    result = await UserApi.getPosts(
+                        user.email,
+                        isDeleted,
+                        quantity.page,
+                        quantity.size
+                    );
+                } else if (page === "BOOK_MARK") {
+                    result = await UserApi.getBookMarkPosts(user.email);
+                }
                 setPosts(result.content);
             } catch (error) {
                 console.log(error);
@@ -121,9 +160,24 @@ function LayOutMyPost({ page = "MY_POST", children }) {
         fetchApi();
     };
 
+    const handleRemoveBookmark = (postId) => {
+        const fetchApi = async () => {
+            try {
+                await UserApi.removeBookmark(user.email, postId);
+                setPosts(posts.filter((post) => post.id !== postId));
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchApi();
+    };
+
     return (
         <div className="container mt-10">
-            <h1 className="uppercase font-bold text-3xl mb-10">My post</h1>
+            <h1 className="uppercase font-bold text-3xl mb-10">
+                {page === "MY_POST" ? "My Post" : "Bookmark"}
+            </h1>
             <div className="border-b-[1px] border-b-gray-200 mb-4">
                 {page === "MY_POST" && (
                     <div className="flex">
@@ -159,6 +213,8 @@ function LayOutMyPost({ page = "MY_POST", children }) {
                 {posts?.map((post, index) => {
                     return (
                         <PostItem
+                            handleRemoveBookmark={handleRemoveBookmark}
+                            page={page}
                             handleRestorePost={handleRestorePost}
                             openDeleteModal={openDeleteModal}
                             post={post}

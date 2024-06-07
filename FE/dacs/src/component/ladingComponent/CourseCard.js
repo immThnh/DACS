@@ -45,7 +45,6 @@ export const CourseCard = memo(
                 navigate("/login");
             }
         };
-
         return (
             <div className="course-card w-full md:w-1/3 lg:w-1/3 px-4 flex flex-col mb-7">
                 <div className="b-shadow bg-white rounded-xl border border-gray-100 p-6 flex flex-col">
@@ -58,8 +57,10 @@ export const CourseCard = memo(
                         />
                     </div>
                     <div className="flex justify-start mb-2 flex-wrap gap-1.5">
-                        {course.categories.map((category) => (
-                            <Badge keyData={category.id}>{category.name}</Badge>
+                        {course.categories?.map((category, index) => (
+                            <Badge key={index} keyData={category.id}>
+                                {category.name}
+                            </Badge>
                         ))}
                     </div>
                     <h3 className="text-md sm:text-lg font-semibold text-neutral-800 mb-2 truncate text-start">
@@ -86,7 +87,7 @@ const CoursesComponent = () => {
     useEffect(() => {
         const fetchApi = async () => {
             try {
-                const result = await dataApi.getAllCourse(0, 9999);
+                const result = await dataApi.getAllCourse(0, 999);
                 setCourses(result.content.content);
             } catch (error) {
                 console.log("error: " + error);

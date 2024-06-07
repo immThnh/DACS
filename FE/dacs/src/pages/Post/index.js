@@ -5,13 +5,7 @@ import { useEffect, useState } from "react";
 import * as dataApi from "../../api/apiService/dataService";
 import avatar from "../../assets/images/avatar_25.jpg";
 import moment from "moment/moment";
-import {
-    Pagination,
-    PaginationItem,
-    PaginationCursor,
-    PaginationItemType,
-} from "@nextui-org/pagination";
-import { computeHeadingLevel } from "@testing-library/react";
+import { Pagination, PaginationItemType } from "@nextui-org/pagination";
 
 const renderItem = ({
     ref,
@@ -110,22 +104,6 @@ const PostItem = ({ post, ...props }) => {
                             {post.userName}
                         </span>
                     </div>
-                    <div className="cursor-pointer hover:opacity-80">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            strokeWidth={1.5}
-                            stroke="currentColor"
-                            className="size-6"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M6.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM18.75 12a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z"
-                            />
-                        </svg>
-                    </div>
                 </div>
                 <div className="flex">
                     <div className="pr-4 flex-1">
@@ -172,7 +150,7 @@ const PostItem = ({ post, ...props }) => {
                         <img
                             loading="lazy"
                             className="w-full h-full block rounded-lg object-cover"
-                            src={post.thubnail}
+                            src={post.thumbnail}
                             alt="post thumbnail"
                         />
                     </div>

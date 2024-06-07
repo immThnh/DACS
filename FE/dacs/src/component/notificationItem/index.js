@@ -22,7 +22,6 @@ export default function NotificationItem({ iconBtn }) {
         let total = 0;
         notifications.forEach((noti) => {
             if (!noti.read) {
-                console.log(noti.read);
                 total += 1;
             }
         });
@@ -188,6 +187,7 @@ export default function NotificationItem({ iconBtn }) {
                                                                 >
                                                                     <img
                                                                         src={
+                                                                            noti.img ||
                                                                             avatar
                                                                         }
                                                                         alt="avatar"

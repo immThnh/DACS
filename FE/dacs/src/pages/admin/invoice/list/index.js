@@ -37,7 +37,6 @@ function ListInvoice() {
                 loading: "Removing...",
                 success: (data) => {
                     setInvoices(data.content.content);
-                    console.log(data);
                     setTotalData(data.content.totalElements);
                     setDeletedModalOpen(false);
                     return "Remove successfully";
@@ -121,6 +120,7 @@ function ListInvoice() {
             try {
                 const result = await dataApi.getAllInvoice();
                 setInvoices(result.content.content);
+                setTotalData(result.content.totalElements);
             } catch (error) {
                 console.log(error);
             }
@@ -178,7 +178,7 @@ function ListInvoice() {
     return (
         <div>
             <div className="flex justify-center w-full ">
-                <div className="container mt-5 mx-14">
+                <div className="container mt-4 mx-14">
                     <div className="wrapMainDash">
                         <div className={clsx(styles.topMain)}>
                             <div className={clsx(styles.itemTopMain)}>

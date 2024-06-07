@@ -6,6 +6,7 @@ import com.example.demo.entity.data.Course;
 import com.example.demo.repository.data.CategoryRepository;
 import com.example.demo.repository.data.CourseRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,11 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class CategoryService {
     private final CategoryRepository categoryRepository;
-    private final CourseRepository courseRepository;
+
+    @Autowired
+    public CategoryService(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
 
     public ResponseObject getAllCategory(int page, int size) {
         var categories = categoryRepository.findAllByIsDeleted(false, PageRequest.of(page, size));
@@ -32,11 +36,7 @@ public class CategoryService {
     }
 
     public Category getById(int id) {
-        var cate = categoryRepository.findById(id).orElse(null);
-        if(cate == null) {
-            return null;
-        }
-        return cate;
+        return categoryRepository.findById(id).orElse(null);
     }
 
     public void updateCategoriesForCourse(Course course, List<Integer> categories) {
@@ -52,14 +52,17 @@ public class CategoryService {
         course.getCategories().removeIf(old -> !newCategories.contains(old));
     }
 
-    public void addCategoriesForCourse(Course course, List<Integer> categories) {
+    public List<Category> addCategoriesForCourse(Course course, List<Integer> categories) {
+        List<Category> newCategories = new ArrayList<>();
         if(categories == null) {
             course.setCategories(null);
-            return;
+            return null;
         }
         for(var temp : categories) {
-            categoryRepository.findById(temp).ifPresent(cate -> course.getCategories().add(cate));
+            categoryRepository.findById(temp).ifPresent(newCategories::add);
         }
+
+        return newCategories;
     }
 
     public ResponseObject getByTitle(String title, int page, int size) {
@@ -97,11 +100,7 @@ public class CategoryService {
             return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("Category does not exist!").build();
         }
         category.setDeleted(true);
-        for (Course course : category.getCourses()) {
-            course.getCategories().remove(category);
-            courseRepository.save(course);
-        }
-        category.setCourses(null);
+
         categoryRepository.save(category);
         return ResponseObject.builder().mess("Delete course successfully!").status(HttpStatus.OK).build();
     }

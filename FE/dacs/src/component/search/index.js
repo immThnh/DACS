@@ -13,12 +13,15 @@ const SearchBar = () => {
     const searchBarRef = useRef(null);
     const [loading, setloading] = useState(false);
     const inputRef = useRef();
+
     const fetchApi = async (title) => {
         try {
-            const result = await dataApi.getCourseByName(title);
+            const result = await dataApi.searchCourseByNameAndPostByTitle(
+                title
+            );
             setloading(false);
             setShowResult(true);
-            setSearchResult(result.content.content);
+            setSearchResult(result.content);
         } catch (error) {
             console.log(error);
         }
@@ -31,8 +34,6 @@ const SearchBar = () => {
             }, delay);
         };
     };
-
-    const fetchApiRequest = debounce(fetchApi, 500);
 
     const handleSearch = (event) => {
         const title = event.target.value;
@@ -72,7 +73,7 @@ const SearchBar = () => {
     }, []);
 
     const handleShowResult = () => {
-        if (searchResult.length > 0 && !showResult) {
+        if (searchResult?.length > 0 && !showResult) {
             setShowResult(true);
         }
     };
@@ -93,7 +94,7 @@ const SearchBar = () => {
                     value={searchTerm}
                     onChange={handleSearch}
                     className="flex-grow text-xs  pl-2 pr-4 text-gray-700 leading-tight focus:outline-none rounded-l-full"
-                    placeholder="Search courses..."
+                    placeholder="Search course, post..."
                 />
                 <div className="absolute inset-y-0 right-10 flex items-center mr-1.5">
                     {searchTerm.length > 0 && !loading && (
@@ -133,26 +134,35 @@ const SearchBar = () => {
             </div>
             {showResult && (
                 <div className="absolute top-full bg-white border border-gray-300 rounded-md shadow-lg w-full z-20 mt-3">
-                    {searchResult.length > 0 ? (
-                        <div>
-                            {searchResult.map((course, index) => (
+                    {searchResult?.posts?.length > 0 ||
+                    searchResult?.courses?.length > 0 ? (
+                        <div className="px-6 py-3">
+                            <h4 className="font-semibold text-sm uppercase  ">
+                                Course
+                            </h4>
+                            <hr className="cssHr" />
+
+                            {searchResult?.courses?.map((course, index) => (
                                 <div
                                     key={index}
-                                    className="flex font-semibold text-sm  p-2.5 truncate hover:bg-gray-100 cursor-pointer"
+                                    className="flex font-semibold text-sm  py-2.5 truncate hover:bg-gray-100 cursor-pointer row"
                                 >
-                                    <div className="w-9 h-9 mr-3 ">
+                                    <div className="w-9 h-9 rounded-full col-lg-3">
                                         <img
+                                            loading="lazy"
                                             src={
                                                 course.thumbnail
                                                     ? course.thumbnail
                                                     : ""
                                             }
                                             alt="thumbnail"
-                                            className="w-9 h-9 object-cover"
+                                            className="rounded-full size-full object-cover"
                                         />
                                     </div>
-                                    <div>
-                                        {course.title}
+                                    <div className="col-lg-9 ">
+                                        <span className="line-clamp-1 whitespace-pre-wrap">
+                                            {course.title}
+                                        </span>
                                         <div className="font-normal text-xs">
                                             Tags:
                                             {course.categories.map(
@@ -169,11 +179,45 @@ const SearchBar = () => {
                                     </div>
                                 </div>
                             ))}
+                            {searchResult?.courses?.length === 0 && (
+                                <span className="flex justify-center mt-2 text-sm font-semibold text-gray-500">
+                                    No course found
+                                </span>
+                            )}
+                            <h4 className="mt-2 font-semibold text-sm uppercase ">
+                                Post
+                            </h4>
                             <hr className="cssHr" />
-                            {/* <div className="cursor-pointer p-2.5 text-sm text-center text-gray-700 truncate">
-                                View more results for "
-                                <strong>{searchTerm}</strong>"
-                            </div> */}
+
+                            {searchResult?.posts?.map((element, index) => (
+                                <div
+                                    key={index}
+                                    className="flex font-semibold text-sm  py-2.5 truncate hover:bg-gray-100 cursor-pointer row"
+                                >
+                                    <div className="w-9 h-9 col-lg-3">
+                                        <img
+                                            loading="lazy"
+                                            src={
+                                                element.thumbnail
+                                                    ? element.thumbnail
+                                                    : ""
+                                            }
+                                            alt="thumbnail"
+                                            className="rounded-full  size-full object-cover"
+                                        />
+                                    </div>
+                                    <div className="text-wrap flex items-center col-lg-9">
+                                        <span className="whitespace-pre-wrap">
+                                            {element.title}
+                                        </span>
+                                    </div>
+                                </div>
+                            ))}
+                            {searchResult?.posts?.length === 0 && (
+                                <span className="flex justify-center mt-2 text-sm font-semibold text-gray-500">
+                                    No post found
+                                </span>
+                            )}
                         </div>
                     ) : (
                         <div className="p-4 flex items-center text-xs flex-col ">
@@ -183,9 +227,6 @@ const SearchBar = () => {
                             <span className="mb-1">
                                 No results found for "
                                 <strong>{searchTerm}</strong>".
-                            </span>
-                            <span>
-                                Try checking for typos or using complete words.
                             </span>
                         </div>
                     )}

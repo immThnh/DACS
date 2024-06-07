@@ -37,12 +37,30 @@ public class MeController {
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 
+    @GetMapping("/{email}/posts/bookmark")
+    public ResponseEntity<ResponseObject> getBookmarks(@PathVariable String email) {
+        var result = authService.getBookmarks(email);
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
+
+    @GetMapping("/{email}/courses")
+    public ResponseEntity<ResponseObject> getCourses(@PathVariable String email) {
+        var result = userService.getCourses(email);
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
+
     @GetMapping("/{email}/posts")
     public ResponseEntity<ResponseObject> getPosts(@PathVariable String email,
             @RequestParam boolean deleted,
                                                    @RequestParam(defaultValue = "0") int page,
                                                    @RequestParam(defaultValue = "5") int size) {
         var result = userService.getPosts(email, deleted, page, size);
+        return ResponseEntity.status(result.getStatus()).body(result);
+    }
+
+    @PutMapping("/{email}/post/removeBookmark/{postId}")
+    public ResponseEntity<ResponseObject> removeBookmark(@PathVariable String email, @PathVariable int postId) {
+        var result = userService.toggleFavoritePost(email, postId);
         return ResponseEntity.status(result.getStatus()).body(result);
     }
 

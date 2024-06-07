@@ -3,7 +3,7 @@ import styles from "../../../user/userProfile/UserProfile.module.scss";
 import clsx from "clsx";
 import avatar from "../../../../assets/images/avatar_25.jpg";
 import ShowPassword from "../../../../component/auth/ShowPassword";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import * as userApi from "../../../../api/apiService/authService";
 import { toast } from "sonner";
 
@@ -262,11 +262,10 @@ const AdminView = () => {
                                                 "flex gap-3 w-full"
                                             )}
                                         >
-                                            <div>
+                                            <div className="flex-1">
                                                 <div
                                                     className={clsx(
-                                                        styles.formField,
-                                                        "flex-1"
+                                                        styles.formField
                                                     )}
                                                 >
                                                     <input
@@ -296,7 +295,7 @@ const AdminView = () => {
                                                     </div>
                                                 )}
                                             </div>
-                                            <div>
+                                            <div className="flex-1">
                                                 <div
                                                     className={clsx(
                                                         styles.formField,
@@ -331,7 +330,7 @@ const AdminView = () => {
                                                 )}
                                             </div>
                                         </div>
-                                        <div>
+                                        <div className="flex flex-col gap-4">
                                             <div
                                                 className={clsx(
                                                     styles.formField,

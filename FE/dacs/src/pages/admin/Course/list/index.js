@@ -156,7 +156,7 @@ function ListCourse() {
 
     return (
         <div className="flex justify-center w-full ">
-            <div className="container mt-5 mx-14">
+            <div className="container mt-4 mx-14">
                 <div className="wrapMainDash">
                     <div className={clsx(styles.topMain)}>
                         <div className={clsx(styles.itemTopMain)}>
@@ -197,12 +197,13 @@ function ListCourse() {
                             )}
                         >
                             <div className={clsx(styles.contentItem)}>
-                                <div className={clsx(styles.formSelect)}>
+                                <div className={clsx(styles.formSelect, "w-52")}>
                                     <label htmlFor="">Category</label>
                                     <Select
                                         onChange={handleSelectChange}
                                         getOptionLabel={(x) => x.name}
                                         getOptionValue={(x) => x.id}
+                                        placeholder="All"
                                         options={options}
                                         styles={{
                                             control: (baseStyles, state) => ({

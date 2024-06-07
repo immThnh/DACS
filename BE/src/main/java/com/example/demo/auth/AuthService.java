@@ -16,6 +16,7 @@ import com.example.demo.repository.data.LessonRepository;
 import com.example.demo.repository.data.NotificationRepository;
 import com.example.demo.repository.data.ProgressRepository;
 import com.example.demo.service.*;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +40,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class AuthService {
     private final UserRepository userRepository;
@@ -50,13 +50,33 @@ public class AuthService {
     private final JwtService jwtService;
     private final CloudService cloudService;
     private final PasswordEncoder passwordEncoder;
-    private  final NotificationService notificationService;
+    private final NotificationService notificationService;
     private final InvoiceService invoiceService;
-    private  final CommentService commentService;
+    private final CommentService commentService;
+    private final PostService postService;
+
     @Autowired
-    private PostService postService;
-    @Autowired
-    private TagService tagService;
+    private AuthService(UserRepository userRepository, AuthenticationManager authenticationManager, CourseRepository courseRepository, ProgressRepository progressRepository, JwtService jwtService, CloudService cloudService, PasswordEncoder passwordEncoder, NotificationService notificationService, InvoiceService invoiceService, CommentService commentService, PostService postService) {
+        this.userRepository = userRepository;
+        this.authenticationManager = authenticationManager;
+        this.courseRepository = courseRepository;
+        this.progressRepository = progressRepository;
+        this.jwtService = jwtService;
+        this.cloudService = cloudService;
+        this.passwordEncoder = passwordEncoder;
+        this.notificationService = notificationService;
+        this.invoiceService = invoiceService;
+        this.commentService = commentService;
+        this.postService = postService;
+    }
+
+    public ResponseObject getBookmarks (String email) {
+        var user = userRepository.findByEmail(email).orElse(null);
+        if(user == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("User not found").build();
+        }
+        return ResponseObject.builder().status(HttpStatus.OK).content(user.getFavoritePosts()).build();
+    }
 
 
     public ResponseObject savePost(PostDTO postDTO) {

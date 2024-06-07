@@ -27,6 +27,8 @@ public class CourseService {
     private final CategoryService categoryService;
     private final LessonService lessonService;
     private final SectionService sectionService;
+    private final CoursePostService coursePostService;
+
 
 
     public ResponseObject getCourseById(int id, boolean isDeleted) {
@@ -86,8 +88,7 @@ public class CourseService {
                 .build();
 
         sectionService.addListSectionDtoToCourse(newCourse, request.getSections());
-        newCourse.setCategories(new ArrayList<>());
-        categoryService.addCategoriesForCourse(newCourse, request.getCategories());
+        newCourse.setCategories(categoryService.addCategoriesForCourse(newCourse, request.getCategories()));
 
         courseRepository.save(newCourse);
         return ResponseObject.builder().mess("Create success").status(HttpStatus.OK).build();

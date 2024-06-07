@@ -110,7 +110,6 @@ function ListUser() {
             try {
                 let array = [];
                 const result = await authApi.getAllUserAndRole();
-                console.log(result.content);
                 result.content.roles.map((value, index) =>
                     array.push({ id: index, name: value })
                 );
@@ -162,7 +161,7 @@ function ListUser() {
 
     return (
         <div className="flex justify-center w-full ">
-            <div className="container mt-5 mx-14">
+            <div className="container mt-4 mx-14">
                 <div className="wrapMainDash">
                     <div className={clsx(styles.topMain)}>
                         <div className={clsx(styles.itemTopMain)}>
@@ -200,16 +199,14 @@ function ListUser() {
                             )}
                         >
                             <div className={clsx(styles.contentItem)}>
-                                <div
-                                    // className={clsx(styles.cbb)
-                                    className={clsx(styles.formSelect)}
-                                >
+                                <div className={clsx(styles.formSelect, "w-52")}>
                                     <label htmlFor="">Role</label>
                                     <Select
                                         onChange={handleSelectChange}
                                         getOptionLabel={(x) => x.name}
                                         getOptionValue={(x) => x.id}
                                         options={options}
+                                        placeholder="All"
                                         styles={{
                                             control: (baseStyles, state) => ({
                                                 ...baseStyles,

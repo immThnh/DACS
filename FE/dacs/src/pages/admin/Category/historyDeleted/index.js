@@ -116,7 +116,7 @@ function HistoryDeletedCategory() {
 
     return (
         <div className="flex justify-center w-full ">
-            <div className="container mt-5 mx-14">
+            <div className="container mt-4 mx-14">
                 <div className="wrapMainDash">
                     <div className={clsx(styles.topMain)}>
                         <div className={clsx(styles.itemTopMain)}>

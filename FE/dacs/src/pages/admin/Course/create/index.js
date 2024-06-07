@@ -291,7 +291,6 @@ function CreateCourse() {
         fetchApi();
     }, []);
 
-    console.log("render");
     return (
         <>
             <div className="container flex flex-col justify-center">
@@ -355,6 +354,7 @@ function CreateCourse() {
                                     getOptionLabel={(x) => x.name}
                                     getOptionValue={(x) => x.id}
                                     options={options}
+                                    placeholder=""
                                     name="categories"
                                     styles={{
                                         control: (baseStyles, state) => ({

@@ -16,6 +16,7 @@ export function Dropdown({
     children,
     handleRestorePost,
     handleOpenDeletePost,
+    handleRemoveBookmark,
     isMyPost = false,
     post,
 }) {
@@ -62,12 +63,12 @@ export function Dropdown({
                 >
                     <Menu.Items
                         className={clsx(
-                            "absolute top-8 w-40 right-0 mt-2origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
+                            "absolute top-8 w-48 right-0 mt-2origin-top-right divide-y divide-gray-100 rounded-md bg-white shadow-lg ring-1 ring-black/5 focus:outline-none"
                         )}
                     >
                         <div className="px-1 py-1">
                             <div>
-                                {isMyPost && (
+                                {isMyPost ? (
                                     <>
                                         <Menu.Item>
                                             {({ active }) => (
@@ -116,57 +117,6 @@ export function Dropdown({
                                         </Menu.Item>
                                         {!post?.deleted ? (
                                             <>
-                                                <Menu.Item>
-                                                    {({ active }) => (
-                                                        <button
-                                                            onClick={
-                                                                handeCopyLink
-                                                            }
-                                                            className={`${
-                                                                active
-                                                                    ? "bg-black text-white"
-                                                                    : "text-gray-900"
-                                                            } font-medium group flex w-full items-center rounded-md px-2 py-2.5 text-sm`}
-                                                        >
-                                                            {active ? (
-                                                                <svg
-                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                    fill="none"
-                                                                    viewBox="0 0 24 24"
-                                                                    strokeWidth={
-                                                                        1.5
-                                                                    }
-                                                                    stroke="currentColor"
-                                                                    className="mr-4 w-4 h-4"
-                                                                >
-                                                                    <path
-                                                                        strokeLinecap="round"
-                                                                        strokeLinejoin="round"
-                                                                        d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
-                                                                    />
-                                                                </svg>
-                                                            ) : (
-                                                                <svg
-                                                                    xmlns="http://www.w3.org/2000/svg"
-                                                                    fill="none"
-                                                                    viewBox="0 0 24 24"
-                                                                    strokeWidth={
-                                                                        1.5
-                                                                    }
-                                                                    stroke="currentColor"
-                                                                    className="mr-4 w-4 h-4"
-                                                                >
-                                                                    <path
-                                                                        strokeLinecap="round"
-                                                                        strokeLinejoin="round"
-                                                                        d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
-                                                                    />
-                                                                </svg>
-                                                            )}
-                                                            Copy Link
-                                                        </button>
-                                                    )}
-                                                </Menu.Item>
                                                 <Menu.Item>
                                                     {({ active }) => (
                                                         <div
@@ -277,6 +227,103 @@ export function Dropdown({
                                             </Menu.Item>
                                         )}
                                     </>
+                                ) : (
+                                    <>
+                                        <Menu.Item>
+                                            {({ active }) => (
+                                                <button
+                                                    onClick={handeCopyLink}
+                                                    className={`${
+                                                        active
+                                                            ? "bg-black text-white"
+                                                            : "text-gray-900"
+                                                    } font-medium group flex w-full items-center rounded-md px-2 py-2.5 text-sm`}
+                                                >
+                                                    {active ? (
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            fill="none"
+                                                            viewBox="0 0 24 24"
+                                                            strokeWidth={1.5}
+                                                            stroke="currentColor"
+                                                            className="mr-4 w-4 h-4"
+                                                        >
+                                                            <path
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
+                                                            />
+                                                        </svg>
+                                                    ) : (
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            fill="none"
+                                                            viewBox="0 0 24 24"
+                                                            strokeWidth={1.5}
+                                                            stroke="currentColor"
+                                                            className="mr-4 w-4 h-4"
+                                                        >
+                                                            <path
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
+                                                            />
+                                                        </svg>
+                                                    )}
+                                                    Copy Link
+                                                </button>
+                                            )}
+                                        </Menu.Item>
+                                        <Menu.Item>
+                                            {({ active }) => (
+                                                <button
+                                                    onClick={() =>
+                                                        handleRemoveBookmark(
+                                                            post.id
+                                                        )
+                                                    }
+                                                    className={`${
+                                                        active
+                                                            ? "bg-black text-white"
+                                                            : "text-gray-900"
+                                                    } font-medium group flex w-full items-center rounded-md px-2 py-2.5 text-sm`}
+                                                >
+                                                    {active ? (
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            fill="none"
+                                                            viewBox="0 0 24 24"
+                                                            strokeWidth={1.5}
+                                                            stroke="currentColor"
+                                                            className="mr-4 w-4 h-4"
+                                                        >
+                                                            <path
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
+                                                            />
+                                                        </svg>
+                                                    ) : (
+                                                        <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            fill="none"
+                                                            viewBox="0 0 24 24"
+                                                            strokeWidth={1.5}
+                                                            stroke="currentColor"
+                                                            className="mr-4 w-4 h-4"
+                                                        >
+                                                            <path
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
+                                                            />
+                                                        </svg>
+                                                    )}
+                                                    Remove Bookmark
+                                                </button>
+                                            )}
+                                        </Menu.Item>
+                                    </>
                                 )}
                             </div>
                         </div>
@@ -297,7 +344,6 @@ const ViewPost = () => {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const watch = searchParams.get("watch");
-
     useEffect(() => {
         if (!title) return;
         const fetchApi = async () => {
@@ -325,7 +371,6 @@ const ViewPost = () => {
     };
 
     const handleSavePost = async () => {
-        console.log(user.email);
         toast.promise(UserApi.toggleSavePost(post.id, user.email), {
             loading: "loading...",
             success: (result) => {
@@ -388,7 +433,7 @@ const ViewPost = () => {
                     <div className="flex justify-between mb-7">
                         <div className="flex-1 flex">
                             <img
-                                className="mr-3 rounded-full w-12 h-1w-12 border"
+                                className="mr-3 rounded-full h-12 w-12 border"
                                 loading="lazy"
                                 src={post.avatar || avatar}
                                 alt="User avavtar"

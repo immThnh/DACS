@@ -1,9 +1,8 @@
 import styles from "../../Course/create/CreateCourse.module.scss";
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import * as dataApi from "../../../../api/apiService/dataService";
-import { Navigate, redirect, useParams } from "react-router-dom";
 
 function CreateCategory() {
     const [category, setCateogry] = useState();
@@ -53,7 +52,7 @@ function CreateCategory() {
 
                         <button
                             type="submit"
-                            className="justify-center px-5 py-3.5 mt-5 text-sm font-medium text-center text-white bg-black rounded-lg max-md:max-w-full w-full"
+                            className="justify-center px-5 py-3.5 mt-2 text-sm font-medium text-center text-white bg-black rounded-lg max-md:max-w-full w-full"
                             onClick={handleSubmit}
                         >
                             Create

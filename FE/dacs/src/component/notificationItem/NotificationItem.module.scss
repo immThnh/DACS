@@ -2,8 +2,8 @@
     width: 400px;
     cursor: default;
 }
-@media(max-width:768px){
-    .wrap{
+@media (max-width: 768px) {
+    .wrap {
         width: 320px;
     }
 }
@@ -25,6 +25,7 @@
 }
 
 .boxContent {
+    height: 356px;
     overflow-y: scroll !important;
     max-height: 405px;
 }

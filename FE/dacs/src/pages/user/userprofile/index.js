@@ -178,7 +178,7 @@ function UserProfile({ adminOpen = false }) {
 
     return (
         <div className={styles.container}>
-            <div className={clsx("container")}>
+            <div className={clsx("container py-5")}>
                 <div className={clsx("row justify-center gap-6")}>
                     <div className={clsx(styles.header, "col-lg-10")}>
                         <ul className={clsx("flex gap-10 mb-0")}>
@@ -363,7 +363,7 @@ function UserProfile({ adminOpen = false }) {
                                                 )}
                                             </div>
                                         </div>
-                                        <div>
+                                        <div className="flex gap-4 flex-col">
                                             <div
                                                 className={clsx(
                                                     styles.formField,

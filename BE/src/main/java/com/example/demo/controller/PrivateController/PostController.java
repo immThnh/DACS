@@ -1,8 +1,6 @@
 package com.example.demo.controller.PrivateController;
 
-import com.example.demo.dto.PagePostDTO;
 import com.example.demo.dto.ResponseObject;
-import com.example.demo.entity.data.PostStatus;
 import com.example.demo.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

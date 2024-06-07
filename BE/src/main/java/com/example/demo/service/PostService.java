@@ -56,7 +56,7 @@ public class PostService {
         post.setStatus(PostStatus.valueOf(status));
         notificationService.sendNotificationToUser(null, post.getUser().getEmail(), "Your post \"" + post.getTitle() + "\" has been " + status.toLowerCase());
         postRepository.save(post);
-        return getAll(status, page, size);
+        return getAll("ALL", page, size);
     }
 
     public ResponseObject getAll(String status, int page, int size) {

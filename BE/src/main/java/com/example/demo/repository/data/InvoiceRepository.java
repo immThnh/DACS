@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 public interface InvoiceRepository extends JpaRepository<Invoice, Integer> {
     @Query("SELECT new com.example.demo.dto.InvoiceDTO(i.id, i.date, i.total, i.content, i.method, new com.example.demo.dto.UserStatisticDTO(u.email, u.firstName, u.lastName, u.avatar)) FROM Invoice i JOIN i.user u WHERE i.isDelete = false")
     Page<InvoiceDTO> findAllInvoicesWithSelectedUserFields(Pageable pageable);
+
     @Query("SELECT new com.example.demo.dto.InvoiceDTO(i.id, i.date, i.total, i.content, i.method, new com.example.demo.dto.UserStatisticDTO(u.email, u.firstName, u.lastName, u.avatar)) FROM Invoice i JOIN i.user u WHERE i.isDelete = true")
     Page<InvoiceDTO> findAllIDeleteInvoicesWithSelectedUserFields(Pageable pageable);
 

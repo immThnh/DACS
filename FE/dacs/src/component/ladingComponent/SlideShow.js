@@ -1,26 +1,39 @@
-import React, { memo } from "react";
+import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "./Slideshow.css";
 import { Pagination, Navigation, Autoplay } from "swiper/modules";
-import background from "../../assets/images/Banner_01_2.png";
+import slideShow1 from "../../assets/images/slideShow1.png";
+import slideShow2 from "../../assets/images/slideshow2.png";
+import slideShow3 from "../../assets/images/slideshow3.png";
+import clsx from "clsx";
+import { Link } from "react-router-dom";
 
 const PromoSlideshow = () => {
     const slides = [
         {
-            img: background,
-            title: "Lorem ipsum dolor",
-            description:
-                "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eos, natus fugiat quod unde aliquid eius facere dignissimos aut quidem. Temporibus sapiente eligendi reiciendis dolorem rerum nobis fugit magnam, dolore corrupti!",
+            img: slideShow1,
+            title: "Study every time and everywhere",
+            description: "Lots of useful knowledge, constantly updated",
+            path: "/course/2",
             buttonText: "Register Now",
         },
         {
-            img: background,
-            title: "Lorem ipsum dolor",
+            img: slideShow2,
+            title: "ReactJS course is having attractive promotion",
             description:
-                "Lorem ipsum dolor, sit amet consectetur adipisicing elit. Eos, natus fugiat quod unde aliquid eius facere dignissimos aut quidem. Temporibus sapiente eligendi reiciendis dolorem rerum nobis fugit magnam, dolore corrupti!",
+                "ReactJS course from basic to advanced. The result of this course is that you can do most common projects with ReactJS.",
+            path: "/course/2",
+            buttonText: "Register Now",
+        },
+        {
+            img: slideShow3,
+            title: "Many courses are being updated and discounted",
+            description:
+                "Quickly register for the course to improve your abilities and find more job opportunities.",
+            path: "/course/2",
             buttonText: "Register Now",
         },
     ];
@@ -53,29 +66,36 @@ const PromoSlideshow = () => {
                 {slides.map((slide, index) => (
                     <SwiperSlide
                         key={index}
-                        className="flex items-center justify-between bg-pink-300"
+                        className={clsx("flex items-center justify-between ", {
+                            "bg-pink-400": index === 0,
+                            "bg-blue-400": index === 1,
+                            "bg-orange-400": index === 2,
+                        })}
                     >
                         <div className="row">
-                        <div className="flex z-10 p-10 text-left text-white w-full md:w-1/2 col-lg-6">
-                            <div>
-                                <h2 className="pl-20 text-2xl md:text-4xl font-bold">
-                                    {slide.title}
-                                </h2>
-                                <p className="pl-20 my-4 text-sm md:text-base">
-                                    {slide.description}
-                                </p>
-                                <button className="ml-20 px-4 py-2 mb-2 text-white bg-purple-500 rounded-full font-medium shadow-lg text-sm md:text-base">
-                                    {slide.buttonText}
-                                </button>
+                            <div className="flex z-10 p-10 text-left text-white w-full md:w-1/2 col-lg-6">
+                                <div>
+                                    <h2 className="pl-20 text-2xl md:text-4xl font-bold">
+                                        {slide.title}
+                                    </h2>
+                                    <p className="pl-20 my-4 text-sm md:text-base">
+                                        {slide.description}
+                                    </p>
+                                    <Link
+                                        to={slide.path}
+                                        className="ml-20 px-4 py-2 mb-2 text-white bg-purple-500 rounded-full font-medium shadow-lg text-sm md:text-base"
+                                    >
+                                        {slide.buttonText}
+                                    </Link>
+                                </div>
                             </div>
-                        </div>
-                        <div className="md:w-1/2 col-lg-6">
-                            <img
-                                src={slide.img}
-                                alt="Slide image"
-                                className="object-contain h-full m-auto pb-5"
-                            />
-                        </div>
+                            <div className="md:w-1/2 col-lg-6">
+                                <img
+                                    src={slide.img}
+                                    alt="New feeds"
+                                    className="object-contain h-full m-auto pb-5"
+                                />
+                            </div>
                         </div>
                     </SwiperSlide>
                 ))}

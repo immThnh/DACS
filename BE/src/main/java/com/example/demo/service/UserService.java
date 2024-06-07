@@ -2,11 +2,11 @@ package com.example.demo.service;
 
 import com.example.demo.dto.ResponseObject;
 import com.example.demo.dto.UsersAndRoles;
-import com.example.demo.entity.data.Post;
-import com.example.demo.entity.data.QPost;
+import com.example.demo.entity.data.*;
 import com.example.demo.entity.user.Role;
 import com.example.demo.entity.user.User;
 import com.example.demo.repository.UserRepository;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQuery;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -31,6 +32,18 @@ public class UserService {
         this.userRepository = userRepository;
         this.tagService = tagService;
         this.entityManager = entityManager;
+    }
+
+    public ResponseObject getCourses(String email) {
+        var user = getUserByEmail(email);
+        if (user == null) {
+            return ResponseObject.builder().status(HttpStatus.BAD_REQUEST).mess("User not found").build();
+        }
+        List<Course> courses = new JPAQuery<Course>(entityManager).from(QCourse.course)
+                .innerJoin(QProgress.progress).on(QCourse.course.id.eq(QProgress.progress.course.id))
+                .where(QProgress.progress.user.id.eq(user.getId()))
+                .fetch();
+        return ResponseObject.builder().status(HttpStatus.OK).content(courses).build();
     }
 
 

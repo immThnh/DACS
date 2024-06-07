@@ -240,7 +240,6 @@ function ListPost() {
                     selectedSize
                 );
                 setReult(data.content);
-                console.log(data.content);
                 setTotalData(
                     data.content.totalApproved +
                         data.content.totalPending +
@@ -274,7 +273,7 @@ function ListPost() {
     return (
         <div>
             <div className="flex justify-center w-full ">
-                <div className="container mt-5 mx-14">
+                <div className="container mt-4 mx-14">
                     <div className="wrapMainDash">
                         <div className={clsx(styles.topMain)}>
                             <div className={clsx(styles.itemTopMain)}>

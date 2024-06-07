@@ -19,6 +19,7 @@ public interface CourseRepository extends JpaRepository<Course, Integer> {
      Optional<Course> findByTitle(String title);
 
      Page<Course> findAllByIsDeleted(boolean isDeleted, Pageable pageable);
+
     @Query(value = "select * from course inner join course_category on course.id = course_category.course_id where category_id = :id and course.is_deleted = 0", nativeQuery = true)
     Page<Course> findByCategoryId(int id, Pageable pageable);
 

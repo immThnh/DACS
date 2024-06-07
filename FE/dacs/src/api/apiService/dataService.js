@@ -140,6 +140,20 @@ export const getCoursesByCategory = async (id, page, size) => {
     }
 };
 
+export const searchCourseByNameAndPostByTitle = async (
+    title,
+    page = 0,
+    size = 5
+) => {
+    try {
+        return await publicInstance.get(
+            `/course-post?title=${title}&page=${page}&size=${size}`
+        );
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
 export const getCourseByName = async (
     title,
     page = 0,
@@ -225,10 +239,8 @@ export const restoreCourseById = (id) => {
 
 export const getComments = async (path = "") => {
     try {
-        // return await publicInstance.get(`/lesson/${lessonId}/comments`);
         return await publicInstance.get(`${path}`);
     } catch (error) {
-        console.log(error.status);
         return Promise.reject(error);
     }
 };

@@ -13,13 +13,11 @@ import java.util.List;
 import java.util.Optional;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Integer> {
-    @Query(value = "select * from category", nativeQuery = true)
-    Optional<List<Category>> getAllCategories();
 
     Page<Category> findAllByIsDeleted(boolean isDeleted, Pageable pageable);
 
     Optional<Category> findByName(String name);
 
     Page<Category> findByNameContaining(String name, Pageable pageable);
-    Optional<List<Category>> findByCourses(Course course);
+
 }

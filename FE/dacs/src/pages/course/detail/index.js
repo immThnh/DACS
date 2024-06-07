@@ -18,10 +18,15 @@ const debounce = (func, delay = 1000) => {
 };
 
 const CourseHero = ({ video = "", thumbnail }) => {
+    let link;
+    function youtube_parser(url) {
+        var regExp =
+            /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+        var match = url.match(regExp);
+        return match && match[7].length === 11 ? match[7] : false;
+    }
     if (!video.startsWith("https://res.cloudinary.com")) {
-        var parts = video.split("/");
-        var videoId = parts[parts.length - 1].split("?")[0];
-        videoId = `https://www.youtube.com/embed/${videoId}`;
+        link = `https://www.youtube.com/embed/${youtube_parser(video)}`;
     }
 
     return (
@@ -42,7 +47,7 @@ const CourseHero = ({ video = "", thumbnail }) => {
                 video !== "" && (
                     <iframe
                         title="Video"
-                        src={videoId}
+                        src={link}
                         frameBorder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
@@ -94,7 +99,7 @@ const CurriculumItem = ({
 
         const fetchUpdateLessonIds = async () => {
             try {
-                const result = await userApi.updateLessonIds(
+                await userApi.updateLessonIds(
                     aliasEmail,
                     courseId,
                     newUpdate

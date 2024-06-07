@@ -416,3 +416,29 @@ export const restorePost = async (email, postId) => {
         return Promise.reject(error);
     }
 };
+
+export const getCoursesOfUser = async (email) => {
+    try {
+        return await userInstance.get(`/${email}/courses`);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const getBookMarkPosts = async (email) => {
+    try {
+        return await userInstance.get(`/${email}/posts/bookmark`);
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};
+
+export const removeBookmark = async (email, postId) => {
+    try {
+        return await userInstance.put(
+            `/${email}/post/removeBookmark/${postId}`
+        );
+    } catch (error) {
+        return Promise.reject(error);
+    }
+};

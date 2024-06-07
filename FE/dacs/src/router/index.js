@@ -30,7 +30,7 @@ import Post from "../pages/Post";
 import CreatePost from "../pages/Post/create";
 import ViewPost from "../pages/Post/ViewPost";
 import EditPost from "../pages/Post/edit";
-import BookMarkPost from "../pages/Post/bookmark";
+import BookMark from "../pages/Post/bookmark";
 import MyPosts from "../pages/Post/MyPosts";
 import ListPost from "../pages/admin/post/list";
 import AdminViewPost from "../pages/admin/post/view";
@@ -43,7 +43,6 @@ const publicRoutes = [
     { path: "/course/:id", component: Course },
     { path: "/posts", component: Post },
     { path: "/posts/:title/", component: ViewPost },
-    // { path: "/search/:query", component: SearchResults },
 ];
 
 const userRoutes = [
@@ -60,7 +59,7 @@ const userRoutes = [
     { path: "/new-post", component: CreatePost },
     { path: "/post/:id/edit", component: EditPost },
     { path: "/me/posts/publish", component: MyPosts },
-    { path: "/me/bookmark/posts", component: BookMarkPost },
+    { path: "/me/bookmark/posts", component: BookMark },
 ];
 
 const adminRoutes = [

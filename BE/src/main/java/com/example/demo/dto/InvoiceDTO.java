@@ -22,4 +22,13 @@ public class InvoiceDTO {
     private final UserStatisticDTO user;
     private Course course;
 
+    public InvoiceDTO(Integer id, LocalDateTime date, Long total, String content, MethodPayment method, UserStatisticDTO user) {
+        this.id = id;
+        this.date = date;
+        this.total = total;
+        this.content = content;
+        this.method = method;
+        this.user = user;
+    }
+
 }

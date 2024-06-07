@@ -48,9 +48,11 @@ const Dashboard = () => {
                 setInvoices(result.invoicesCreated);
                 setCourses(result.coursesCreated);
                 setUsers(result.usersRegistered);
-                console.table(result.coursesCreated);
+                console.table(result);
                 setTotalInvoice(result.invoiceTotal);
-            } catch (error) {}
+            } catch (error) {
+                console.log(error);
+            }
         };
         fetchApi();
     }, []);
@@ -130,7 +132,7 @@ const Dashboard = () => {
                                 <div
                                     className={clsx(
                                         styles.titleMid,
-                                        "row rounded-lg py-2 bg-black text-white"
+                                        "row rounded-md py-2 bg-gray-100 text-gray-600 text-sm"
                                     )}
                                 >
                                     <div className="col-lg-2 self-center">
@@ -152,7 +154,7 @@ const Dashboard = () => {
                                                         key={index}
                                                         className={clsx(
                                                             stylesList.item,
-                                                            "row rounded-lg h-[60px]"
+                                                            "row rounded-lg h-[68px]"
                                                         )}
                                                     >
                                                         <div
@@ -249,7 +251,7 @@ const Dashboard = () => {
                                 <div
                                     className={clsx(
                                         styles.titleMid,
-                                        "row rounded-lg py-2 bg-black text-white"
+                                        "row rounded-md py-2 bg-gray-100 text-gray-600 text-sm"
                                     )}
                                 >
                                     <div className="col-lg-2 self-center">
@@ -272,7 +274,7 @@ const Dashboard = () => {
                                                         key={index}
                                                         className={clsx(
                                                             stylesList.item,
-                                                            "row rounded-lg h-[60px]"
+                                                            "row rounded-lg h-[68px]"
                                                         )}
                                                     >
                                                         <div
@@ -313,7 +315,7 @@ const Dashboard = () => {
                                                                 <div
                                                                     className={clsx(
                                                                         stylesList.name,
-                                                                        "line-clamp-3 text-wrap"
+                                                                        "line-clamp-1 text-wrap"
                                                                     )}
                                                                 >
                                                                     {
@@ -379,7 +381,7 @@ const Dashboard = () => {
                                 <div
                                     className={clsx(
                                         styles.titleMid,
-                                        "row rounded-lg py-2 bg-black text-white"
+                                        "row text-sm rounded-md py-2 bg-gray-100 text-gray-600"
                                     )}
                                 >
                                     <div className="col-lg-1 self-center">
@@ -404,7 +406,7 @@ const Dashboard = () => {
                                                         key={index}
                                                         className={clsx(
                                                             stylesList.item,
-                                                            "row rounded-lg h-[60px]"
+                                                            "row rounded-lg h-[68px]"
                                                         )}
                                                     >
                                                         <div
@@ -449,7 +451,7 @@ const Dashboard = () => {
                                                                 <div
                                                                     className={clsx(
                                                                         stylesList.name,
-                                                                        "line-clamp-3 text-wrap"
+                                                                        "line-clamp-1 text-wrap"
                                                                     )}
                                                                 >
                                                                     {element
@@ -480,7 +482,7 @@ const Dashboard = () => {
                                                             <div
                                                                 className={clsx(
                                                                     stylesList.name,
-                                                                    "text-wrap line-clamp-3"
+                                                                    "text-wrap line-clamp-2"
                                                                 )}
                                                             >
                                                                 {

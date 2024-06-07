@@ -53,7 +53,6 @@
         color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
     box-shadow: none;
     color: rgb(255, 255, 255);
-    // background-color: rgb(33, 43, 54);
     background-color: black;
     svg {
         color: white;
@@ -99,7 +98,6 @@
     }
 
     .formSelect {
-        width: auto;
         height: 56px;
         border-radius: 8px !important;
         cursor: pointer;
@@ -193,8 +191,8 @@
 }
 
 .item {
-    height: 90px;
-    padding: 10px 0;
+    // height: 80px;
+    padding: 14px 0;
     border-bottom: 1px solid #f3f0f0;
     div {
         align-self: center;
@@ -202,8 +200,6 @@
 }
 
 .cssImg {
-    width: 60px;
-    height: 60px;
     border-radius: 100rem;
     position: relative;
     display: flex;
@@ -216,8 +212,8 @@
     line-height: 1;
     overflow: hidden;
     user-select: none;
-    width: 50px;
-    height: 50px;
+    width: 42px;
+    height: 42px;
     margin-right: 16px;
 }
 

@@ -31,7 +31,7 @@ export const CourseCard = memo(
                             <Badge key={category.id}>{category.name}</Badge>
                         ))}
                     </div>
-                    <h3 className="text-md sm:text-lg font-semibold text-neutral-800 mb-2  text-start">
+                    <h3 className="text-base font-semibold text-neutral-800 mb-3 line-clamp-2  text-start">
                         {course.title}
                     </h3>
 
@@ -53,10 +53,10 @@ const MyCourses = () => {
     useEffect(() => {
         const fetchApi = async () => {
             try {
-                const result = await userApi.getUserByEmail(user.email);
+                const result = await userApi.getCoursesOfUser(user.email);
                 let listCourse = [];
-                result.content.progresses.forEach((pro) => {
-                    listCourse.push(pro.course);
+                result.content?.forEach((pro) => {
+                    listCourse.push(pro);
                 });
                 setCourses(listCourse);
             } catch (error) {

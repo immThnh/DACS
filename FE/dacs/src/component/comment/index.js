@@ -574,7 +574,7 @@ export default function Comment({
                                                                         moment();
                                                                     const then =
                                                                         moment(
-                                                                            cmt.date
+                                                                            sComment.date
                                                                         );
                                                                     const diffInSeconds =
                                                                         now.diff(

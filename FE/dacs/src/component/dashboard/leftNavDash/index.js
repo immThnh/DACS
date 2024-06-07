@@ -20,7 +20,6 @@ function LeftNavDash() {
         }
     };
     const subItemClickHandle = (e) => {
-        console.log(e.currentTarget.id);
         var element = e.currentTarget;
         element.classList.toggle(clsx(styles.active));
 

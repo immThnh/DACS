@@ -5,8 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Builder
@@ -14,7 +12,6 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "name")
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,8 +19,4 @@ public class Category {
     private String name;
     private LocalDateTime date;
     private boolean isDeleted = false;
-    @ManyToMany(mappedBy = "categories")
-//! không được sử dụng @JsonBackReference() với Collections
-    @JsonIgnore
-    private List<Course> courses = new ArrayList<>();
 }
